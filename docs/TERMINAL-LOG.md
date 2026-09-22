@@ -63,6 +63,15 @@ git push -u origin m0.1-scaffold
 gh pr create --base main --head m0.1-scaffold
 ```
 
-**Failed:** creating the Vercel project through the Vercel connector reported "created, but git link could not be
-verified", and the project then 404'd and never appeared in the team's project list (deployment listing returned 403).
-Next step is in the dashboard: vercel.com/new → import `knp4830/portfolio` (framework Next.js, defaults).
+**Looked failed, wasn't:** the Vercel connector's project creation reported "created, but git link could not be
+verified", then the project 404'd and didn't appear in the team's project list. It was linked anyway: opening the PR
+triggered a Vercel build (`vercel.com/minced/portfolio`, "Deployment has completed").
+
+```bash
+gh pr checks 1 --watch                      # CI "check" pass (25s); Vercel pass
+gh api repos/knp4830/portfolio/deployments  # → portfolio-n6zep6wm5-minced.vercel.app
+curl -I https://portfolio-n6zep6wm5-minced.vercel.app
+```
+
+**Blocked (expected):** `302` → Vercel login. Preview URLs are behind Vercel Authentication (Deployment Protection) by
+default, so it only loads for a logged-in team member.
