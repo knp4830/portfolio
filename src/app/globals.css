@@ -291,6 +291,15 @@
   letter-spacing: 0.005em;
 }
 
+/* The smaller typewriter set: colophon facts and the mobile foundations card. */
+@utility type-semi-sm {
+  font-family: var(--font-semi);
+  font-weight: 400;
+  font-size: calc(var(--semi-scale) * 16px);
+  line-height: var(--baseline);
+  letter-spacing: 0.005em;
+}
+
 @utility type-label {
   font-family: var(--font-mono);
   font-weight: 400;
@@ -330,6 +339,39 @@
     black var(--rule-offset) calc(var(--rule-offset) + 1px),
     transparent calc(var(--rule-offset) + 1px) var(--baseline)
   );
+}
+
+/* Links and focus (design: States → Focus rings). Huckleberry on paper; controls
+   on the desk switch the ring to --desk-ink, since huckleberry is 1.9:1 there. */
+@layer base {
+  a {
+    color: var(--huckleberry);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+  :focus-visible {
+    outline: 2px solid var(--huckleberry);
+    outline-offset: 3px;
+  }
+}
+
+/* Projects: the selected project's detail slides in like a new index card from
+   under the page edge; the mobile sheet rises over the card list. Both skipped
+   under prefers-reduced-motion (motion-safe:). */
+@keyframes card-in {
+  from {
+    translate: 100% 0;
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    translate: 0 100%;
+  }
 }
 
 body {

@@ -4,10 +4,15 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import type { ReactElement } from "react";
 import { z } from "zod";
 import {
+  type PageCopy,
+  type PageId,
   type Project,
+  type Site,
   type Skills,
   type TimelineEntry,
+  pageSchemas,
   projectSchema,
+  siteSchema,
   skillsSchema,
   timelineEntrySchema,
 } from "./schema.ts";
@@ -93,8 +98,25 @@ export async function loadProjects(root = defaultRoot()): Promise<(Project & { b
   return projects;
 }
 
+/** Chrome copy shared by every spread (name, theme toggle, links, contents entries). */
+export async function loadSite(root = defaultRoot()): Promise<Site> {
+  return (await readMdx(root, "site.mdx", siteSchema)).data;
+}
+
+/** One spread's own copy: labels, headings, and handwritten notes. */
+export async function loadPage<Id extends PageId>(id: Id, root = defaultRoot()): Promise<PageCopy<Id>> {
+  return (await readMdx(root, `pages/${id}.mdx`, pageSchemas[id])).data as PageCopy<Id>;
+}
+
 /** Loads everything; used by the build step and tests. */
 export async function checkContent(root = defaultRoot()) {
-  const [timeline, skills, projects] = await Promise.all([loadTimeline(root), loadSkills(root), loadProjects(root)]);
-  return { timeline, skills, projects };
+  const ids = Object.keys(pageSchemas) as PageId[];
+  const [timeline, skills, projects, site, ...pages] = await Promise.all([
+    loadTimeline(root),
+    loadSkills(root),
+    loadProjects(root),
+    loadSite(root),
+    ...ids.map((id) => loadPage(id, root)),
+  ]);
+  return { timeline, skills, projects, site, pages };
 }

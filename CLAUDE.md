@@ -38,21 +38,25 @@ portfolio/
 │   │   ├── skills/page.tsx           # pp. 5–6
 │   │   ├── projects/page.tsx         # projects spread
 │   │   ├── projects/[slug]/page.tsx  # deep link, same spread with that card selected
-│   │   ├── colophon/page.tsx
-│   │   ├── contact/page.tsx          # contact + resume
+│   │   ├── contact/page.tsx          # pp. 9–10, back cover + contact + resume
+│   │   ├── colophon/page.tsx         # pp. 11–12, the last spread
 │   │   └── globals.css               # every color, font, and spacing token
-│   ├── components/notebook/          # Notebook, Page, PageCurl, FactsPanel, Project*, …
+│   ├── components/notebook/          # Notebook, Page, MobilePage, chrome, primitives (Marginalia, HandMark, …)
+│   │   ├── spreads/                  # one component per spread: left, right, and mobile content
+│   │   └── art/                      # specimens, icons, one-off marks (converted from design/html)
 │   ├── lib/curl/                     # fold math, clip polygon, reflection matrix, input → progress
+│   ├── lib/notebook/                 # spread order, routes, page ranges, previous/next
 │   ├── lib/paper/                    # generated page geometry (pages.ts) + responsive clip
 │   └── lib/content/                  # MDX loading + frontmatter types
 ├── content/
+│   ├── site.mdx                     # chrome copy + contents entries
+│   ├── pages/*.mdx                  # each spread's own copy (labels, headings, notes)
 │   ├── timeline/*.mdx               # one per entry, frontmatter only
 │   ├── skills.mdx
 │   └── projects/*.mdx
 ├── public/
 │   ├── resume.pdf
-│   ├── textures/                     # baked paper wear, desk, cover (AVIF; `pnpm bake:paper`)
-│   └── specimens/                    # PNW line drawings (SVG)
+│   └── textures/                     # baked paper wear, desk, cover (AVIF; `pnpm bake:paper`)
 ├── design/                           # Claude Design output — the visual spec
 └── docs/                             # BRIEF, BUILD-PLAN, LEARNING-LOG, TERMINAL-LOG
 ```
@@ -87,7 +91,7 @@ portfolio/
 
 **Content**
 - **Resume download appears on exactly two pages:** the opening spread and the contact page.
-- **The notebook is exactly 12 pages** — 1–2 opening, 3–4 timeline, 5–6 skills, 7–8 projects, 9–10 colophon, 11–12 contact. Page numbers in footers and the contents page ranges must match.
+- **The notebook is exactly 12 pages** — 1–2 opening, 3–4 timeline, 5–6 skills, 7–8 projects, 9–10 contact, 11–12 colophon (Kevin moved the colophon last, Sep 21). The order lives in `src/lib/notebook/spreads.ts`; page numbers, contents ranges, and previous/next all derive from it.
 - **Contents:** five sections with page ranges. Hover and keyboard focus turn the title huckleberry with a highlighter swash, tint the leader and range, and show "jump →"; click riffles straight to the section and updates the route.
 - No phone number anywhere. No LeetCode.
 - Project cards have **no links or screenshots** until Kevin provides them — leave the slots empty, don't invent placeholders that look real.
@@ -141,7 +145,7 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 ### Phase 1 — Static notebook (no curl)
 - ☑ **M1.1 Page and Notebook** — ruled paper, texture overlay, edge chips, desk surface, spread layout. DoD: matches the design at 1440px and 390px.
-- ☐ **M1.2 Pages and chrome** (was M1.2–M1.4, combined by Kevin Sep 21) — opening (intro, contents with page ranges + hover, resume), two-page timeline, skills spread, projects spread (card grid, detail page, selection via URL, mobile sheet), colophon, contact; ribbon bookmark, theme toggle, specimens; mobile merged pages; plain next/previous links. DoD: every route renders; the timeline and skills spreads fit with no internal scroll at 1440×900; `/projects/minced` opens with Minced selected; the sheet closes with X, swipe down, and back; keyboard-only navigation reaches everything.
+- ☑ **M1.2 Pages and chrome** (was M1.2–M1.4, combined by Kevin Sep 21) — opening (intro, contents with page ranges + hover, resume), two-page timeline, skills spread, projects spread (card grid, detail page, selection via URL, mobile sheet), colophon, contact; ribbon bookmark, theme toggle, specimens; mobile merged pages; plain next/previous links. DoD: every route renders; the timeline and skills spreads fit with no internal scroll at 1440×900; `/projects/minced` opens with Minced selected; the sheet closes with X, swipe down, and back; keyboard-only navigation reaches everything.
 
 ### Phase 2 — The curl engine
 - ☐ **M2.1 Fold math** — pure functions for fold line, clip polygon, reflection matrix, with unit tests. DoD: tests cover corner, mid-turn, and fully turned states.
@@ -188,6 +192,13 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 - Each project card keeps its screenshot slot as a **blank square** until Kevin adds pictures (no fake image).
 - Still waiting on Kevin to confirm the timeline descriptions and skills lists.
 
-**M1.1 done** (branch `m1.1-notebook`). The empty notebook matches the design at 1440 and 390, day and night: desk + props, lamp, leather cover, page block, torn edges (live clip-path), ruled lines, baked wear per page, gutter, page numbers; one page in a leather strip below 1024px. Wear, desk, and cover are baked from `design/html` by `pnpm bake:paper` (see LEARNING-LOG). For M2: the grab-corner folds are currently baked in and must move to the curl engine.
+**M1.1 done** (branch `m1.1-notebook`). The empty notebook matches the design at 1440 and 390, day and night: desk + props, lamp, leather cover, page block, torn edges (live clip-path), ruled lines, baked wear per page, gutter, page numbers; one page in a leather strip below 1024px. Wear, desk, and cover are baked from `design/html` by `pnpm bake:paper` (see LEARNING-LOG). (Correction: the grab-corner turn corners were never baked; M2 draws them.)
 
-**Next up: M1.2 — Pages and chrome** (combined M1.2–M1.4).
+**M1.2 done** (branch `m1.2-pages`, combined M1.2–M1.4). All six spreads, desktop and mobile, day and night, with content from `content/` (site chrome in `site.mdx`, per-spread copy in `pages/*.mdx`). Contact is now pp. 9–10 and keeps its back-cover wording; the colophon is last (pp. 11–12); each keeps its own baked wear. Projects selection is the URL; on mobile `/projects/<slug>` opens a sheet (X, swipe down, back). Theme toggle persists in localStorage with no flash. Verified in headless Chrome: 25/25 DoD checks. Open items for Kevin:
+- **`public/resume.pdf` doesn't exist yet**, so both resume buttons 404 until it's added (the brief also lists resume updates).
+- **Colophon copy is stale** (from the design): "Every version is one MDX file: the facts page renders from its frontmatter, the story from its body" describes the retired per-entry pages, and the Type row omits Special Elite. Flagged, not rewritten.
+- Project card lines (`cardLine`) and lineage version tags (v0.1, v0.2, v1.0) come from the design; confirm.
+- The design's two rows of project cards run into the p. 07 footer; the cards now sit over the page number.
+- The mobile project sheet stops 8px short of the right edge (it's clipped with the page's torn edge).
+
+**Next up: M2.1 — Fold math.**
