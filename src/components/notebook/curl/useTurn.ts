@@ -232,7 +232,11 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
   };
 
   function onWheel(event: WheelEvent) {
-    if (o().platform !== "desktop" || !active() || leaving || event.ctrlKey) return;
+    if (o().platform !== "desktop" || !active() || event.ctrlKey) return;
+    // The spread never scrolls, so the wheel is the curl's: swallow it, or the
+    // browser rubber-bands the whole page while you turn (macOS trackpads).
+    if (event.cancelable) event.preventDefault();
+    if (leaving) return;
     const dy = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaMode === 2 ? event.deltaY * innerHeight : event.deltaY;
     const now = performance.now();
     if (now < memory.wheel.lockedUntil) {
@@ -393,7 +397,7 @@ export function useTurn(options: TurnOptions): TurnEngine {
 
   useEffect(() => {
     const turn = engine.current!;
-    addEventListener("wheel", turn.onWheel, { passive: true });
+    addEventListener("wheel", turn.onWheel, { passive: false });
     addEventListener("keydown", turn.onKey);
     document.addEventListener("click", turn.onClick, true);
     return () => {

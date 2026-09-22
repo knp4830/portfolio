@@ -36,6 +36,10 @@ export function timelineSpread({ copy, entries }: TimelineProps): SpreadContent 
       <div className="absolute top-[716px] left-[452px]">
         <Marginalia lines={[copy.continuedNote]} tone="pencil" tilt={-2.5} className="text-[22px]" />
       </div>
+      {/* By p. 3's grab corner: the same gesture, backwards. */}
+      <div className="absolute top-[744px] left-[56px]">
+        <Marginalia lines={[copy.dragBack]} tilt={2} />
+      </div>
     </>
   );
 

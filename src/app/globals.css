@@ -375,6 +375,8 @@
 }
 
 body {
+  /* The wheel turns pages; the page itself never moves (no rubber-band bounce). */
+  overscroll-behavior-y: none;
   background: var(--desk);
   color: var(--desk-ink);
   -webkit-font-smoothing: antialiased;
