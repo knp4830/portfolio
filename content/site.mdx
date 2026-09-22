@@ -1,0 +1,44 @@
+---
+# Chrome that appears on every spread, plus the contents page's section list.
+name: "Kevin Pham"
+tagline: "— field notebook"
+mobileTagline: "Field notebook"
+version: "v1.1"
+location: "Seattle, WA"
+theme:
+  group: "Journal theme"
+  day: "Day"
+  night: "Night"
+  toDay: "Switch to day journal"
+  toNight: "Switch to night journal"
+ribbon: "Contents"
+# Plain previous/next links (the page curl replaces them in M2 but they stay as the no-JS fallback).
+turn:
+  label: "Pages"
+  previous: "Previous page"
+  next: "Next page"
+resume:
+  label: "Download resume"
+  format: "PDF"
+  href: "/resume.pdf"
+links:
+  - id: "email"
+    label: "Email"
+    display: "kevinpham4830@gmail.com"
+    href: "mailto:kevinpham4830@gmail.com"
+  - id: "linkedin"
+    label: "LinkedIn"
+    display: "linkedin.com/in/kevinpham4830"
+    href: "https://www.linkedin.com/in/kevinpham4830/"
+  - id: "github"
+    label: "GitHub"
+    display: "github.com/knp4830"
+    href: "https://github.com/knp4830"
+# Contents entries, keyed by spread. The order and page ranges come from the notebook itself.
+sections:
+  timeline: { title: "Timeline", subtitle: "001 → 011 · June 2022 – now" }
+  skills: { title: "Skills", subtitle: "Tools, foundations, practice" }
+  projects: { title: "Projects", subtitle: "Minced · PolyPaper · World Map Photo Album" }
+  contact: { title: "Contact", subtitle: "Email · LinkedIn · GitHub · resume" }
+  colophon: { title: "Colophon", subtitle: "How this notebook was built" }
+---

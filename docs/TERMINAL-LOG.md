@@ -192,3 +192,31 @@ git add -A
 git commit -m "M1.1: page and notebook — baked paper wear, desk, cover, spread and mobile layout"
 git push -u origin m1.1-notebook
 ```
+
+## M1.2 — Pages and chrome (2026-09-21)
+
+```bash
+pnpm bake:paper        # re-bake after reordering (contact pp. 9–10, colophon 11–12), adding tears and separate crease maps
+pnpm content:check     # 11 timeline entries, 5 skill groups (24 chips), 3 projects, site + 6 page files
+pnpm test              # 46 tests
+pnpm build && pnpm start -p 3130
+node dod.mjs           # headless Chrome over the DevTools protocol (Node 24's built-in WebSocket): 25/25
+```
+
+**Failed:** long bash heredocs containing JSX with `'` (e.g. `[font-variation-settings:'SOFT'_50]`) died with
+`unexpected EOF while looking for matching '` before running. Wrote those files with the editor instead.
+
+**Failed:** a Python template for HandMark used `%` formatting and the JSX contains `106%` →
+`TypeError: not enough arguments for format string`. Switched to placeholder `.replace()`.
+
+**Failed (test bug, not site bug):** the DoD script counted 7 "pages" on /skills; the tool groups are labelled
+`<section>`s too. Counting only `main > section[aria-label]` fixed it.
+
+```bash
+# Kevin: commit, push, PR
+git fetch
+git checkout -b m1.2-pages origin/main
+git add -A
+git commit -m "M1.2: pages and chrome — all six spreads, contents, theme toggle, projects sheet"
+git push -u origin m1.2-pages
+```

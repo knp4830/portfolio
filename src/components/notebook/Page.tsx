@@ -10,7 +10,8 @@ type PageProps = {
 };
 
 // One 630×840 desktop page. Layers, bottom to top: paper, ruled lines, baked wear
-// (texture, edge aging, foxing, stains, folds — different on every page), the
+// (a crease map multiplied at the wear level's opacity, then edge aging, foxing,
+// stains, folds, tears — different on every page), the
 // spine-side fold shade, then content on the 56px margin. The torn and chipped
 // edges are a clip-path on the real DOM, so text stays selectable.
 export function Page({ number, label, children }: PageProps) {
@@ -27,11 +28,16 @@ export function Page({ number, label, children }: PageProps) {
       <div aria-hidden className="ruled absolute inset-x-0 top-[56px] bottom-0 bg-rule" />
       <div
         aria-hidden
+        className="absolute inset-0 bg-size-[100%_100%] mix-blend-multiply"
+        style={{ backgroundImage: `url(${spec.crease})`, opacity: `var(--tex-${spec.wear})` }}
+      />
+      <div
+        aria-hidden
         className="absolute inset-0 bg-[image:var(--img-day)] bg-size-[100%_100%] night:bg-[image:var(--img-night)]"
         style={{ "--img-day": `url(${spec.textures.day})`, "--img-night": `url(${spec.textures.night})` } as CSSProperties}
       />
       <div aria-hidden className={`absolute inset-y-0 w-3 bg-paper-fold ${spec.gutter === "left" ? "left-0" : "right-0"}`} />
-      <div className="absolute inset-0 p-[56px]">{children}</div>
+      <div className="absolute inset-0 flex flex-col p-[56px] *:shrink-0">{children}</div>
       <p className={`type-label absolute inset-x-[56px] top-[790px] text-ink-soft ${left ? "text-left" : "text-right"}`}>
         p. {String(number).padStart(2, "0")}
       </p>

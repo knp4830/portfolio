@@ -178,3 +178,64 @@ The page's own color stays a token (`bg-paper`), so the baked layer is just the 
 - **The bake depends on Chrome being installed** (`CHROME_PATH` to override). The output is committed, so neither CI nor Vercel runs the bake.
 - **Grab-corner folds are baked in for now.** CLAUDE.md says lifted turn corners are the curl engine's rest state and must share its fold math. When M2 builds them, the bake has to drop those corner layers.
 - **Mobile page numbers don't sit on a rule yet.** The page height is `100dvh` for the empty shell; once M1.2 gives pages real content, heights should snap to whole lines.
+
+## M1.2 — Pages and chrome (2026-09-21, combined M1.2–M1.4)
+
+### What we built
+All six spreads with their content, desktop and mobile, day and night:
+- **opening:** property card, headline, resume, contents with hover
+- **timeline:** the two-page trail
+- **skills:** chips and the foundations grid
+- **projects:** cards, detail, and the mobile sheet
+- **contact:** back cover and contact details
+- **colophon:** the build notes and Fig. 1
+
+Plus the chrome: the name on the desk, the day/night toggle, the ribbon bookmark, previous/next links, specimens, and handwritten notes. Contact now comes before the colophon (pp. 9–10), so the colophon is the last spread (pp. 11–12).
+
+### Key files
+- `src/lib/notebook/spreads.ts`: the running order, routes, page ranges, previous/next (+ tests)
+- `content/site.mdx`, `content/pages/*.mdx`: chrome copy and each spread's own copy; schemas in `src/lib/content/schema.ts`
+- `src/components/notebook/spreads/*.tsx`: one component per spread; each returns `left`, `right`, and `mobile` content for `Notebook`
+- `src/components/notebook/`:
+  - `Marginalia`, `HandMark`, `PageHeader`, `StackChip`, `FactsPanel`, `ResumeButton`, `Tape`
+  - `ThemeToggle`, `RibbonBookmark`, `TurnLinks`, `ProjectSheet`
+- `src/components/notebook/art/`: specimens, icons, and one-off marks, converted from `design/html`
+- `src/app/*/page.tsx`: six routes plus `/projects/[slug]` (static params, `dynamicParams = false`)
+
+### How it works
+**One order, everything derived.** `SPREADS` lists the spreads in reading order. Page numbers come from the baked page data, and a test asserts that they run 1–12 with no gaps. The contents page's numbers and ranges, the "5 sections · 12 pages" count, and every previous/next link are computed from it. Moving the colophon after contact meant changing one array and re-running the bake.
+
+**Two trees, one shown.** Each spread renders the desktop scene and the mobile merged page. CSS shows one (`hidden spread:block` / `spread:hidden`), and `display: none` removes the other from the accessibility tree and from tab order. Both are static HTML, with no JavaScript needed to pick a layout.
+
+**Handwriting is deterministic.** `Marginalia` splits a note into glyphs and gives each a baseline wobble (a sine plus jitter), a rotation, and uneven spacing. The randomness is seeded by hashing the text (FNV-1a → mulberry32). So the same note looks the same on every render, and the server and browser always agree (no hydration mismatch). Screen readers get the plain text; decorative marks pass `label={null}`.
+
+**Hand marks are the design's strokes.** `HandMark` wraps text in a relative span and stretches one of the design's underline or circle paths to it: `preserveAspectRatio="none"` plus `vector-effect: non-scaling-stroke`, so the line stays 2.2px at any word length.
+
+**Projects selection is a URL.** Cards are links to `/projects/<slug>`. The spread's `selected` prop comes from the route, so selection works without JavaScript, every project is linkable, and back/forward step through selections. The detail's slide-in is a CSS keyframe keyed by slug (`motion-safe:` only). On mobile the same route renders a fixed sheet over the card list:
+- **X** is a link back to `/projects#slug`
+- **Back** works because opening the sheet was a navigation
+- **Swipe down** is a small client component: it only engages when the sheet is scrolled to the top and the finger moves down, so it never blocks scrolling
+
+**Theme toggle without a flash.**
+- **Before paint:** an inline script in `<head>` applies a saved choice.
+- **Pressed styling:** uses the `night:` variant, so it's correct before hydration.
+- **After hydration:** `useSyncExternalStore` watches `data-theme` (MutationObserver) and the OS preference for `aria-pressed`.
+- **Storage:** `localStorage` holds the choice, the one allowed use of browser storage.
+
+### Why this way, and what we rejected
+- **Rejected: absolute positioning copied from the mockups.** Text uses flow layout on the 28px grid (the mockups' own fixed heights: 28/56/84/112…). Only decorative art and notes are placed absolutely, at the design's page coordinates.
+- **Rejected: Framer Motion for the sheet.** CSS keyframes and ~30 lines of touch handling cover it with no new dependency.
+- **Rejected: a portal for the sheet.** It would need JavaScript to render; kept inline so `/projects/<slug>` works without it.
+- **Rejected: client state for project selection.** A URL is shareable, survives reload, and gets back/forward for free.
+- **No "← → turn pages" hint on the desk yet.** It describes the curl (M2), so it would be false today.
+
+### Gotchas
+- **The design PNGs were rendered without the web fonts** (Times/serif fallbacks). Fraunces and JetBrains Mono are wider, so a few design positions collided. The 004 strike note moved 14px right, and the skills specimen caption is right-aligned.
+- **Flex rows shrink by default.** On projects, the card grid is taller than the column, so flex quietly squeezed the page header by 5px. Page columns now use `*:shrink-0`, as the mockup's `.col > *` did.
+- **The design's two rows of project cards run 28px into the footer.** The cards now sit above the page number instead of it printing over them.
+- **Pinning mobile wear to the top** left the baked bottom edge-aging band across the middle of tall pages; mobile wear now stretches to the page (`100% 100%`).
+- **Animations that fade can leave a dialog see-through** if caught mid-way. The sheet now only slides.
+- **Scaling a figure scales its caption.** The colophon's drawing scales to the phone column; its caption sits outside the scaled box.
+- **The mockups draw an erased note as text inside the wear layers**, which the bake (SVG only) skipped. It's now a live 24%-opacity `Marginalia`.
+- **Correction to M1.1:** the grab-corner turn corners were never baked. They're drawn after the content column in the mockups, so the bake skipped them. M2 adds them fresh.
+- **Checked in a real browser, not just screenshots:** a DevTools-protocol script covered routes, no-scroll at 1440×900, selection, keyboard reach, theme persistence, and the sheet's X/swipe/back with emulated touch (25/25).

@@ -1,7 +1,8 @@
-import { Notebook } from "@/components/notebook/Notebook";
+import { OpeningSpread } from "@/components/notebook/spreads/Opening";
+import { loadPage, loadSite } from "@/lib/content/load";
 
-// Opening spread (pp. 1–2). M1.1 builds the empty notebook; the intro,
-// contents, and resume come in M1.2.
-export default function Home() {
-  return <Notebook spread="opening" labels={["Opening", "Table of contents"]} />;
+// Opening spread (pp. 1–2).
+export default async function Home() {
+  const [site, copy] = await Promise.all([loadSite(), loadPage("opening")]);
+  return <OpeningSpread site={site} copy={copy} />;
 }

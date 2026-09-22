@@ -8,6 +8,7 @@
 // once per theme with headless Chrome, encoded to AVIF with sharp, and committed.
 //
 // Output
+//   public/textures/crease-<page>.avif             desktop crease map (630×840, multiplied at runtime)
 //   public/textures/page-<page>-<theme>.avif      desktop page wear (630×840, transparent)
 //   public/textures/mobile-<id>-<theme>.avif      mobile page wear (382×H, transparent)
 //   public/textures/desk-<main|scene>-<theme>.avif desk grain + props (1440×952, 1920×1200)
@@ -30,6 +31,7 @@ const tokensCss = readFileSync(path.join(root, "design/tokens.css"), "utf8");
 const outDir = path.join(root, "public/textures");
 const work = path.join(tmpdir(), "bake-paper");
 const SCALE = 2;
+const CREASE_SCALE = 1; // soft noise: 1× is indistinguishable and a quarter of the bytes
 
 const requireFromNext = createRequire(createRequire(import.meta.url).resolve("next/package.json"));
 const sharp = requireFromNext("sharp");
@@ -49,8 +51,9 @@ const SPREADS = [
   { id: "timeline", day: "TimelineDay", night: "TimelineNight", pages: [3, 4] },
   { id: "skills", day: "SkillsDay", night: "SkillsNight", pages: [5, 6] },
   { id: "projects", day: "ProjectsDay", night: "ProjectsNight", pages: [7, 8] },
-  { id: "colophon", day: "ColophonDay", night: "ColophonNight", pages: [9, 10] },
-  { id: "contact", day: "ContactDay", night: "ContactNight", pages: [11, 12] },
+  // Contact comes before the colophon (Kevin, Sep 21); each keeps its own wear.
+  { id: "contact", day: "ContactDay", night: "ContactNight", pages: [9, 10] },
+  { id: "colophon", day: "ColophonDay", night: "ColophonNight", pages: [11, 12] },
 ];
 const MOBILE = SPREADS.map(({ id }) => {
   const name = { opening: "Opening", timeline: "Timeline", skills: "Skills", projects: "Projects", colophon: "Colophon", contact: "Contact" }[id];
@@ -94,7 +97,14 @@ function readPages(doc) {
     const colAt = inner.search(/<div[^>]*class="col"/);
     if (colAt === -1) throw new Error(`${label}: no content column`);
     const paper = inner.slice(0, colAt);
-    const [rules, ...wear] = topLevelSvgs(paper);
+    const [rules, ...layers] = topLevelSvgs(paper);
+    // The crease texture is multiplied onto the paper at a per-theme opacity, so it's baked
+    // separately (once, theme-free) and blended at runtime; everything else is an overlay.
+    const crease = layers.find((svg) => svg.includes('class="tex '));
+    const wear = layers.filter((svg) => svg !== crease);
+    // Tears are drawn after the content column (their fibre sits over the page edge);
+    // they're wear too. Turn corners are also drawn there but belong to the curl (M2).
+    const tears = topLevelSvgs(inner.slice(colAt)).filter((svg) => svg.includes("var(--fiber)"));
     const firstRule = rules.match(/d="M0 ([\d.]+)H/);
     if (!rules.includes("var(--rule)") || !firstRule) throw new Error(`${label}: first layer isn't the ruled lines`);
     const texture = paper.match(/class="tex (w-\w+)"/)?.[1].slice(2);
@@ -107,13 +117,14 @@ function readPages(doc) {
       wear: texture,
       firstRule: Number(firstRule[1]),
       gutter: gutterLeft === undefined ? null : Number(gutterLeft) === 0 ? "left" : "right",
-      layers: wear,
+      crease: crease?.replace(/ class="tex [\w-]+"/, ""),
+      layers: [...wear, ...tears],
     };
   });
 }
 
 /** Render markup at width×height (CSS px) with headless Chrome, then encode to AVIF. */
-function render(name, { width, height, theme, markup, background = "transparent" }) {
+function render(name, { width, height, theme, markup, background = "transparent", scale = SCALE }) {
   mkdirSync(work, { recursive: true });
   const file = path.join(work, `${name}.html`);
   const png = path.join(work, `${name}.png`);
@@ -131,7 +142,7 @@ html,body{margin:0;width:${width}px;height:${height}px;overflow:hidden;backgroun
     "--disable-gpu",
     "--hide-scrollbars",
     "--default-background-color=00000000",
-    `--force-device-scale-factor=${SCALE}`,
+    `--force-device-scale-factor=${scale}`,
     `--window-size=${Math.max(width, 600)},${height}`,
     "--virtual-time-budget=3000",
     `--screenshot=${png}`,
@@ -141,11 +152,11 @@ html,body{margin:0;width:${width}px;height:${height}px;overflow:hidden;backgroun
   return png;
 }
 
-async function encode(png, name, { width, height }) {
+async function encode(png, name, { width, height, scale = SCALE }) {
   const out = path.join(outDir, `${name}.avif`);
   // Crop: Chrome keeps a minimum window width, so narrow renders come back wider.
   await sharp(png)
-    .extract({ left: 0, top: 0, width: width * SCALE, height: height * SCALE })
+    .extract({ left: 0, top: 0, width: width * scale, height: height * scale })
     .avif({ quality: 55, effort: 6 })
     .toFile(out);
   return `/textures/${name}.avif`;
@@ -169,6 +180,14 @@ for (const spread of SPREADS) {
   for (const [i, number] of spread.pages.entries()) {
     const geometry = day[i];
     if (night[i].clip !== geometry.clip) console.warn(`  note: page ${number} night clip differs from day; using day`);
+    if (!geometry.crease) throw new Error(`page ${number}: no crease texture layer`);
+    const crease = await bake(`crease-${number}`, {
+      width: geometry.width,
+      height: geometry.height,
+      theme: "day",
+      markup: geometry.crease,
+      scale: CREASE_SCALE,
+    });
     const textures = {};
     for (const [theme, page] of [["day", geometry], ["night", night[i]]]) {
       textures[theme] = await bake(`page-${number}-${theme}`, {
@@ -184,6 +203,7 @@ for (const spread of SPREADS) {
       clip: geometry.clip,
       wear: geometry.wear,
       gutter: geometry.gutter,
+      crease,
       textures,
     };
   }
@@ -194,6 +214,14 @@ for (const page of MOBILE) {
   const [day] = readPages(html(page.day));
   const [night, extra] = readPages(html(page.night));
   if (!day || !night || extra) throw new Error(`${page.id}: expected 1 mobile page`);
+  if (!day.crease) throw new Error(`mobile ${page.id}: no crease texture layer`);
+  const crease = await bake(`mobile-crease-${page.id}`, {
+    width: day.width,
+    height: day.height,
+    theme: "day",
+    markup: day.crease,
+    scale: CREASE_SCALE,
+  });
   const textures = {};
   for (const [theme, source] of [["day", day], ["night", night]]) {
     textures[theme] = await bake(`mobile-${page.id}-${theme}`, {
@@ -203,7 +231,7 @@ for (const page of MOBILE) {
       markup: source.layers.join(""),
     });
   }
-  mobile[page.id] = { clip: day.clip, wear: day.wear, width: day.width, height: day.height, textures };
+  mobile[page.id] = { clip: day.clip, wear: day.wear, width: day.width, height: day.height, crease, textures };
 }
 
 console.log("desk and cover");
@@ -243,6 +271,9 @@ export type PageSpec = {
   wear: Wear;
   /** Which edge touches the spine; that strip gets the paper-fold shade. */
   gutter: "left" | "right";
+  /** Crease map, multiplied onto the paper at --tex-<wear> opacity. Same in both themes. */
+  crease: string;
+  /** Everything else (edge aging, foxing, stains, folds, tears), drawn over the paper. */
   textures: ThemedImage;
 };
 
@@ -251,6 +282,7 @@ export type MobilePageSpec = {
   wear: Wear;
   width: number;
   height: number;
+  crease: string;
   textures: ThemedImage;
 };
 
