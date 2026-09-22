@@ -75,3 +75,47 @@ Every color, font, type role, and grid value from the design now lives in `src/a
 - **`"type": "module"` in package.json** stops Node's "reparsing as ES module" warning on every test run. Next, ESLint, and PostCSS configs are already ESM (`.ts`/`.mjs`), so nothing else changed.
 - **Headless Chrome won't shrink a window below ~500px.** A "390px" screenshot is a crop of a wider layout and looks like horizontal overflow. To check mobile, put the page in a 390px `<iframe>`.
 - **The starter home page lost its colors** because Tailwind's palette is cleared. It's replaced in M1.2.
+
+## M0.3 — Content pipeline (2026-09-21)
+
+### What we built
+All site content from the brief now lives in `content/` as MDX files with typed frontmatter:
+- 11 timeline entries (`content/timeline/v0-1.mdx` … `v1-1.mdx`)
+- the skills page (`content/skills.mdx`)
+- 3 projects (`content/projects/minced.mdx`, `polypaper.mdx`, `world-map-photo-album.mdx`)
+
+A loader reads and validates them. `pnpm build` refuses to build if any file is missing a field, has a misspelled field, or breaks a layout limit.
+
+### Key files
+- `src/lib/content/schema.ts`: one zod schema per content type; the TypeScript types are inferred from them
+- `src/lib/content/load.ts`: `loadTimeline`, `loadSkills`, `loadProjects`, `checkContent`, and `ContentError`
+- `src/lib/content/check.ts`: the build step (`pnpm content:check`, also run by `pnpm build`)
+- `src/lib/content/load.test.ts`: proves valid content loads and six kinds of broken content are rejected
+- `package.json`: `"build": "node src/lib/content/check.ts && next build"`
+
+### How it works
+1. **Read.** The loader lists `content/<type>/*.mdx`. The file name is the slug: `v0-4` is the `/timeline#v0-4` anchor, `minced` is `/projects/minced`.
+2. **Compile.** `compileMDX` from `next-mdx-remote/rsc` splits off the YAML frontmatter and compiles the MDX body into a React element. Timeline and skills are frontmatter only; projects keep the body (empty for now) so detail pages can add prose later.
+3. **Validate.** zod checks the frontmatter against the schema. `safeParse` either returns typed data or an error listing every problem. `z.prettifyError` turns that into `✖ Invalid input: expected string, received undefined → at dates`, and `ContentError` puts the file path on top.
+4. **Cross-file rules** the schema can't see: the file name must match the version (`0.4` → `v0-4.mdx`), entry numbers must run 1…N with no gaps, and no two projects may share an `order`.
+5. **Fail the build.** No page uses the loaders until M1.2, so `next build` alone wouldn't notice bad content yet. `pnpm build` (which Vercel runs) therefore starts with `check.ts`, which loads everything and exits 1 on the first problem. Once pages call the loaders at build time, Next would fail on its own too; the check just makes that true from day one.
+
+**Schema is the type.** `type TimelineEntry = z.infer<typeof timelineEntrySchema>` means a field is declared once. Components in M1.2 get exactly the shape the validator guarantees, so there's no second hand-written interface to drift.
+
+**Layout limits live in the schema.** `description` is `.max(125)` because the timeline fits two lines per entry (CLAUDE.md). Copy that would overflow the spread fails the build instead of being discovered visually.
+
+### Why this way, and what we rejected
+- **next-mdx-remote + zod** (Kevin chose). **Rejected: `@next/mdx`**, which turns `.mdx` files into imported components. It needs extra remark plugins for frontmatter, and validation would happen per import, so "every file is valid" is hard to guarantee in one place. **Rejected: a hand-written validator**: every field would need its check and its type written separately.
+- **Strict objects** (`z.strictObject`). A typo like `date:` for `dates:` is an error. A loose schema would silently drop it and the date would vanish from the page.
+- **Details as an ordered `{label, text}` list, not fixed keys.** Labels ("What sets it apart", "Pipeline") are copy and belong in `content/`, and each project has different extras. The five parts every project has (Problem, Role, Key decisions, Rejected idea, Result) are enforced by a `refine`; a part with no copy yet says "To be added" rather than being left out.
+- **Lineage is structured** (`name`, `note`, `date`) because the design draws it as a version history, not a sentence.
+- **No link or screenshot fields yet.** CLAUDE.md says leave the slots empty until Kevin provides them; the schema gets those fields then.
+- **Unconfirmed skills** are written `{ name, unconfirmed: true }` so they render as dashed chips; plain strings are confirmed. zod's `transform` normalizes both into `{ name, unconfirmed }`, so components handle one shape.
+
+### Gotchas
+- **YAML types are guessed from how a value is written.** `version: 1.0` is the number `1`, not the string `"1.0"`. Every version is quoted, and the schema's regex rejects a bare number (tested).
+- **Quote any value with a colon**: `title: "Added dependency: math"`. Unquoted, YAML reads it as a nested key.
+- **Node's type stripping needs `.ts` in imports** (`./schema.ts`), same as M0.2. Next's bundler accepts them too. Verified with a throwaway page that called `checkContent()` during `next build` and rendered the data.
+- **Windows paths.** `path.join` gives `content\timeline\…` on Windows. Error labels are built with `/` so messages look the same locally and on Vercel.
+- **The copy is still draft.** The brief marks the timeline descriptions and skills lists "Kevin to confirm". Editing them means editing the `.mdx` files only.
+- **Deleted pages leave stale types in `.next/`.** After removing the throwaway probe page, `tsc` failed with "Cannot find module …/zz-content-probe/page.js" from `.next/types/`. `rm -rf .next && pnpm build` fixes it. CI never sees this because `.next/` isn't committed.

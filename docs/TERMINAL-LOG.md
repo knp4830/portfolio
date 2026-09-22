@@ -119,3 +119,39 @@ git add .github package.json tsconfig.json src docs CLAUDE.md
 git commit -m "M0.2: tokens, fonts, type scale, contrast checks"
 git push -u origin m0.2-tokens
 ```
+
+## M0.3 — Content pipeline (2026-09-21)
+
+```bash
+git checkout -b m0.3-content origin/main   # (Kevin)
+
+pnpm add next-mdx-remote zod     # approved by Kevin: 6.0.0, 4.6.5
+pnpm content:check               # node src/lib/content/check.ts
+pnpm test                        # 41 tests: 34 contrast/token + 7 content
+
+# DoD: delete a required field and confirm the build fails
+sed -i '/^dates:/d' content/timeline/v0-7.mdx
+pnpm build
+```
+
+**Failed (on purpose):**
+```
+content check failed: content/timeline/v0-7.mdx
+✖ Invalid input: expected string, received undefined
+  → at dates
+[ELIFECYCLE] Command failed with exit code 1.
+```
+Restored the file afterwards; `pnpm build` passes again (`content ok: 11 timeline entries, 5 skill groups (24 chips), 3 projects`).
+
+```bash
+# Kevin: commit, push, PR
+git add package.json pnpm-lock.yaml content src docs CLAUDE.md
+git commit -m "M0.3: content pipeline — MDX loading, typed frontmatter, all content stubbed"
+git push -u origin m0.3-content
+```
+
+**Failed:** `pnpm typecheck` → `TS2307: Cannot find module '../../../../src/app/zz-content-probe/page.js'`, from stale
+`.next/types` after deleting a throwaway page. Fixed with:
+```bash
+rm -rf .next && pnpm build
+```
