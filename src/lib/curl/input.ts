@@ -11,8 +11,8 @@ export const TIMING = {
   auto: 450,
   /** Snapping a half-finished turn to done or back. */
   snap: 250,
-  /** Each page of a contents riffle. */
-  riffle: 150,
+  /** Each spread of a contents riffle (real pages turning one after another). */
+  riffle: 220,
   /** Wheel quiet time before a half-finished turn snaps. */
   idle: 150,
   /** After a turn completes, wheel input is ignored until it has been quiet this long. */
@@ -32,6 +32,10 @@ export const ARC = 0.55;
 
 export function easeInOut(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+}
+
+export function easeIn(t: number) {
+  return t * t;
 }
 
 export function easeOut(t: number) {

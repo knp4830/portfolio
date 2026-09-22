@@ -342,3 +342,27 @@ Every page's HTML now carries the whole notebook: 107 KB gzipped, up from ~35. A
 - **Hidden dialogs still match `[role="dialog"]`.** All project sheets are now in the DOM, so "is a sheet open?" has to check that one is displayed (`dialogOpen()`). The old check disabled every key and swipe.
 - **Git Bash rewrites `/timeline` into a Windows path** when it's a command-line argument (`MSYS_NO_PATHCONV=1` stops it). My debug script silently loaded a 404 page and the key "did nothing".
 - **`visibility: hidden` elements keep an `offsetParent`.** Tests that meant "the visible page" had to check computed visibility.
+
+## Four fixes after testing the mounted notebook (2026-09-21)
+
+Kevin reported four problems. Each is fixed separately.
+
+### 1. The spine line was gone
+**Cause:** the curl gives each page an inline `z-index` so the flap, the current pages, and the page beneath stack correctly. Those z-indexes competed in the stage's stacking context, so the pages painted over the spine rule, the lamp's cast, and the ribbon, which come later in the DOM with no z-index.
+**Fix:** the curl root is `isolate`, a new stacking context. The pages' z-indexes now only order pages against each other, and the whole curl paints as one layer under the spine, the cast, and the ribbon.
+
+### 2. The contents jump lagged between pages
+**Cause:** riffles still flipped *blank* pages (from the replica era) with a pause between flips, then cut to the target.
+**Fix:** every page is mounted now, so a riffle turns the **real spreads** in order (timeline → skills → projects → contact → colophon), one after another. Each flip is `TIMING.riffle` = 220ms. The first eases in (`easeIn`), the middle ones are linear, and the last eases out, so the run reads as one continuous motion. `TurnFrame.from` says which spread is turning, and the route changes once, at the end. Measured: at most 1 frame without a turning page between flips.
+
+### 3. Page 8 was blank while turning toward projects
+**Cause:** the project detail showed only when the URL named a project. Turning from p. 6 or back from p. 9, the route wasn't `/projects` yet, so p. 8 had no project to show.
+**Fix:** a CSS default. When no `projects:` route marker is present, the first project (Minced) is shown and its card marked selected. So p. 8 already has Minced on it while it's being turned to. The "Click a project to learn more" placeholder wasn't needed.
+
+### 4. Arrow turns flashed
+**Cause:** pages not involved in a turn were `visibility: hidden`. A hidden layer isn't rasterized, so when a turn revealed one, the GPU painted it for the first time mid-turn: a flash.
+**Fix:** all twelve pages stay visible, stacked under the current spread (`Z = stack < beneath < current < flap`). A turn only reorders them, so every revealed page was painted long before. Measured: 0 DOM changes and 0 hidden frames across four arrow turns.
+
+### Gotchas
+- **`elementsFromPoint` skips `pointer-events: none` elements.** The spine line has it, so a hit-test said it was "missing". To test paint order, turn pointer events back on for the check.
+- **`z-index` on a positioned child escapes to the nearest stacking context**, not to its parent. `isolation: isolate` is the cheapest way to contain it: no transform, no opacity change.

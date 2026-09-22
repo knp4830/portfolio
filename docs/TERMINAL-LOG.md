@@ -290,3 +290,27 @@ git add -A
 git commit -m "Keep the notebook mounted across routes: seamless turns, project slide-in only on switch"
 git push -u origin persistent-notebook
 ```
+
+## Four fixes: spine, riffle, page 8, flash (2026-09-21)
+
+```bash
+pnpm build && pnpm start -p 3000   # serve the production build locally
+node four.mjs            # 9/9 (one check per reported problem)
+node curl-dod.mjs        # 22/22
+node dod.mjs             # 25/25
+node verify-persist.mjs  # 8/8
+pnpm lint && pnpm typecheck && pnpm test   # clean; 72 unit tests
+```
+
+**Looked failed:** `four.mjs` said the spine line wasn't on top. `document.elementsFromPoint` ignores elements with
+`pointer-events: none` (the spine has it). A zoomed screenshot showed the line was there; the check now enables
+pointer events on the line while it tests.
+
+```bash
+# Kevin: commit, push, PR
+git fetch
+git checkout -b four-fixes origin/main
+git add -A
+git commit -m "Restore the spine line, riffle real pages, show Minced mid-turn, stop turn flashes"
+git push -u origin four-fixes
+```

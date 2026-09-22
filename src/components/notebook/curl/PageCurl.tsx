@@ -60,7 +60,7 @@ const CORNERS: Record<Direction, { corner: Point; mirror: Point }> = {
 const PAGE_OF: Record<Direction, Rect> = { forward: RIGHT, backward: LEFT };
 const mirrorSpine = (p: Point): Point => ({ x: 2 * SPINE - p.x, y: p.y });
 const points = (list: Point[]) => list.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
-const Z = { beneath: "1", current: "2", flap: "3" } as const;
+const Z = { stack: "0", beneath: "1", current: "2", flap: "3" } as const;
 
 type TurnLink = { href: string; label: string };
 
@@ -96,24 +96,17 @@ export function PageCurl({ pages, links, turnLabel }: PageCurlProps) {
   const pathname = usePathname();
   const spread = spreadOf(pathname) ?? "opening";
   const { previous, next } = links[spread];
-  // No lifted corner before the first page or after the last; the contents page keeps its dog-ear.
-  const restCorners: Record<Direction, boolean> = { backward: !!previous, forward: !!next && spread !== "opening" };
 
   const root = useRef<HTMLDivElement>(null);
   const wraps = useRef<Record<number, HTMLDivElement | null>>({});
   const shades = useRef<Record<number, HTMLDivElement | null>>({});
-  const blankFlap = useRef<HTMLDivElement>(null);
-  const blankFlapPage = useRef<HTMLDivElement>(null);
-  const blankUnder = useRef<HTMLDivElement>(null);
   const turnFold = useRef<SVGLineElement>(null);
   const restFlaps = { forward: useRef<SVGPolygonElement>(null), backward: useRef<SVGPolygonElement>(null) };
   const restFolds = { forward: useRef<SVGLineElement>(null), backward: useRef<SVGLineElement>(null) };
   const hover = useRef<Record<Direction, number>>({ forward: 0, backward: 0 });
   const corner = useRef<Point | null>(null);
   const current = useRef(spread);
-  const rests = useRef(restCorners);
   current.current = spread;
-  rests.current = restCorners;
 
   function showLine(line: SVGLineElement | null, fold: Fold, page: Rect) {
     const segment = foldSegment(page, fold);
@@ -126,36 +119,41 @@ export function PageCurl({ pages, links, turnLabel }: PageCurlProps) {
     line.setAttribute("y2", String(segment[1].y));
   }
 
-  function place(number: number | undefined, role: { visible: boolean; z?: string; current?: boolean }) {
+  function place(number: number | undefined, z: string, current = false) {
     const wrap = number ? wraps.current[number] : null;
     if (!wrap) return;
-    wrap.style.visibility = role.visible ? "visible" : "hidden";
-    wrap.style.zIndex = role.z ?? "0";
+    wrap.style.visibility = "visible";
+    wrap.style.zIndex = z;
     wrap.style.transform = "";
     wrap.style.clipPath = "none";
     const shade = shades.current[number!];
     if (shade) shade.style.opacity = "0";
-    const inert = !role.current;
+    const inert = !current;
     if (wrap.inert !== inert) wrap.inert = inert;
   }
 
   function draw(frame: TurnFrame) {
-    const roles = rolesFor(current.current);
-    const landed = frame.direction !== null && frame.progress >= 1;
+    // A riffle turns through spreads the route hasn't reached yet.
+    const showing = frame.from ?? current.current;
+    const roles = rolesFor(showing);
+    // No lifted corner before the first page or after the last; the contents page keeps its dog-ear.
+    const rest: Record<Direction, boolean> = {
+      backward: !!links[showing].previous,
+      forward: !!links[showing].next && showing !== "opening",
+    };
 
-    // Every page to its role for this spread. Landed: the page under the flap is
-    // hidden (its torn edges differ from the flap's), exactly as the next spread draws it.
-    for (const n of PAGE_NUMBERS) place(n, { visible: false });
-    place(roles.left, { visible: !(landed && frame.direction === "forward"), z: Z.current, current: true });
-    place(roles.right, { visible: !(landed && frame.direction === "backward"), z: Z.current, current: true });
-    place(roles.nextRight, { visible: true, z: Z.beneath });
-    place(roles.previousLeft, { visible: true, z: Z.beneath });
+    // Every page stays drawn, stacked like a real page block: this spread on top,
+    // the pages a turn uncovers just beneath, the rest below them. A turn only ever
+    // reveals pages the browser has already painted, so nothing flashes in.
+    for (const n of PAGE_NUMBERS) place(n, Z.stack);
+    place(roles.nextRight, Z.beneath);
+    place(roles.previousLeft, Z.beneath);
+    place(roles.left, Z.current, true);
+    place(roles.right, Z.current, true);
     for (const d of ["forward", "backward"] as const) {
       restFlaps[d].current?.setAttribute("visibility", "hidden");
       restFolds[d].current?.setAttribute("visibility", "hidden");
     }
-    blankFlap.current?.style.setProperty("visibility", "hidden");
-    blankUnder.current?.style.setProperty("visibility", "hidden");
     turnFold.current?.setAttribute("visibility", "hidden");
     corner.current = null;
 
@@ -174,25 +172,18 @@ export function PageCurl({ pages, links, turnLabel }: PageCurlProps) {
         const { flat, lifted } = splitPage(page, fold);
         wrap.style.clipPath = polygonCss(flat);
         const back = side === "forward" ? roles.nextLeft : roles.previousRight;
-        const flap = frame.blank ? blankFlap.current : back ? wraps.current[back] : null;
+        const flap = back ? wraps.current[back] : null;
         if (flap) {
-          flap.style.visibility = "visible";
           flap.style.zIndex = Z.flap;
           flap.style.transform = matrixCss(compose(reflectionMatrix(fold), mirrorX(SPINE)));
           flap.style.clipPath = polygonCss(lifted.map(mirrorSpine));
+          // The back of the page is shaded paper-back as it lifts, fading out as it
+          // lands so the finished turn is exactly the page at rest.
+          const shade = shades.current[back!];
+          if (shade) shade.style.opacity = String(0.35 * (1 - frame.progress));
         }
-        if (frame.blank && blankFlapPage.current && blankUnder.current) {
-          // Riffle: blank pages flip over; the spreads in between aren't shown.
-          blankFlapPage.current.style.left = `${side === "forward" ? LEFT.left : RIGHT.left}px`;
-          blankUnder.current.style.left = `${page.left}px`;
-          blankUnder.current.style.visibility = "visible";
-        }
-        // The back of the page is shaded paper-back as it lifts, fading out as it
-        // lands so the finished turn is exactly the page at rest.
-        const shade = back && !frame.blank ? shades.current[back] : null;
-        if (shade) shade.style.opacity = String(0.35 * (1 - frame.progress));
         showLine(turnFold.current, fold, page);
-      } else if (rests.current[side] && !(frame.direction && frame.blank)) {
+      } else if (rest[side]) {
         // The resting lifted corner: the curl's rest state, from the same fold math.
         const P = restCorner(C, SPINE, REST_LEGS + HOVER_LIFT * hover.current[side]);
         const fold = foldLine(C, P)!;
@@ -280,7 +271,7 @@ export function PageCurl({ pages, links, turnLabel }: PageCurlProps) {
   useEffect(() => {
     const onDown = (event: PointerEvent) => {
       const direction = engine.frame.direction;
-      if (!direction || engine.frame.blank || drag.current || !corner.current || !engine.active()) return;
+      if (!direction || drag.current || !corner.current || !engine.active()) return;
       const p = toStage(event);
       if (Math.hypot(p.x - corner.current.x, p.y - corner.current.y) > CATCH_RADIUS) return;
       press(direction, event, true);
@@ -354,11 +345,9 @@ export function PageCurl({ pages, links, turnLabel }: PageCurlProps) {
   );
 
   return (
-    <div ref={root} className="pointer-events-none absolute inset-0">
-      <div ref={blankUnder} aria-hidden className="invisible absolute top-[64px] z-[1] h-[840px] w-[630px] bg-paper">
-        <div className="ruled absolute inset-x-0 top-[56px] bottom-0 bg-rule" />
-      </div>
-
+    // isolate: the pages' own stacking order stays inside the curl, so the spine
+    // line, the lamp's cast, and the ribbon (drawn after it) stay on top.
+    <div ref={root} className="pointer-events-none absolute inset-0 isolate">
       {pages.map(({ number, spread: owner, node }) => (
         <div
           key={number}
@@ -380,10 +369,6 @@ export function PageCurl({ pages, links, turnLabel }: PageCurlProps) {
           />
         </div>
       ))}
-
-      <div ref={blankFlap} aria-hidden className="invisible absolute inset-0 z-[3] origin-top-left">
-        <div ref={blankFlapPage} className="absolute top-[64px] h-[840px] w-[630px] bg-paper-back" />
-      </div>
 
       {/* Fold lines and the resting corners' flaps. */}
       <svg aria-hidden width={1440} height={952} className="absolute inset-0 z-[4] overflow-visible">
