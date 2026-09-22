@@ -263,3 +263,30 @@ git add -A
 git commit -m "Polish: seamless turn handoff, ribbon pull-up, fitted project titles, contact tweaks"
 git push -u origin polish-curl
 ```
+
+## The notebook stays mounted (2026-09-21)
+
+```bash
+git mv src/app/page.tsx "src/app/(notebook)/page.tsx"        # routes into a route group with a shared layout
+git mv src/app/timeline "src/app/(notebook)/timeline"         # (same for skills, contact, colophon)
+```
+
+**Failed:** `git mv src/app/projects …` → `Permission denied` (a Windows file lock, probably the running server). Moved
+`projects/page.tsx` and `projects/[slug]/page.tsx` individually instead.
+
+**Failed:** `tsc` → `Cannot find module '../../src/app/projects/page.js'` from stale `.next/types` after the move. `rm -rf .next`.
+
+**Looked failed:** my frame-recording script's key press "did nothing". Git Bash had rewritten the `/timeline` argument
+to `C:/Program Files/Git/timeline`, a 404. `MSYS_NO_PATHCONV=1 node glitch.mjs /timeline`.
+
+```bash
+node verify-persist.mjs   # 8/8: no page nodes change in a turn; no slide-in on arrival; no-JS routes correct
+node curl-dod.mjs && node dod.mjs   # 22/22, 25/25
+
+# Kevin: commit, push, PR
+git fetch
+git checkout -b persistent-notebook origin/main
+git add -A
+git commit -m "Keep the notebook mounted across routes: seamless turns, project slide-in only on switch"
+git push -u origin persistent-notebook
+```

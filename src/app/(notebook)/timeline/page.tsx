@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { renderNotebook } from "@/components/notebook/renderNotebook";
+import { RouteMarker } from "@/components/notebook/RouteMarker";
 import { loadSite } from "@/lib/content/load";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -7,6 +7,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // Timeline (pp. 3–4). Entries are anchored #v0-1 … #v1-1.
-export default async function TimelinePage() {
-  return renderNotebook("timeline");
+export default function TimelinePage() {
+  return <RouteMarker spread="timeline" />;
 }

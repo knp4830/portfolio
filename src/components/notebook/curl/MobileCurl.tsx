@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { type ReactNode, useEffect, useRef } from "react";
 import {
   type Point,
@@ -16,7 +17,7 @@ import {
 } from "@/lib/curl/geometry";
 import { ARC } from "@/lib/curl/input";
 import type { SpreadId } from "@/lib/notebook/spreads";
-import { type TurnFrame, useTurn } from "./useTurn";
+import { type TurnFrame, dialogOpen, spreadOf, useTurn } from "./useTurn";
 
 // The mobile peel. One page is on screen, so the curl works on the part of the
 // page in the viewport: its bottom-right corner peels toward the (off-screen)
@@ -49,6 +50,8 @@ type Gesture = {
 };
 
 export function MobileCurl({ spread, next, children }: MobileCurlProps) {
+  // Every spread's mobile page is rendered (the route marker shows one); only the one on screen turns.
+  const showing = (spreadOf(usePathname()) ?? "opening") === spread;
   const wrap = useRef<HTMLDivElement>(null);
   const under = useRef<HTMLDivElement>(null);
   const cover = useRef<HTMLDivElement>(null);
@@ -128,6 +131,7 @@ export function MobileCurl({ spread, next, children }: MobileCurlProps) {
 
   const engine = useTurn({
     spread,
+    showing,
     platform: "mobile",
     draw,
     corners,
@@ -143,7 +147,7 @@ export function MobileCurl({ spread, next, children }: MobileCurlProps) {
     const onStart = (event: TouchEvent) => {
       gesture = null;
       if (event.touches.length !== 1 || !engine.active()) return;
-      if (document.querySelector('[role="dialog"]')) return;
+      if (dialogOpen()) return;
       const touch = event.touches[0];
       const root = document.documentElement;
       gesture = {

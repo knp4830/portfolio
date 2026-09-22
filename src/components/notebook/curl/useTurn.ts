@@ -34,7 +34,10 @@ export type TurnFrame = {
 };
 
 export type TurnOptions = {
+  /** The spread this engine turns from right now (desktop: the one on screen; mobile: its own page). */
   spread: SpreadId;
+  /** Mobile renders every spread's page; only the one on screen may turn. Desktop: always true. */
+  showing: boolean;
   platform: "desktop" | "mobile";
   /** Paint one frame. Runs every animation frame, so it writes styles directly. */
   draw: (frame: TurnFrame) => void;
@@ -51,6 +54,10 @@ const DESKTOP = "(min-width: 64rem)";
 /** Reduced motion: wheel distance that steps one page. */
 const REDUCED_STEP = 120;
 
+/** A project sheet is open (they're all rendered; only the open one is displayed). */
+export const dialogOpen = () =>
+  [...document.querySelectorAll('[role="dialog"]')].some((dialog) => dialog.getClientRects().length > 0);
+
 /** Which spread a same-site path belongs to ("/projects/minced" → projects). */
 export function spreadOf(pathname: string): SpreadId | null {
   const segment = pathname.split("/")[1] ?? "";
@@ -66,7 +73,7 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
   let reducedWheel = 0;
 
   const o = options;
-  const active = () => matchMedia(DESKTOP).matches === (o().platform === "desktop");
+  const active = () => matchMedia(DESKTOP).matches === (o().platform === "desktop") && o().showing;
   const reduced = () => matchMedia(REDUCED).matches;
   const around = () => neighbors(o().spread);
   const target = (direction: Direction) => (direction === "forward" ? around().next : around().previous);
@@ -275,7 +282,7 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
     if (!active() || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
     if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
     const element = event.target as Element | null;
-    if (element?.closest?.("input, textarea, select, [contenteditable]") || document.querySelector('[role="dialog"]')) return;
+    if (element?.closest?.("input, textarea, select, [contenteditable]") || dialogOpen()) return;
     const to = event.key === "ArrowRight" ? around().next : around().previous;
     if (!to) return;
     event.preventDefault();
@@ -304,8 +311,16 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
     turnTo(to, url.pathname + url.hash);
   }
 
-  /** On mount: fade in after a crossfade, or replay the turn after back/forward. */
+  /**
+   * A spread has come on screen: after our own turn (settle), after a crossfade
+   * (fade in), or after browser back/forward (replay the turn). The notebook
+   * stays mounted across routes, so this also clears the last turn's state.
+   */
   function arrived() {
+    stop();
+    clearTimeout(idleTimer);
+    leaving = false;
+    Object.assign(frame, { direction: null, progress: 0, pointer: null, blank: false });
     const { from, fadeIn, turned } = arrive(o().spread);
     const ribbon = o().ribbon();
     if (ribbon && !reduced() && (turned || from)) {
@@ -366,13 +381,16 @@ export function useTurn(options: TurnOptions): TurnEngine {
     (href, scroll) => router.push(href, { scroll }),
   );
 
+  // Runs when this engine's spread comes on screen (and on first load). A layout
+  // effect, so a replay's first frame is set before the browser paints.
+  const { spread, showing } = options;
   useLayoutEffect(() => {
     const turn = engine.current!;
-    if (!turn.active()) return;
+    if (!showing || !turn.active()) return;
     turn.arrived();
-    const { previous, next } = neighbors(latest.current.spread);
+    const { previous, next } = neighbors(spread);
     for (const id of [previous, next]) if (id) router.prefetch(PATHS[id]);
-  }, [router]);
+  }, [router, spread, showing]);
 
   useEffect(() => {
     const turn = engine.current!;
