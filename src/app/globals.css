@@ -119,6 +119,15 @@
   }
 }
 
+/* Shade over the scene: the lamp's falloff toward the screen edges and the one soft
+   shadow under the notebook. Same in both themes (the desk is dark in both). */
+:root {
+  --vignette: rgb(0 0 0 / 0.62);
+  --vignette-soft: rgb(0 0 0 / 0.28);
+  --cover-shadow: rgb(0 0 0 / 0.75);
+  --cover-shadow-near: rgb(0 0 0 / 0.55);
+}
+
 /* Grid. Mobile first; desktop values apply from the spread breakpoint (1024px). */
 :root {
   --baseline: 28px;     /* one ruled line */
@@ -158,6 +167,22 @@
   so a stray `bg-blue-500` generates nothing. Utilities: bg-paper, text-ink,
   border-rule, font-display, rounded-chip, p-page, mt-line, spread:… (≥ 1024px).
 */
+/*
+  night: — styles that apply when the night journal is showing, whether forced
+  (data-theme="night") or from the OS preference. Used to swap baked images,
+  which can't follow the color tokens. Mirrors the theme selectors above.
+*/
+@custom-variant night {
+  &:where([data-theme="night"], [data-theme="night"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="day"]), :root:not([data-theme="day"]) *) {
+      @slot;
+    }
+  }
+}
+
 @theme {
   --color-*: initial;
   --font-*: initial;
@@ -285,6 +310,26 @@
   font-weight: 400;
   font-size: var(--pen-size);
   line-height: var(--baseline);
+}
+
+/*
+  Notebook geometry. The desktop scene is drawn at the design's 1440×952 and
+  scaled down (never up) to fit the window, so a spread never scrolls. tan(atan2(a, b))
+  is a / b as a plain number: CSS can't divide one length by another directly.
+*/
+@utility stage-scale {
+  --stage-scale: min(1, tan(atan2(100vw, 1440px)), tan(atan2(100dvh, 952px)));
+}
+
+/* One 1px rule per 28px line, sitting --rule-offset into the line box. The mask's
+   hard stops draw lines, not a visible gradient; the color comes from bg-rule. */
+@utility ruled {
+  mask-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 var(--rule-offset),
+    black var(--rule-offset) calc(var(--rule-offset) + 1px),
+    transparent calc(var(--rule-offset) + 1px) var(--baseline)
+  );
 }
 
 body {

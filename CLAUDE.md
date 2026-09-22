@@ -43,6 +43,7 @@ portfolio/
 │   │   └── globals.css               # every color, font, and spacing token
 │   ├── components/notebook/          # Notebook, Page, PageCurl, FactsPanel, Project*, …
 │   ├── lib/curl/                     # fold math, clip polygon, reflection matrix, input → progress
+│   ├── lib/paper/                    # generated page geometry (pages.ts) + responsive clip
 │   └── lib/content/                  # MDX loading + frontmatter types
 ├── content/
 │   ├── timeline/*.mdx               # one per entry, frontmatter only
@@ -50,7 +51,7 @@ portfolio/
 │   └── projects/*.mdx
 ├── public/
 │   ├── resume.pdf
-│   ├── textures/                     # 4 crease maps (AVIF)
+│   ├── textures/                     # baked paper wear, desk, cover (AVIF; `pnpm bake:paper`)
 │   └── specimens/                    # PNW line drawings (SVG)
 ├── design/                           # Claude Design output — the visual spec
 └── docs/                             # BRIEF, BUILD-PLAN, LEARNING-LOG, TERMINAL-LOG
@@ -139,10 +140,8 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 - ☑ **M0.3 Content pipeline** — MDX loading, typed frontmatter, 11 timeline entries, skills, and 3 projects stubbed from the brief. DoD: build fails on a missing required frontmatter field.
 
 ### Phase 1 — Static notebook (no curl)
-- ☐ **M1.1 Page and Notebook** — ruled paper, texture overlay, edge chips, desk surface, spread layout. DoD: matches the design at 1440px and 390px.
-- ☐ **M1.2 Opening, timeline, skills** — intro, contents (page ranges + hover), resume; two-page timeline roadmap; skills spread; mobile merged pages; plain next/previous links. DoD: every route renders; the timeline and skills spreads fit with no internal scroll at 1440×900.
-- ☐ **M1.3 Projects spread** — card grid, detail page, selection via URL, mobile sheet. DoD: `/projects/minced` opens with Minced selected; the sheet closes with X, swipe down, and back.
-- ☐ **M1.4 Colophon, contact, chrome** — ribbon bookmark, theme toggle, specimens. DoD: keyboard-only navigation reaches everything.
+- ☑ **M1.1 Page and Notebook** — ruled paper, texture overlay, edge chips, desk surface, spread layout. DoD: matches the design at 1440px and 390px.
+- ☐ **M1.2 Pages and chrome** (was M1.2–M1.4, combined by Kevin Sep 21) — opening (intro, contents with page ranges + hover, resume), two-page timeline, skills spread, projects spread (card grid, detail page, selection via URL, mobile sheet), colophon, contact; ribbon bookmark, theme toggle, specimens; mobile merged pages; plain next/previous links. DoD: every route renders; the timeline and skills spreads fit with no internal scroll at 1440×900; `/projects/minced` opens with Minced selected; the sheet closes with X, swipe down, and back; keyboard-only navigation reaches everything.
 
 ### Phase 2 — The curl engine
 - ☐ **M2.1 Fold math** — pure functions for fold line, clip polygon, reflection matrix, with unit tests. DoD: tests cover corner, mid-turn, and fully turned states.
@@ -182,12 +181,13 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 **M0.2 done** (branch `m0.2-tokens`). Every token lives in `globals.css` (day, night, system preference). Fonts load via `src/app/fonts.ts`. Type roles are `type-*` utilities; `/tokens` shows everything in both themes, and `pnpm test` runs 34 contrast/token checks in CI. Decided: timeline descriptions are 15/28 (Kevin, Sep 21: the extra room is wanted); headings keep the design's 1.15 leading inside a fixed two-line (56px) box, text bottom-aligned, so the page stays on the 28px grid; card copy stays 15/22 as designed.
 
 **M0.3 done** (branch `m0.3-content`). Content lives in `content/` (11 timeline entries, skills, 3 projects, stubbed verbatim from the brief). `src/lib/content/` loads it with next-mdx-remote and validates it with zod; `pnpm build` runs `content:check` first, so a missing or misspelled field fails the build. Content decisions (Kevin, Sep 21 — these override the brief):
-- Missing copy says **"To be added"**: the Rejected idea on PolyPaper and World Map Photo Album, and World Map's second stack item (was "TBD"). Every project now needs all five detail parts (Problem, Role, Key decisions, Rejected idea, Result).
-- Minced's "What sets it apart" is left out of the detail page (it isn't in the design).
+- Missing copy says **"To be added"**: World Map Photo Album's Rejected idea and second stack item (was "TBD"). PolyPaper has no Rejected idea. Required detail parts: Problem, Role, Key decisions, Result.
+- Minced: "What sets it apart" is left out of the detail page (it isn't in the design); the stack says "Supabase" (Kevin will revisit Minced's copy once the app is further along).
 - Skills → Design & tools is just "UI design"; "prototyping" and the design-tools placeholder are out.
-- Straight apostrophes (ReuMo's), and status reads "Shipped (team of 5)" — both as in the brief.
-- M1.3: each project card keeps its screenshot slot as a **blank square** until Kevin adds pictures (no fake image).
-- Open: the design's Minced card shows only the one-liner's first sentence and "Supabase" without "(Postgres, Auth, RLS)"; content keeps the brief's full text. Decide at M1.3.
+- Straight apostrophes (ReuMo's), and status reads "Shipped (team of 5)".
+- Each project card keeps its screenshot slot as a **blank square** until Kevin adds pictures (no fake image).
 - Still waiting on Kevin to confirm the timeline descriptions and skills lists.
 
-**Next up: M1.1 — Page and Notebook.**
+**M1.1 done** (branch `m1.1-notebook`). The empty notebook matches the design at 1440 and 390, day and night: desk + props, lamp, leather cover, page block, torn edges (live clip-path), ruled lines, baked wear per page, gutter, page numbers; one page in a leather strip below 1024px. Wear, desk, and cover are baked from `design/html` by `pnpm bake:paper` (see LEARNING-LOG). For M2: the grab-corner folds are currently baked in and must move to the curl engine.
+
+**Next up: M1.2 — Pages and chrome** (combined M1.2–M1.4).

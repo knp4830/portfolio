@@ -32,9 +32,9 @@ export const skillsSchema = z.strictObject({
   foundations: z.array(z.strictObject({ name: text, detail: text, from: text })).min(1),
 });
 
-// Every detail page has these five parts (brief → Project detail pages); projects can add
-// their own (Pipeline, Signature detail, …). A part without copy yet says "To be added".
-export const REQUIRED_PROJECT_PARTS = ["Problem", "Role", "Key decisions", "Rejected idea", "Result"] as const;
+// Every detail page has these parts; projects add their own (Rejected idea, Pipeline,
+// Signature detail, …). A part without copy yet says "To be added".
+export const REQUIRED_PROJECT_PARTS = ["Problem", "Role", "Key decisions", "Result"] as const;
 
 export const projectSchema = z.strictObject({
   order: z.int().min(1),

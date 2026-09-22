@@ -155,3 +155,40 @@ git push -u origin m0.3-content
 ```bash
 rm -rf .next && pnpm build
 ```
+
+## M1.1 — Page and Notebook (2026-09-21)
+
+```bash
+pnpm bake:paper      # node scripts/bakePaper.mjs → public/textures/*.avif + src/lib/paper/pages.ts
+```
+
+**Failed:** `TypeError: Cannot read properties of null (reading '1')` at `attrs.match(/aria-label=…/)[1]`.
+The skills mockup nests `<section>`s inside its pages; matching to the next `</section>` picked up an inner one.
+Fixed by matching page sections by aria-label + `position: absolute` and finding each end by depth.
+
+```bash
+# Visual check: production build + headless Chrome screenshots (day, forced dark, 1920, 1280×720)
+pnpm build && pnpm start -p 3130
+chrome --headless=new --window-size=1440,952 --screenshot=home-1440.png http://localhost:3130/
+chrome --headless=new --force-dark-mode --window-size=1440,952 --screenshot=home-night.png http://localhost:3130/
+# Mobile: render inside a 390px <iframe> (headless Chrome won't make a window narrower than ~500px)
+```
+
+**Looked failed:** the first mobile screenshot was Chrome's "Your file couldn't be accessed" page. The iframe HTML was
+opened as `file:////c/Users/…` (Git Bash path) instead of `file:///C:/Users/…`.
+
+**Failed:** a long bash heredoc writing these notes died with `unexpected EOF while looking for matching '` before running
+anything. Wrote the notes to files first and appended them instead.
+
+```bash
+git rm public/file.svg public/globe.svg public/next.svg public/vercel.svg public/window.svg   # starter leftovers (staged)
+```
+
+```bash
+# Kevin: commit, push, PR
+git fetch
+git checkout -b m1.1-notebook origin/main
+git add -A
+git commit -m "M1.1: page and notebook — baked paper wear, desk, cover, spread and mobile layout"
+git push -u origin m1.1-notebook
+```

@@ -11,7 +11,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "node --test \"src/**/*.test.ts\"",
-    "content:check": "node src/lib/content/check.ts"
+    "content:check": "node src/lib/content/check.ts",
+    "bake:paper": "node scripts/bakePaper.mjs"
   },
   "dependencies": {
     "next": "15.5.25",
