@@ -177,6 +177,4 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 **Phase: Design → build.** Design rev 8 (six spreads, twelve pages) is delivered and the handoff above is filled in. Design is settled (rev 8); the build history is in the "Field Notebook — how it was built" doc. Waiting on Kevin to confirm the 11 timeline descriptions and the skills lists (drafts in `docs/BRIEF.md`); body stays Newsreader.
 
-**M0.1 in progress.** Scaffolded with `create-next-app@15` (TS, Tailwind v4, ESLint, App Router, `src/`, pnpm); `pnpm lint`, `tsc --noEmit` and `pnpm build` pass; pushed to GitHub (see `docs/TERMINAL-LOG.md`). Still to do for the DoD: Vercel preview deploy and a CI workflow running lint + typecheck.
-
-**Next up: finish M0.1 (Vercel + CI).** The design is exported to `design/` — start at `design/README.md`.
+**M0.1 in progress** on branch `m0.1-scaffold`. Scaffolded with `create-next-app@15` (TS, Tailwind v4, ESLint, App Router, `src/`, pnpm). Design export committed. CI (`.github/workflows/ci.yml`) runs `pnpm lint` + `pnpm typecheck` on every push to main and every PR; verified in a clean clone. Still to do for the DoD: import the repo into Vercel (the connector's project creation didn't stick) and confirm the PR's preview URL loads and CI is green.

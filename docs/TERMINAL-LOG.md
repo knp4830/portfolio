@@ -32,3 +32,37 @@ git add .
 git commit -m "Scaffold + brief"
 gh repo create portfolio --public --source=. --push
 ```
+
+## M0.1 — Design commit, CI, Vercel (2026-09-21)
+
+```bash
+# One milestone = one branch
+git checkout -b m0.1-scaffold
+
+# Commit the Claude Design export, then the rev 8 doc updates, separately
+git add design && git commit -m "Add Claude Design rev 8 visual spec"
+git add CLAUDE.md docs/BRIEF.md && git commit -m "Update CLAUDE.md and brief for design rev 8"
+
+# CI: .github/workflows/ci.yml runs lint + typecheck; package.json gets
+# "typecheck": "tsc --noEmit" and "packageManager": "pnpm@12.5.1"
+pnpm lint
+pnpm typecheck
+```
+
+**Failed:** in a fresh clone, `pnpm install --frozen-lockfile` →
+`Cannot update packageManagerDependencies with "frozen-lockfile" because the lockfile is not up to date`.
+pnpm 12 records the `packageManager` pin in the lockfile, so adding the field means the lockfile has to be regenerated.
+
+```bash
+pnpm install        # rewrites pnpm-lock.yaml with packageManagerDependencies
+# Re-verify exactly what CI will do, in a clean clone
+git clone --branch m0.1-scaffold . <scratch>/clone
+pnpm install --frozen-lockfile && pnpm lint && pnpm typecheck && pnpm build
+
+git push -u origin m0.1-scaffold
+gh pr create --base main --head m0.1-scaffold
+```
+
+**Failed:** creating the Vercel project through the Vercel connector reported "created, but git link could not be
+verified", and the project then 404'd and never appeared in the team's project list (deployment listing returned 403).
+Next step is in the dashboard: vercel.com/new → import `knp4830/portfolio` (framework Next.js, defaults).
