@@ -6,6 +6,12 @@ type PageProps = {
   number: number;
   /** Landmark name for screen readers, e.g. the section title. */
   label: string;
+  /**
+   * A neighbouring spread's page, rendered only so a page turn can show it (the
+   * back of the turning page, or the page underneath). Hidden from assistive
+   * tech and unfocusable: it's a picture of a page, not part of this route.
+   */
+  replica?: boolean;
   children?: ReactNode;
 };
 
@@ -14,14 +20,17 @@ type PageProps = {
 // stains, folds, tears — different on every page), the
 // spine-side fold shade, then content on the 56px margin. The torn and chipped
 // edges are a clip-path on the real DOM, so text stays selectable.
-export function Page({ number, label, children }: PageProps) {
+export function Page({ number, label, replica = false, children }: PageProps) {
   const spec = PAGES[number];
   if (!spec) throw new Error(`No page ${number}; the notebook has pages 1–12`);
   const left = number % 2 === 1;
 
+  const Tag = replica ? "div" : "section";
   return (
-    <section
-      aria-label={label}
+    <Tag
+      aria-label={replica ? undefined : label}
+      aria-hidden={replica || undefined}
+      inert={replica || undefined}
       className={`absolute top-[64px] h-[840px] w-[630px] bg-paper text-ink ${left ? "left-[90px]" : "left-[720px]"}`}
       style={{ clipPath: spec.clip }}
     >
@@ -41,6 +50,6 @@ export function Page({ number, label, children }: PageProps) {
       <p className={`type-label absolute inset-x-[56px] top-[790px] text-ink-soft ${left ? "text-left" : "text-right"}`}>
         p. {String(number).padStart(2, "0")}
       </p>
-    </section>
+    </Tag>
   );
 }

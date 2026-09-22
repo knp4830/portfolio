@@ -1,7 +1,7 @@
 import type { PageCopy, Site } from "@/lib/content/schema";
+import type { SpreadContent } from "../spreadContent";
 import { BananaSlug } from "../art/specimens";
 import { Marginalia } from "../Marginalia";
-import { Notebook } from "../Notebook";
 import { PageHeader } from "../PageHeader";
 import { ResumeButton } from "../ResumeButton";
 import { Tape } from "../Tape";
@@ -11,7 +11,7 @@ type ContactProps = { site: Site; copy: PageCopy<"contact"> };
 // Pages 9–10: the back cover's closing note on a tipped-in index card, and the
 // ways to reach Kevin (email, LinkedIn, GitHub, resume). Contact comes before
 // the colophon but keeps its back-cover wording (Kevin, Sep 21).
-export function ContactSpread({ site, copy }: ContactProps) {
+export function contactSpread({ site, copy }: ContactProps): SpreadContent {
   const { backCover, contact } = copy;
 
   // A tipped-in index card: huckleberry header rule, then lines on the same 28px baseline.
@@ -103,14 +103,5 @@ export function ContactSpread({ site, copy }: ContactProps) {
     </>
   );
 
-  return (
-    <Notebook
-      spread="contact"
-      site={site}
-      labels={[backCover.label, contact.title]}
-      left={left}
-      right={right}
-      mobile={mobile}
-    />
-  );
+  return { spread: "contact", labels: [backCover.label, contact.title], left: left, right: right, mobile };
 }

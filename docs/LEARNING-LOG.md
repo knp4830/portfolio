@@ -239,3 +239,68 @@ Plus the chrome: the name on the desk, the day/night toggle, the ribbon bookmark
 - **The mockups draw an erased note as text inside the wear layers**, which the bake (SVG only) skipped. It's now a live 24%-opacity `Marginalia`.
 - **Correction to M1.1:** the grab-corner turn corners were never baked. They're drawn after the content column in the mockups, so the bake skipped them. M2 adds them fresh.
 - **Checked in a real browser, not just screenshots:** a DevTools-protocol script covered routes, no-scroll at 1440×900, selection, keyboard reach, theme persistence, and the sheet's X/swipe/back with emulated touch (25/25).
+
+## Phase 2 — The curl engine (2026-09-21, M2.1–M2.6 built together)
+
+### What we built
+Pages turn. On desktop:
+- **Keyboard:** ← and → turn pages.
+- **Mouse:** clicking or dragging a lifted corner turns the page, and the corner follows the pointer exactly.
+- **Wheel and trackpad:** the turn scrubs as you scroll and snaps done or back when you stop.
+- **Contents jumps:** a quick riffle of blank pages, then the target spread.
+- **Browser back and forward:** replay the turn.
+
+On mobile:
+- A horizontal swipe, the lifted corner, or pulling past the bottom of a page peels to the next page.
+- Swiping right or pulling past the top brings the previous page back.
+- Vertical scrolling is never taken over.
+
+With reduced motion, every turn is a 200ms crossfade and no curl frame is ever drawn.
+
+### Key files
+- `src/lib/curl/geometry.ts` (+ tests): fold line, half-plane clip, reflection `matrix()`, corner path, spine hinge, foreshortening
+- `src/lib/curl/input.ts` (+ tests): timings, the snap rule, the riffle plan, the wheel state machine
+- `src/components/notebook/curl/useTurn.ts`: the shared turn driver (one state, all inputs, navigation, replay)
+- `src/components/notebook/curl/PageCurl.tsx`: the desktop renderer, plus corner links, drag, and hover
+- `src/components/notebook/curl/MobileCurl.tsx`: the mobile renderer and gestures
+- `src/components/notebook/curl/memory.ts`: what survives a route change
+- `src/components/notebook/renderNotebook.tsx`: builds a route's spread and its neighbours; spreads now return content instead of a `Notebook`
+
+### How it works
+**The fold is a perpendicular bisector.** Fold paper so its corner C lands on the pointer P, and the crease is the set of points equally far from C and P. The page splits along that line:
+- The part on P's side stays put, clipped with `clip-path: polygon(…)`. A Sutherland–Hodgman clip of the page rectangle against the half-plane gives the polygon.
+- The part on C's side lifts and is reflected across the crease. The reflection is `I − 2nnᵀ` plus an offset: one CSS `matrix()`.
+
+**The flap is the next page, pre-mirrored.** The back of the turning right page *is* the next spread's left page. The flap renders that page at its normal (left) position and applies `reflect(fold) ∘ mirror(spine)`. At a full turn the fold is the spine, so the two mirrors cancel and the page lands exactly where the next route will draw it. That's why finishing a turn and changing the route shows no jump. The flap's clip is the lifted region mapped into the element's own coordinates (`mirror(spine)` of it, because reflections are their own inverse). The next spread's right page lies underneath and shows through the clipped-away part.
+
+**Neighbours are real pages, hidden.** Each route renders its previous and next spreads' pages as replicas (`aria-hidden`, `inert`, visibility-hidden until a turn needs them). Visibility-hidden still loads their textures, so the first turn never shows unloaded paper.
+
+**One state, many inputs.** `useTurn` keeps `{ direction, progress, pointer?, blank }`, and every input writes it:
+- **Keys and clicks** animate progress 0→1 (450ms, ease-in-out) along an arc that lifts the corner 55% of the page height mid-turn.
+- **The wheel** runs through `wheelStep`: 600px is a full turn; scrolling against a turn reverses it, and through 0 it becomes a turn the other way.
+- **A drag** sets `pointer` directly: the corner follows the pointer, held inside the spine hinge. A page can't reach further from the spine's bottom than its width, or from the spine's top than its diagonal.
+- **A turn in motion** can be caught near its moving corner and dragged from there.
+- **Release, or 150ms of wheel silence:** at 35% or more (or on a flick) the turn completes in 250ms, otherwise it falls back. Nothing stays half-turned.
+
+**Routes and history.** A finished turn calls `router.push`. `memory` (module state, which lives as long as the tab) records that we caused the navigation, so the arriving spread doesn't replay it. When the route changes any other way (browser back or forward), the arriving spread sees where it came from and plays the turn in reverse from a fully turned state.
+
+**One page per gesture.** After a turn completes, the wheel is locked, and every event during the lock extends it. The lock only ends after 350ms of genuine quiet. A fixed 350ms isn't enough: trackpad inertia can run for over a second and would turn a second page.
+
+**Mobile.** The curl works on the part of the page that's on screen, in viewport coordinates. The flap is a fixed `paper-back` shape (the reflected polygon, so no matrix is needed) over a blank page. Going back is the same geometry in reverse: a blank "previous page" is clipped to the flat part and settles back over the current one. Gestures use passive touch listeners and `touch-action: pan-y`, so the browser keeps vertical scrolling. A turn starts only from a horizontal swipe, the lifted corner, or pulling 24px past the page's end.
+
+**Reduced motion.** Drags follow silently (no frames), and completing a turn is a 100ms fade-out, the route change, and a 100ms fade-in. The wheel steps one page per 120px, with the same lock.
+
+### Why this way, and what we rejected
+- **Rejected: a page-flip library** (CLAUDE.md), **canvas or screenshots** (text must stay real DOM), and **CSS 3D transforms** (a real page folds along an arbitrary line, not a hinge).
+- **Rejected: rendering all six spreads on every route.** Only the neighbours can appear in a single turn; riffles show blank pages and then cut, as the brief allows.
+- **Rejected: letting Next's `<Link>` navigate.** A capture-phase click listener stops it first, so the turn plays and then the route changes. Links still work without JavaScript.
+- **Rejected: letting React render each frame.** The renderers write `clip-path`, `transform`, and SVG attributes directly from `requestAnimationFrame`; React renders the DOM once.
+- **Rest corners come from the same fold math** as the turn (`restCorner` + `foreshorten` at 60%), as CLAUDE.md requires, so grabbing one continues smoothly into a drag.
+
+### Gotchas
+- **Full-stage wrappers eat clicks.** Each page sits in an `absolute inset-0` wrapper so the fold clip can use stage coordinates. Empty boxes are still hit targets, so the right page's wrapper blocked links on the left page. The wrappers are `pointer-events: none`, with the pages inside set back to `auto`.
+- **Anchors went to hidden copies.** With desktop, mobile, and replica copies of a page, `#contents` matched the first (hidden) one. IDs now live only in the mobile tree, which renders first; desktop doesn't scroll to anchors anyway.
+- **A drag ends in a click.** Releasing a dragged corner fires a click on the corner link, which would start a second turn. The next click after a drag is swallowed.
+- **`useLayoutEffect` for arrival.** The replay's first frame (fully turned) has to be painted before the browser shows the new route at rest, or the spread flashes before turning back.
+- **Tests that pass for the wrong reason.** The DoD script's "is a flap visible" check first matched the mobile fold-line `<svg>`, which is always visible (only its line hides). The old M1.2 checks needed updating too, because pages now sit inside curl wrappers and replicas add inert copies.
+- **Page weight.** The replicas roughly double each page's HTML (28–43 KB gzipped). If M3.2 needs it, render them after first paint.

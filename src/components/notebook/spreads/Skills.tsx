@@ -1,17 +1,17 @@
-import type { PageCopy, Site, Skills } from "@/lib/content/schema";
+import type { PageCopy, Skills } from "@/lib/content/schema";
+import type { SpreadContent } from "../spreadContent";
 import { Beaver } from "../art/specimens";
 import { FactsPanel } from "../FactsPanel";
 import { Marginalia } from "../Marginalia";
-import { Notebook } from "../Notebook";
 import { PageHeader } from "../PageHeader";
 import { ChipRow, StackChip } from "../StackChip";
 
-type SkillsProps = { site: Site; copy: PageCopy<"skills">; skills: Skills };
+type SkillsProps = { copy: PageCopy<"skills">; skills: Skills };
 
 // Pages 5–6: tool groups as moss stack chips (each with where it was used), and
 // foundations & practice as a typewritten facts grid tagged with the timeline
 // version it came from. Mobile: the groups, then the foundations as a card.
-export function SkillsSpread({ site, copy, skills }: SkillsProps) {
+export function skillsSpread({ copy, skills }: SkillsProps): SpreadContent {
   const facts = skills.foundations.map((item) => ({ label: item.name, value: item.detail, reference: item.from }));
 
   const groups = skills.groups.map((group) => (
@@ -73,14 +73,5 @@ export function SkillsSpread({ site, copy, skills }: SkillsProps) {
     </>
   );
 
-  return (
-    <Notebook
-      spread="skills"
-      site={site}
-      labels={[copy.title, copy.foundations.title]}
-      left={left}
-      right={right}
-      mobile={mobile}
-    />
-  );
+  return { spread: "skills", labels: [copy.title, copy.foundations.title], left: left, right: right, mobile };
 }

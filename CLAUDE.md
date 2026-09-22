@@ -42,9 +42,10 @@ portfolio/
 │   │   ├── colophon/page.tsx         # pp. 11–12, the last spread
 │   │   └── globals.css               # every color, font, and spacing token
 │   ├── components/notebook/          # Notebook, Page, MobilePage, chrome, primitives (Marginalia, HandMark, …)
-│   │   ├── spreads/                  # one component per spread: left, right, and mobile content
+│   │   ├── spreads/                  # one builder per spread: left, right, and mobile content
+│   │   ├── curl/                     # the page-curl engine: useTurn (shared state), PageCurl, MobileCurl
 │   │   └── art/                      # specimens, icons, one-off marks (converted from design/html)
-│   ├── lib/curl/                     # fold math, clip polygon, reflection matrix, input → progress
+│   ├── lib/curl/                     # fold math (geometry.ts), timing + input rules (input.ts), with tests
 │   ├── lib/notebook/                 # spread order, routes, page ranges, previous/next
 │   ├── lib/paper/                    # generated page geometry (pages.ts) + responsive clip
 │   └── lib/content/                  # MDX loading + frontmatter types
@@ -75,7 +76,7 @@ portfolio/
 **The curl**
 - **One shared turn progress (0 → 1) is the single source of truth.** Wheel, trackpad, drag, keys, and clicks all write to it. Never let two inputs animate independently.
 - A half-finished turn **never sticks**: 150ms after input stops, ≥ 35% (or a fast flick) completes; below that it falls back.
-- **One page per gesture:** ignore wheel input for 350ms after a turn completes (swallows trackpad inertia).
+- **One page per gesture:** after a turn completes, ignore wheel input until it has been quiet for 350ms (each ignored event restarts the wait, so a long trackpad inertia tail is swallowed whole).
 - The curl is built on the **real DOM** — `clip-path` polygon on the fold line, flap reflected with one `matrix()`. No canvas, no screenshots: text must stay selectable and indexable.
 - Fold line = perpendicular bisector of the corner's rest point C and the pointer P (not of P and its mirror Q — that's the spine).
 - Desktop flap shows the next spread's left page mirrored; mobile flap shows `paper-back`. The flap is `aria-hidden`.
@@ -147,13 +148,13 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 - ☑ **M1.1 Page and Notebook** — ruled paper, texture overlay, edge chips, desk surface, spread layout. DoD: matches the design at 1440px and 390px.
 - ☑ **M1.2 Pages and chrome** (was M1.2–M1.4, combined by Kevin Sep 21) — opening (intro, contents with page ranges + hover, resume), two-page timeline, skills spread, projects spread (card grid, detail page, selection via URL, mobile sheet), colophon, contact; ribbon bookmark, theme toggle, specimens; mobile merged pages; plain next/previous links. DoD: every route renders; the timeline and skills spreads fit with no internal scroll at 1440×900; `/projects/minced` opens with Minced selected; the sheet closes with X, swipe down, and back; keyboard-only navigation reaches everything.
 
-### Phase 2 — The curl engine
-- ☐ **M2.1 Fold math** — pure functions for fold line, clip polygon, reflection matrix, with unit tests. DoD: tests cover corner, mid-turn, and fully turned states.
-- ☐ **M2.2 Auto-curl** — click, key, and tap turn pages at 450ms. DoD: arrow keys turn every page; route updates.
-- ☐ **M2.3 Drag and snap** — corner drag, 35% threshold, spring back, hover lift. DoD: releasing at 30% falls back; at 40% completes.
-- ☐ **M2.4 Scroll to turn** — wheel scrub, idle snap, inertia lockout. DoD: one trackpad flick turns exactly one page.
-- ☐ **M2.5 Mobile peel and riffle** — bottom-edge peel, swipe back, contents riffle. DoD: vertical scroll inside a page never triggers a turn.
-- ☐ **M2.6 Reduced motion** — crossfade fallback. DoD: with reduced motion on, no curl frames render.
+### Phase 2 — The curl engine (built together as one PR, Kevin Sep 21)
+- ☑ **M2.1 Fold math** — pure functions for fold line, clip polygon, reflection matrix, with unit tests. DoD: tests cover corner, mid-turn, and fully turned states.
+- ☑ **M2.2 Auto-curl** — click, key, and tap turn pages at 450ms. DoD: arrow keys turn every page; route updates.
+- ☑ **M2.3 Drag and snap** — corner drag, 35% threshold, spring back, hover lift. DoD: releasing at 30% falls back; at 40% completes.
+- ☑ **M2.4 Scroll to turn** — wheel scrub, idle snap, inertia lockout. DoD: one trackpad flick turns exactly one page.
+- ☑ **M2.5 Mobile peel and riffle** — bottom-edge peel, swipe back, contents riffle. DoD: vertical scroll inside a page never triggers a turn.
+- ☑ **M2.6 Reduced motion** — crossfade fallback. DoD: with reduced motion on, no curl frames render.
 
 ### Phase 3 — Launch
 - ☐ **M3.1 Accessibility pass** — landmarks, focus rings, screen-reader labels, no-JS fallback. DoD: axe reports zero violations; VoiceOver reads every entry in order.
@@ -201,4 +202,10 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 - The design's two rows of project cards run into the p. 07 footer; the cards now sit over the page number.
 - The mobile project sheet stops 8px short of the right edge (it's clipped with the page's torn edge).
 
-**Next up: M2.1 — Fold math.**
+**Phase 2 done** (branch `m2-curl`, M2.1–M2.6 in one PR). Pages turn with a custom curl on the real DOM: keys, clicks, corner drag, wheel/trackpad scrub with idle snap and inertia lock, contents riffle, browser back/forward replay; mobile peel from swipes, the corner, and pulls past the page ends; reduced motion crossfades. Each route renders its neighbours' pages as inert replicas for the flap and the page beneath. Verified in headless Chrome: 22/22 Phase 2 checks, 25/25 M1.2 checks still pass; 72 unit tests. Notes for Kevin:
+- The flap rises above the page edge mid-turn (the corner arcs 55% of the page height, per the brief), unlike the design's static mid-curl frame, which keeps it inside.
+- Riffles show blank pages between spreads, then cut to the target (the pages in between aren't rendered).
+- The neighbour replicas roughly double page HTML (28–43 KB gzipped); M3.2 can defer them if Lighthouse wants.
+- `public/resume.pdf` is still missing (from M1.2).
+
+**Next up: M3.1 — Accessibility pass.**

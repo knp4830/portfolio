@@ -220,3 +220,28 @@ git add -A
 git commit -m "M1.2: pages and chrome — all six spreads, contents, theme toggle, projects sheet"
 git push -u origin m1.2-pages
 ```
+
+## Phase 2 — The curl engine (2026-09-21)
+
+```bash
+pnpm test        # 72 tests (geometry: corner / mid-turn / fully turned; input: flick, snap, riffle)
+pnpm build && pnpm start -p 3130
+node curl-dod.mjs   # DevTools-protocol checks for M2.1–M2.6: 22/22
+node dod.mjs        # M1.2 checks re-run after the refactor: 25/25
+```
+
+**Failed (test data):** the first "one flick turns one page" test flicked only 1158px, short of the 1200px I meant it
+to cover (two turns' worth). Stronger flick in the test; the rule was right.
+
+**Failed (test bugs, not site bugs):** "vertical scroll never turns" saw 430 "curl frames". The selector matched the
+always-visible fold-line `<svg>`, and the test swiped down at the very top (which is the pull-back gesture). The M1.2
+checks counted pages as direct children of `<main>` (they're now inside curl wrappers) and counted inert replicas.
+
+```bash
+# Kevin: commit, push, PR
+git fetch
+git checkout -b m2-curl origin/main
+git add -A
+git commit -m "Phase 2: the curl engine — fold math, auto-curl, drag, scroll, mobile peel, reduced motion"
+git push -u origin m2-curl
+```

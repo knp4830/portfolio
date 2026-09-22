@@ -1,11 +1,11 @@
-import type { PageCopy, Site, TimelineEntry } from "@/lib/content/schema";
+import type { PageCopy, TimelineEntry } from "@/lib/content/schema";
+import type { SpreadContent } from "../spreadContent";
 import { StrikeNoteMarks } from "../art/marks";
 import { HandMark } from "../HandMark";
 import { Marginalia } from "../Marginalia";
-import { Notebook } from "../Notebook";
 import { PageHeader, Tag } from "../PageHeader";
 
-type TimelineProps = { site: Site; copy: PageCopy<"timeline">; entries: TimelineEntry[] };
+type TimelineProps = { copy: PageCopy<"timeline">; entries: TimelineEntry[] };
 
 // Pages 3–4: eleven releases as a trail map. 001–005 on the left page, 006–011
 // on the right; entries indent in a gentle wave and a dashed huckleberry trail
@@ -22,7 +22,7 @@ const NODE_X = 72;
 
 const versionTag = (entry: TimelineEntry) => `v${entry.version}`;
 
-export function TimelineSpread({ site, copy, entries }: TimelineProps) {
+export function timelineSpread({ copy, entries }: TimelineProps): SpreadContent {
   const left = entries.slice(0, LEFT_COUNT);
   const right = entries.slice(LEFT_COUNT);
   const latest = entries[entries.length - 1];
@@ -82,16 +82,7 @@ export function TimelineSpread({ site, copy, entries }: TimelineProps) {
     </>
   );
 
-  return (
-    <Notebook
-      spread="timeline"
-      site={site}
-      labels={[`${copy.title}, ${left[0].entry}–${left[left.length - 1].entry}`, `${copy.title}, ${right[0].entry}–${latest.entry}`]}
-      left={leftPage}
-      right={rightPage}
-      mobile={mobile}
-    />
-  );
+  return { spread: "timeline", labels: [`${copy.title}, ${left[0].entry}–${left[left.length - 1].entry}`, `${copy.title}, ${right[0].entry}–${latest.entry}`], left: leftPage, right: rightPage, mobile };
 }
 
 type TrailPageProps = {
@@ -147,7 +138,7 @@ function TrailPage({ entries, top, latest, copy }: TrailPageProps) {
 
 function Entry({ entry, indent, now, copy }: { entry: TimelineEntry; indent: number; now: boolean; copy: PageCopy<"timeline"> }) {
   return (
-    <article id={entry.slug} className="relative flex h-28 flex-col" style={{ paddingLeft: indent }}>
+    <article className="relative flex h-28 flex-col" style={{ paddingLeft: indent }}>
       <div className="flex h-7 items-center gap-2.5 whitespace-nowrap">
         <span className="type-label text-ink-soft">{String(entry.entry).padStart(3, "0")}</span>
         <Tag>{versionTag(entry)}</Tag>
