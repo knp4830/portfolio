@@ -1,0 +1,356 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "ColophonDay.dc.html": {
+      "h": 952,
+      "title": "Colophon · pp. 9–10 · 1440 · day",
+      "w": 1440,
+      "x": 0,
+      "y": 9372
+    },
+    "ColophonMobileDay.dc.html": {
+      "h": 1848,
+      "title": "Colophon · 390 · day",
+      "w": 390,
+      "x": 3040,
+      "y": 9372
+    },
+    "ColophonMobileNight.dc.html": {
+      "h": 1848,
+      "title": "Colophon · 390 · night",
+      "w": 390,
+      "x": 3510,
+      "y": 9372
+    },
+    "ColophonNight.dc.html": {
+      "h": 952,
+      "title": "Colophon · pp. 9–10 · 1440 · night",
+      "w": 1440,
+      "x": 1520,
+      "y": 9372
+    },
+    "Components.dc.html": {
+      "h": 5500,
+      "title": "Component list",
+      "w": 1440,
+      "x": 1520,
+      "y": 17000
+    },
+    "ContactDay.dc.html": {
+      "h": 952,
+      "title": "Contact · pp. 11–12 · 1440 · day",
+      "w": 1440,
+      "x": 0,
+      "y": 11640
+    },
+    "ContactMobileDay.dc.html": {
+      "h": 1428,
+      "title": "Contact · 390 · day",
+      "w": 390,
+      "x": 3040,
+      "y": 11640
+    },
+    "ContactMobileNight.dc.html": {
+      "h": 1428,
+      "title": "Contact · 390 · night",
+      "w": 390,
+      "x": 3510,
+      "y": 11640
+    },
+    "ContactNight.dc.html": {
+      "h": 952,
+      "title": "Contact · pp. 11–12 · 1440 · night",
+      "w": 1440,
+      "x": 1520,
+      "y": 11640
+    },
+    "Fonts.dc.html": {
+      "h": 3900,
+      "title": "Font options",
+      "w": 1440,
+      "x": 3040,
+      "y": 17000
+    },
+    "Main.dc.html": {
+      "h": 952,
+      "title": "Opening · pp. 1–2 · 1440 · day",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "MidCurl.dc.html": {
+      "h": 952,
+      "title": "State · mid-curl · 1440 · day",
+      "w": 1440,
+      "x": 0,
+      "y": 13600
+    },
+    "OpeningMobileDay.dc.html": {
+      "h": 1456,
+      "title": "Opening · 390 · day",
+      "w": 390,
+      "x": 3040,
+      "y": 0
+    },
+    "OpeningMobileNight.dc.html": {
+      "h": 1456,
+      "title": "Opening · 390 · night",
+      "w": 390,
+      "x": 3510,
+      "y": 0
+    },
+    "OpeningNight.dc.html": {
+      "h": 952,
+      "title": "Opening · pp. 1–2 · 1440 · night",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "ProjectSheetDay.dc.html": {
+      "h": 2156,
+      "title": "ProjectSheet · 390 · day",
+      "w": 390,
+      "x": 3980,
+      "y": 6796
+    },
+    "ProjectSheetNight.dc.html": {
+      "h": 2156,
+      "title": "ProjectSheet · 390 · night",
+      "w": 390,
+      "x": 4450,
+      "y": 6796
+    },
+    "ProjectsDay.dc.html": {
+      "h": 952,
+      "title": "Projects · pp. 7–8 · 1440 · day",
+      "w": 1440,
+      "x": 0,
+      "y": 6796
+    },
+    "ProjectsMobileDay.dc.html": {
+      "h": 1708,
+      "title": "Projects · 390 · day",
+      "w": 390,
+      "x": 3040,
+      "y": 6796
+    },
+    "ProjectsMobileNight.dc.html": {
+      "h": 1708,
+      "title": "Projects · 390 · night",
+      "w": 390,
+      "x": 3510,
+      "y": 6796
+    },
+    "ProjectsNight.dc.html": {
+      "h": 952,
+      "title": "Projects · pp. 7–8 · 1440 · night",
+      "w": 1440,
+      "x": 1520,
+      "y": 6796
+    },
+    "SceneDay.dc.html": {
+      "h": 1200,
+      "title": "Cabin table scene · 1920 · day",
+      "w": 1920,
+      "x": 0,
+      "y": -1620
+    },
+    "SceneNight.dc.html": {
+      "h": 1200,
+      "title": "Cabin table scene · 1920 · night",
+      "w": 1920,
+      "x": 2000,
+      "y": -1620
+    },
+    "SkillsDay.dc.html": {
+      "h": 952,
+      "title": "Skills · pp. 5–6 · 1440 · day",
+      "w": 1440,
+      "x": 0,
+      "y": 4368
+    },
+    "SkillsMobileDay.dc.html": {
+      "h": 1960,
+      "title": "Skills · 390 · day",
+      "w": 390,
+      "x": 3040,
+      "y": 4368
+    },
+    "SkillsMobileNight.dc.html": {
+      "h": 1960,
+      "title": "Skills · 390 · night",
+      "w": 390,
+      "x": 3510,
+      "y": 4368
+    },
+    "SkillsNight.dc.html": {
+      "h": 952,
+      "title": "Skills · pp. 5–6 · 1440 · night",
+      "w": 1440,
+      "x": 1520,
+      "y": 4368
+    },
+    "States.dc.html": {
+      "h": 2980,
+      "title": "States · contents hover, turn corners, focus, empty slots",
+      "w": 1440,
+      "x": 1520,
+      "y": 13600
+    },
+    "TimelineDay.dc.html": {
+      "h": 952,
+      "title": "Timeline · pp. 3–4 · 1440 · day",
+      "w": 1440,
+      "x": 0,
+      "y": 1876
+    },
+    "TimelineMobileDay.dc.html": {
+      "h": 2072,
+      "title": "Timeline · 390 · day",
+      "w": 390,
+      "x": 3040,
+      "y": 1876
+    },
+    "TimelineMobileNight.dc.html": {
+      "h": 2072,
+      "title": "Timeline · 390 · night",
+      "w": 390,
+      "x": 3510,
+      "y": 1876
+    },
+    "TimelineNight.dc.html": {
+      "h": 952,
+      "title": "Timeline · pp. 3–4 · 1440 · night",
+      "w": 1440,
+      "x": 1520,
+      "y": 1876
+    },
+    "Tokens.dc.html": {
+      "h": 3400,
+      "title": "Token sheet",
+      "w": 1440,
+      "x": 0,
+      "y": 17000
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-09-21T06:11:14.906Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "r0": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "00 · The cabin table — full scene",
+      "w": 240,
+      "x": 0,
+      "y": -1900
+    },
+    "r1": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "01 · Opening + contents · pp. 1–2",
+      "w": 240,
+      "x": 0,
+      "y": -280
+    },
+    "r2": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "02 · Timeline · pp. 3–4 (wave)",
+      "w": 240,
+      "x": 0,
+      "y": 1596
+    },
+    "r3": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "04 · Projects · pp. 7–8 + mobile sheet",
+      "w": 240,
+      "x": 0,
+      "y": 6516
+    },
+    "r4": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "05 · Colophon · pp. 9–10",
+      "w": 240,
+      "x": 0,
+      "y": 9092
+    },
+    "r5": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "06 · Contact · pp. 11–12",
+      "w": 240,
+      "x": 0,
+      "y": 11360
+    },
+    "r6": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "07 · States",
+      "w": 240,
+      "x": 0,
+      "y": 13320
+    },
+    "r7": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "08 · Tokens, components & fonts",
+      "w": 240,
+      "x": 0,
+      "y": 16720
+    },
+    "r8": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "03 · Skills · pp. 5–6",
+      "w": 240,
+      "x": 0,
+      "y": 4088
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "OpeningNight.dc.html",
+    "OpeningMobileDay.dc.html",
+    "OpeningMobileNight.dc.html",
+    "ProjectsDay.dc.html",
+    "ProjectsNight.dc.html",
+    "ProjectsMobileDay.dc.html",
+    "ProjectsMobileNight.dc.html",
+    "ProjectSheetDay.dc.html",
+    "ProjectSheetNight.dc.html",
+    "ColophonDay.dc.html",
+    "ColophonNight.dc.html",
+    "ColophonMobileDay.dc.html",
+    "ColophonMobileNight.dc.html",
+    "ContactDay.dc.html",
+    "ContactNight.dc.html",
+    "ContactMobileDay.dc.html",
+    "ContactMobileNight.dc.html",
+    "MidCurl.dc.html",
+    "States.dc.html",
+    "Tokens.dc.html",
+    "Components.dc.html",
+    "Fonts.dc.html",
+    "SceneDay.dc.html",
+    "SceneNight.dc.html",
+    "TimelineDay.dc.html",
+    "TimelineNight.dc.html",
+    "TimelineMobileDay.dc.html",
+    "TimelineMobileNight.dc.html",
+    "SkillsDay.dc.html",
+    "SkillsNight.dc.html",
+    "SkillsMobileDay.dc.html",
+    "SkillsMobileNight.dc.html"
+  ],
+  "pages": [],
+  "title": "Field Notebook Portfolio"
+}

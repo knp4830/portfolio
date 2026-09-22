@@ -1,0 +1,101 @@
+/* Field Notebook tokens, extracted from the Claude Design canvas (rev 8).
+   Day = :root / light, Night = dark. Map these into src/app/globals.css (M0.2). */
+:root, [data-theme="day"] {
+  --paper:#EFEDE6;
+  --paper-back:#E2DED3;
+  --ink:#262A2B;
+  --ink-soft:#5C605F;
+  --huckleberry:#6A3552;
+  --salal:#5F7A63;
+  --rule:#D8D4C8;
+  --desk:#1C1714;
+  --desk-grain:#2A221D;
+  --lamp:rgba(244,217,168,.18);
+  --paper-fold:#E9E6DD;
+  --desk-ink:#E6E2D8;
+  --desk-ink-soft:#A9A69E;
+  --foxing:#9C7A52;
+  --edge-age:#8A6A45;
+  --tape:rgba(244,217,168,.55);
+  --fold-dark:rgba(38,42,43,.18);
+  --fold-light:rgba(255,255,255,.6);
+  --tint:rgba(244,217,168,.20);
+  --cast:rgba(244,217,168,.14);
+  --leather:#5B3A29;
+  --leather-dark:#3A2419;
+  --leather-wear:#7E5842;
+  --stitch:#9A785C;
+  --coffee:#8A5A36;
+  --fiber:#FAF8F2;
+  --moss:#3A5340;
+  --walnut:#5B3A29;
+}
+[data-theme="night"] {
+  --paper:#1E2122;
+  --paper-back:#26292A;
+  --ink:#E6E2D8;
+  --ink-soft:#A9A69E;
+  --huckleberry:#C28AA6;
+  --salal:#8FAE93;
+  --rule:#34383A;
+  --desk:#110E0C;
+  --desk-grain:#1A1512;
+  --lamp:rgba(244,217,168,.10);
+  --paper-fold:#222526;
+  --desk-ink:#E6E2D8;
+  --desk-ink-soft:#A9A69E;
+  --foxing:#7A6248;
+  --edge-age:#000000;
+  --tape:rgba(244,217,168,.16);
+  --fold-dark:rgba(0,0,0,.5);
+  --fold-light:rgba(230,226,216,.10);
+  --tint:rgba(244,217,168,.05);
+  --cast:rgba(244,217,168,.06);
+  --leather:#4A2E20;
+  --leather-dark:#2C1A11;
+  --leather-wear:#654433;
+  --stitch:#7A5B45;
+  --coffee:#8A6242;
+  --fiber:#33383A;
+  --moss:#9CBA9F;
+  --walnut:#B08A6E;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="day"]) {
+    --paper:#1E2122;
+    --paper-back:#26292A;
+    --ink:#E6E2D8;
+    --ink-soft:#A9A69E;
+    --huckleberry:#C28AA6;
+    --salal:#8FAE93;
+    --rule:#34383A;
+    --desk:#110E0C;
+    --desk-grain:#1A1512;
+    --lamp:rgba(244,217,168,.10);
+    --paper-fold:#222526;
+    --desk-ink:#E6E2D8;
+    --desk-ink-soft:#A9A69E;
+    --foxing:#7A6248;
+    --edge-age:#000000;
+    --tape:rgba(244,217,168,.16);
+    --fold-dark:rgba(0,0,0,.5);
+    --fold-light:rgba(230,226,216,.10);
+    --tint:rgba(244,217,168,.05);
+    --cast:rgba(244,217,168,.06);
+    --leather:#4A2E20;
+    --leather-dark:#2C1A11;
+    --leather-wear:#654433;
+    --stitch:#7A5B45;
+    --coffee:#8A6242;
+    --fiber:#33383A;
+    --moss:#9CBA9F;
+    --walnut:#B08A6E;
+  }
+}
+/* Paper texture overlay opacity by wear level */
+[data-theme="day"] .tex.w-light{opacity:.09}
+[data-theme="day"] .tex.w-medium{opacity:.10}
+[data-theme="day"] .tex.w-heavy{opacity:.12}
+[data-theme="night"] .tex.w-light{opacity:.07}
+[data-theme="night"] .tex.w-medium{opacity:.08}
+[data-theme="night"] .tex.w-heavy{opacity:.09}
