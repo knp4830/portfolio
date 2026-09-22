@@ -136,7 +136,7 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 ### Phase 0 — Foundations
 - ☑ **M0.1 Scaffold** — Next.js 15 + TS + Tailwind v4 + pnpm, deployed to Vercel. DoD: preview URL loads; lint and typecheck pass in CI.
 - ☑ **M0.2 Tokens and type** — palette (day + night), fonts, type scale, 28px baseline in `globals.css`. DoD: a token test page renders every token in both themes; contrast checks pass.
-- ☐ **M0.3 Content pipeline** — MDX loading, typed frontmatter, 11 timeline entries, skills, and 3 projects stubbed from the brief. DoD: build fails on a missing required frontmatter field.
+- ☑ **M0.3 Content pipeline** — MDX loading, typed frontmatter, 11 timeline entries, skills, and 3 projects stubbed from the brief. DoD: build fails on a missing required frontmatter field.
 
 ### Phase 1 — Static notebook (no curl)
 - ☐ **M1.1 Page and Notebook** — ruled paper, texture overlay, edge chips, desk surface, spread layout. DoD: matches the design at 1440px and 390px.
@@ -181,4 +181,13 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 **M0.2 done** (branch `m0.2-tokens`). Every token lives in `globals.css` (day, night, system preference). Fonts load via `src/app/fonts.ts`. Type roles are `type-*` utilities; `/tokens` shows everything in both themes, and `pnpm test` runs 34 contrast/token checks in CI. Decided: timeline descriptions are 15/28 (Kevin, Sep 21: the extra room is wanted); headings keep the design's 1.15 leading inside a fixed two-line (56px) box, text bottom-aligned, so the page stays on the 28px grid; card copy stays 15/22 as designed.
 
-**Next up: M0.3 — Content pipeline.**
+**M0.3 done** (branch `m0.3-content`). Content lives in `content/` (11 timeline entries, skills, 3 projects, stubbed verbatim from the brief). `src/lib/content/` loads it with next-mdx-remote and validates it with zod; `pnpm build` runs `content:check` first, so a missing or misspelled field fails the build. Content decisions (Kevin, Sep 21 — these override the brief):
+- Missing copy says **"To be added"**: the Rejected idea on PolyPaper and World Map Photo Album, and World Map's second stack item (was "TBD"). Every project now needs all five detail parts (Problem, Role, Key decisions, Rejected idea, Result).
+- Minced's "What sets it apart" is left out of the detail page (it isn't in the design).
+- Skills → Design & tools is just "UI design"; "prototyping" and the design-tools placeholder are out.
+- Straight apostrophes (ReuMo's), and status reads "Shipped (team of 5)" — both as in the brief.
+- M1.3: each project card keeps its screenshot slot as a **blank square** until Kevin adds pictures (no fake image).
+- Open: the design's Minced card shows only the one-liner's first sentence and "Supabase" without "(Postgres, Auth, RLS)"; content keeps the brief's full text. Decide at M1.3.
+- Still waiting on Kevin to confirm the timeline descriptions and skills lists.
+
+**Next up: M1.1 — Page and Notebook.**

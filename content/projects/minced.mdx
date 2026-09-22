@@ -1,0 +1,29 @@
+---
+order: 1
+title: "Minced"
+oneLiner: "Tells you what to cook, whether or not you already know: match recipes to what's in your kitchen, or search by name. Planned: shopping lists for missing ingredients, nutrition goals, workout logs"
+stack: ["Next.js 15", "TypeScript", "Tailwind v4", "shadcn/ui", "Supabase (Postgres, Auth, RLS)", "Zod", "Vercel", "USDA FoodData Central"]
+dates: "July 2025 – present"
+status: "In development; Phase 1 complete"
+details:
+  - label: "Problem"
+    text: "Someone close to me made me realize not everyone knows how to cook, what to cook, or has time to figure it out. Students and gym-goers chasing protein and carb targets have it hardest, but it works for anyone."
+  - label: "Role"
+    text: "Solo designer and engineer. Built for friends and family first; the goal is for it to become something everyone keeps on their phone."
+  - label: "Key decisions"
+    text: "Two doors into one catalog: match recipes to your pantry, or search by name — every feature works for both. Ranking runs inside Postgres as a database function, never in the browser. Every ingredient resolves to one canonical entry, and pantry staples like salt and oil never count as missing."
+  - label: "Rejected idea"
+    text: "Paste a TikTok cooking video and get a full recipe with nutrition. Exciting, but too much for v1 — cut to keep the core fast."
+  - label: "Result"
+    text: "In development. Phase 1 complete: live database with row-level security and seed recipes. Next: an ingredient vocabulary for a 500+ recipe catalog."
+lineage:
+  - name: "Momentum"
+    note: "fitness analytics"
+    date: "July 2025"
+  - name: "MyRecipePal"
+    note: "recipes and nutrition"
+    date: "Dec 2025"
+  - name: "Minced"
+    note: "the product that ships"
+    date: "2026"
+---

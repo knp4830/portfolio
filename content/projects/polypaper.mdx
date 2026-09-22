@@ -1,0 +1,21 @@
+---
+order: 2
+title: "PolyPaper"
+oneLiner: "Polymarket-style paper trading: portfolios, auth, and event-market browsing"
+stack: ["Flask", "FastAPI", "MongoDB", "Redis", "Docker Compose", "GitHub Actions", "DigitalOcean"]
+dates: "Sep – Dec 2025"
+status: "Shipped (team of 5)"
+details:
+  - label: "Problem"
+    text: "Polymarket and Kalshi went mainstream fast, but there was no way to practice predicting with fake money before putting real money on the line."
+  - label: "Role"
+    text: "One of five engineers on a semester team project"
+  - label: "Key decisions"
+    text: "Split the product in two: a Flask web app for accounts, sessions, and UI, and two FastAPI microservices — search and pricing — that proxy Polymarket's data and cache it in Redis. Every piece runs in its own Docker container."
+  - label: "Pipeline"
+    text: "GitHub Actions tests, builds images, pushes to Docker Hub, and redeploys the DigitalOcean server on every commit to main"
+  - label: "Rejected idea"
+    text: "To be added"
+  - label: "Result"
+    text: "Shipped trading on live Polymarket data, with sign-up, login, account reset, adjustable trading balance and position sizing, and market search. 139 commits. The bigger win: learning to work as a team — standups, issue assignment, splitting work, and GitHub done properly."
+---
