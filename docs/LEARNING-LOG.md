@@ -35,3 +35,43 @@ They don't know about each other. A PR can deploy fine on Vercel and still fail 
 - **Local success isn't CI success.** Locally, `.next/` and `next-env.d.ts` already exist; CI starts with neither (both are gitignored). Testing in a fresh `git clone` of the branch reproduces what CI sees.
 - **Preview URLs are behind a login.** Vercel's default Deployment Protection sends anyone not logged in to your Vercel team to a login page (`302`). Production is public. Keep this in mind before sharing a preview link.
 - **The Vercel connector said the project creation failed, but it had worked.** The project 404'd right afterwards but was linked; the first PR built it. Check the PR's status checks before retrying, or you could end up with a duplicate project.
+
+## M0.2 — Tokens and type (2026-09-21)
+
+### What we built
+Every color, font, type role, and grid value from the design now lives in `src/app/globals.css`, in day and night. The five faces (plus Patrick Hand as a fallback) load through `next/font`. A test page at `/tokens` renders all of it in both themes side by side, and `pnpm test` (now in CI) fails if any text pairing drops below WCAG AA.
+
+### Key files
+- `src/app/globals.css`: the tokens, the Tailwind mapping, and the type-role utilities
+- `src/app/fonts.ts`: the `next/font` setup; `layout.tsx` puts the font variables on `<html>`
+- `src/lib/tokens/contrast.ts`: reads the tokens out of the CSS and computes contrast
+- `src/lib/tokens/contrast.test.ts`: the checks, run with `pnpm test`
+- `src/app/tokens/page.tsx`: the token test page (`noindex`, not linked from the site)
+
+### How it works
+**Three layers of variables.**
+1. Raw tokens (`--paper`, `--ink`, …) are plain CSS custom properties. They're defined once for day on `:root, [data-theme="day"]` and once for night on `[data-theme="night"]`. Custom properties inherit, so any element with `data-theme` re-themes everything inside it. That's how `/tokens` shows both themes on one page.
+2. The system preference: inside `@media (prefers-color-scheme: dark)`, `:root:not([data-theme="day"])` gets the night values. The `:not()` is what lets the toggle (M1.4) override: pinning `data-theme="day"` beats a dark OS setting.
+3. Tailwind names: `@theme inline` maps `--color-paper: var(--paper)` etc., so `bg-paper` or `text-ink` exist as utilities. `inline` makes the utility contain `var(--paper)` itself rather than a copy of the value, so it re-resolves per element and follows the theme.
+
+**Tailwind's defaults are removed.** `--color-*: initial` and `--font-*: initial` clear the built-in palette and font stacks. `bg-blue-500` or `font-sans` now generate nothing, which enforces "no colors outside `globals.css`."
+
+**Type roles are one class each.** `@utility type-display` (and heading, body, detail, card, semi, label, caps, pen) sets face, weight, size, leading, and Fraunces' `SOFT`/`WONK`/`opsz` axes together. Sizes come from variables (`--display-size` …) that switch at 1024px, so the classes are responsive without needing `spread:` prefixes.
+
+**Special Elite at 0.88×.** The typewriter face runs wide, so its size is `calc(0.88 × 18px)` ≈ 16px on desktop and `0.88 × 17px` ≈ 15px on mobile. That's the brief's 16/15 and matches the mockup HTML.
+
+**Contrast checks read the real CSS.** The test and the page both parse `globals.css`, so there's no second copy of the palette to fall out of sync. Each pairing is a foreground token on a surface. A surface can be a stack of layers, e.g. `paper + cast` (the lamp's warm glow) or `paper + edge-age @ 7%` (worn paper). The checker blends translucent layers the way the browser does before computing the ratio. Thresholds: 4.5:1 for text, 3:1 for large text (salal) and focus rings.
+
+### Why this way, and what we rejected
+- **Rejected: a contrast library or axe for this step.** The WCAG formula is ~15 lines, and adding packages needs approval. axe comes in M3.1 for the real pages.
+- **Rejected: Tailwind's `dark:` variant.** Swapping variable values means components never mention the theme. With `dark:`, every component would need two classes per color.
+- **Rejected: storing the palette in TS and generating CSS.** CSS is the source of truth the brief asks for, and the design's `tokens.css` pastes straight in.
+- **The night block is written twice** (forced and system) because CSS can't share one declaration block between a selector and a media query without a preprocessor. A test asserts the two blocks are identical.
+- **Motion and curl constants aren't here yet.** They belong to M2.x and will live next to the curl code.
+
+### Gotchas
+- **Tailwind only emits utilities that some file uses.** After M0.2's first build, none of the new classes were in the CSS, because nothing used them yet. That's expected, not a bug.
+- **Node runs `.ts` directly (Node 24), but imports need the `.ts` extension** (`./contrast.ts`). TypeScript only allows that with `allowImportingTsExtensions` (fine because we never emit JS). Keep `contrast.ts` import-free, so the test never has to resolve `@/` paths.
+- **`"type": "module"` in package.json** stops Node's "reparsing as ES module" warning on every test run. Next, ESLint, and PostCSS configs are already ESM (`.ts`/`.mjs`), so nothing else changed.
+- **Headless Chrome won't shrink a window below ~500px.** A "390px" screenshot is a crop of a wider layout and looks like horizontal overflow. To check mobile, put the page in a 390px `<iframe>`.
+- **The starter home page lost its colors** because Tailwind's palette is cleared. It's replaced in M1.2.

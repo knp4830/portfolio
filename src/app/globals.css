@@ -1,26 +1,294 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Field Notebook tokens — every color, font, and spacing value lives here.
+  Source: design/tokens.css + the token sheet (design rev 8), docs/BRIEF.md → Color, Typography.
+
+  Theme: day is the default. The OS dark preference switches to night unless the
+  page is pinned to day; data-theme="night" forces night. The toggle (M1.4)
+  only sets data-theme on <html>. Any element can carry data-theme to render a
+  theme locally (the /tokens page does this to show both side by side).
+
+  The night block is written twice (forced + system). `pnpm test` fails if they drift.
+*/
+
+:root, [data-theme="day"] {
+  color-scheme: light;
+  --paper: #EFEDE6;
+  --paper-back: #E2DED3;
+  --paper-fold: #E9E6DD;
+  --ink: #262A2B;
+  --ink-soft: #5C605F;
+  --huckleberry: #6A3552;
+  --salal: #5F7A63;
+  --moss: #3A5340;
+  --walnut: #5B3A29;
+  --rule: #D8D4C8;
+  --desk: #1C1714;
+  --desk-grain: #2A221D;
+  --desk-ink: #E6E2D8;
+  --desk-ink-soft: #A9A69E;
+  --lamp: rgb(244 217 168 / 0.18);
+  --cast: rgb(244 217 168 / 0.14);
+  --tint: rgb(244 217 168 / 0.20);
+  --leather: #5B3A29;
+  --leather-dark: #3A2419;
+  --leather-wear: #7E5842;
+  --stitch: #9A785C;
+  --foxing: #9C7A52;
+  --edge-age: #8A6A45;
+  --coffee: #8A5A36;
+  --fiber: #FAF8F2;
+  --tape: rgb(244 217 168 / 0.55);
+  --fold-dark: rgb(38 42 43 / 0.18);
+  --fold-light: rgb(255 255 255 / 0.60);
+  --tex-light: 0.09;
+  --tex-medium: 0.10;
+  --tex-heavy: 0.12;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="night"] {
+  color-scheme: dark;
+  --paper: #1E2122;
+  --paper-back: #26292A;
+  --paper-fold: #222526;
+  --ink: #E6E2D8;
+  --ink-soft: #A9A69E;
+  --huckleberry: #C28AA6;
+  --salal: #8FAE93;
+  --moss: #9CBA9F;
+  --walnut: #B08A6E;
+  --rule: #34383A;
+  --desk: #110E0C;
+  --desk-grain: #1A1512;
+  --desk-ink: #E6E2D8;
+  --desk-ink-soft: #A9A69E;
+  --lamp: rgb(244 217 168 / 0.10);
+  --cast: rgb(244 217 168 / 0.06);
+  --tint: rgb(244 217 168 / 0.05);
+  --leather: #4A2E20;
+  --leather-dark: #2C1A11;
+  --leather-wear: #654433;
+  --stitch: #7A5B45;
+  --foxing: #7A6248;
+  --edge-age: #000000;
+  --coffee: #8A6242;
+  --fiber: #33383A;
+  --tape: rgb(244 217 168 / 0.16);
+  --fold-dark: rgb(0 0 0 / 0.50);
+  --fold-light: rgb(230 226 216 / 0.10);
+  --tex-light: 0.07;
+  --tex-medium: 0.08;
+  --tex-heavy: 0.09;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="day"]) {
+    color-scheme: dark;
+    --paper: #1E2122;
+    --paper-back: #26292A;
+    --paper-fold: #222526;
+    --ink: #E6E2D8;
+    --ink-soft: #A9A69E;
+    --huckleberry: #C28AA6;
+    --salal: #8FAE93;
+    --moss: #9CBA9F;
+    --walnut: #B08A6E;
+    --rule: #34383A;
+    --desk: #110E0C;
+    --desk-grain: #1A1512;
+    --desk-ink: #E6E2D8;
+    --desk-ink-soft: #A9A69E;
+    --lamp: rgb(244 217 168 / 0.10);
+    --cast: rgb(244 217 168 / 0.06);
+    --tint: rgb(244 217 168 / 0.05);
+    --leather: #4A2E20;
+    --leather-dark: #2C1A11;
+    --leather-wear: #654433;
+    --stitch: #7A5B45;
+    --foxing: #7A6248;
+    --edge-age: #000000;
+    --coffee: #8A6242;
+    --fiber: #33383A;
+    --tape: rgb(244 217 168 / 0.16);
+    --fold-dark: rgb(0 0 0 / 0.50);
+    --fold-light: rgb(230 226 216 / 0.10);
+    --tex-light: 0.07;
+    --tex-medium: 0.08;
+    --tex-heavy: 0.09;
   }
 }
 
+/* Grid. Mobile first; desktop values apply from the spread breakpoint (1024px). */
+:root {
+  --baseline: 28px;     /* one ruled line */
+  --rule-offset: 20px;  /* the rule sits 20px into each line box */
+  --page-pad: 24px;
+  --page-w: 630px;      /* 30 lines tall at 840 */
+  --page-h: 840px;
+  --spread-w: 1260px;   /* two pages on a 1440 desk */
+  --grid-gap: 28px;
+  --radius: 2px;        /* chips, buttons, slots */
+  --semi-scale: 0.88;   /* Special Elite runs wide */
+
+  --display-size: 40px;
+  --heading-size: 24px;
+  --heading-leading: 28px;
+  --body-size: 17px;
+  --detail-size: 17px;
+  --semi-base: 17px;
+  --pen-size: 22px;
+}
+
+@media (width >= 64rem) {
+  :root {
+    --page-pad: 56px;
+    --display-size: 56px;
+    --heading-size: 28px;
+    --heading-leading: 1.15;
+    --body-size: 18px;
+    --detail-size: 15px;
+    --semi-base: 18px;
+    --pen-size: 24px;
+  }
+}
+
+/*
+  Tailwind only knows the tokens above: the default palette and fonts are cleared,
+  so a stray `bg-blue-500` generates nothing. Utilities: bg-paper, text-ink,
+  border-rule, font-display, rounded-chip, p-page, mt-line, spread:… (≥ 1024px).
+*/
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+  --breakpoint-spread: 64rem;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-back: var(--paper-back);
+  --color-paper-fold: var(--paper-fold);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-huckleberry: var(--huckleberry);
+  --color-salal: var(--salal);
+  --color-moss: var(--moss);
+  --color-walnut: var(--walnut);
+  --color-rule: var(--rule);
+  --color-desk: var(--desk);
+  --color-desk-grain: var(--desk-grain);
+  --color-desk-ink: var(--desk-ink);
+  --color-desk-ink-soft: var(--desk-ink-soft);
+  --color-lamp: var(--lamp);
+  --color-cast: var(--cast);
+  --color-tint: var(--tint);
+  --color-leather: var(--leather);
+  --color-leather-dark: var(--leather-dark);
+  --color-leather-wear: var(--leather-wear);
+  --color-stitch: var(--stitch);
+  --color-foxing: var(--foxing);
+  --color-edge-age: var(--edge-age);
+  --color-coffee: var(--coffee);
+  --color-fiber: var(--fiber);
+  --color-tape: var(--tape);
+  --color-fold-dark: var(--fold-dark);
+  --color-fold-light: var(--fold-light);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* next/font sets the --font-* face variables on <html> (src/app/fonts.ts). */
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, Menlo, monospace;
+  --font-semi: var(--font-special-elite), var(--font-patrick-hand), "Courier New", monospace;
+  --font-pen: var(--font-nanum-pen), "Bradley Hand", cursive;
+  --default-font-family: var(--font-body);
+  --default-mono-font-family: var(--font-mono);
+
+  --spacing-line: var(--baseline);
+  --spacing-page: var(--page-pad);
+  --spacing-gap: var(--grid-gap);
+  --radius-chip: var(--radius);
+}
+
+/*
+  Type roles (token sheet → Type). One class per role sets face, size, leading,
+  and axes together. Sizes switch at the spread breakpoint via the variables above.
+*/
+@utility type-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--display-size);
+  line-height: 1.1;
+  font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+}
+
+@utility type-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--heading-size);
+  line-height: var(--heading-leading);
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+}
+
+@utility type-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--body-size);
+  line-height: var(--baseline);
+  font-optical-sizing: auto;
+}
+
+/* Project detail values: smaller than body on desktop, same as body on mobile. */
+@utility type-detail {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--detail-size);
+  line-height: var(--baseline);
+  font-optical-sizing: auto;
+}
+
+/* Card copy is deliberately off the 28px grid (token sheet flags it). */
+@utility type-card {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 22px;
+  font-optical-sizing: auto;
+}
+
+/* Facts values and the chapter line: typewriter, scaled down because it runs wide. */
+@utility type-semi {
+  font-family: var(--font-semi);
+  font-weight: 400;
+  font-size: calc(var(--semi-scale) * var(--semi-base));
+  line-height: var(--baseline);
+  letter-spacing: 0.005em;
+}
+
+@utility type-label {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+}
+
+/* Pair with type-label: "NO. 004 · V0.4". */
+@utility type-caps {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+@utility type-pen {
+  font-family: var(--font-pen);
+  font-weight: 400;
+  font-size: var(--pen-size);
+  line-height: var(--baseline);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--desk);
+  color: var(--desk-ink);
+  -webkit-font-smoothing: antialiased;
 }

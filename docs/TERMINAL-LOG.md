@@ -87,3 +87,35 @@ git add CLAUDE.md docs/LEARNING-LOG.md docs/TERMINAL-LOG.md
 git commit -m "Close out M0.1"
 git push -u origin m0.1-closeout
 ```
+
+## M0.2 — Tokens and type (2026-09-21)
+
+```bash
+git checkout -b m0.2-tokens          # (Kevin)
+
+pnpm test                            # node --test "src/**/*.test.ts": 34 contrast/token checks
+pnpm lint && pnpm typecheck && pnpm build
+
+# Look at /tokens in a real browser
+pnpm start -p 3123
+"/c/Program Files/Google/Chrome/Application/chrome.exe" --headless=new --window-size=1440,3600 \
+  --screenshot=tokens-1440.png http://localhost:3123/tokens
+```
+
+**Warning:** `Reparsing as ES module because module syntax was detected` on every `pnpm test`.
+Fixed by adding `"type": "module"` to package.json.
+
+**Looked failed, wasn't:** the `--window-size=390` screenshot looked clipped on the right. Headless Chrome won't
+make a window narrower than ~500px. Rendering the page inside a 390px `<iframe>` showed it fits.
+
+```powershell
+# Stop a server started in the background (PowerShell)
+$c = Get-NetTCPConnection -LocalPort 3124 -State Listen; Stop-Process -Id $c.OwningProcess -Force
+```
+
+```bash
+# Kevin: commit, push, PR
+git add .github package.json tsconfig.json src docs CLAUDE.md
+git commit -m "M0.2: tokens, fonts, type scale, contrast checks"
+git push -u origin m0.2-tokens
+```
