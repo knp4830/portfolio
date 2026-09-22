@@ -21,7 +21,7 @@ type ProjectsProps = {
 // own URL, works without JavaScript, and back/forward move between selections.
 // Every project's detail (and mobile sheet) is rendered once; the route's marker
 // picks which one shows (data-view, see Notebook), so switching projects never
-// rebuilds the page — and only an actual switch plays the slide-in.
+// rebuilds the page — and only an actual switch plays the fade-in.
 
 const CARD_CHIPS = 3;
 

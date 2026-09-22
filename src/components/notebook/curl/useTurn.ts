@@ -6,10 +6,10 @@ import { type Point, lerp, progressOf } from "@/lib/curl/geometry";
 import {
   type Direction,
   TIMING,
-  easeIn,
   easeInOut,
   easeOut,
   initialWheel,
+  riffleDuration,
   rifflePlan,
   settles,
   wheelIdle,
@@ -31,11 +31,11 @@ export type TurnFrame = {
   /** The corner, when a pointer is holding it; otherwise it follows the arc. */
   pointer: Point | null;
   /**
-   * The spread this turn starts from, when it isn't the route's: a contents jump
-   * riffles through the spreads in between, one real turn after another, and
-   * only changes the route at the end.
+   * A contents jump: every page between here and there turns together, fanned
+   * (see riffleLeaves), and `progress` is the whole riffle's. The route changes
+   * once, at the end.
    */
-  from: SpreadId | null;
+  riffle: { from: SpreadId; pages: number } | null;
 };
 
 export type TurnOptions = {
@@ -71,7 +71,7 @@ export function spreadOf(pathname: string): SpreadId | null {
 }
 
 function createEngine(options: () => TurnOptions, push: (href: string, scroll: boolean) => void) {
-  const frame: TurnFrame = { direction: null, progress: 0, pointer: null, from: null };
+  const frame: TurnFrame = { direction: null, progress: 0, pointer: null, riffle: null };
   let raf: number | null = null;
   let idleTimer: ReturnType<typeof setTimeout> | undefined;
   let leaving = false;
@@ -91,7 +91,7 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
     Object.assign(frame, patch);
     paint();
   };
-  const rest = () => set({ direction: null, progress: 0, pointer: null, from: null });
+  const rest = () => set({ direction: null, progress: 0, pointer: null, riffle: null });
 
   function stop() {
     if (raf !== null) cancelAnimationFrame(raf);
@@ -190,30 +190,16 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
     const direction: Direction = distance > 0 ? "forward" : "backward";
     leaving = true;
     if (Math.abs(distance) === 1) {
-      set({ direction, progress: 0, pointer: null, from: null });
+      set({ direction, progress: 0, pointer: null, riffle: null });
       animate(TIMING.auto, (t) => (frame.progress = easeInOut(t)), () => navigate(to, href));
       return;
     }
-    // Riffle: turn the real pages, spread after spread, without stopping. Each
-    // flip starts where the last one landed; only the first eases in and only the
-    // last eases out, so the pages flow. The route changes once, at the end.
-    const step = Math.sign(distance);
-    const start = SPREADS.indexOf(spread);
-    // Brief: up to 6 flips; further than that, 3 and cut (the notebook has 6 spreads, so it never cuts today).
+    // Riffle: the real pages in between turn together, each a beat behind the one
+    // in front, like a bundle flipped with one thumb. The route changes once, at the end.
+    // Brief: up to 6 pages; further than that, 3 and cut (the notebook has 6 spreads, so it never cuts today).
     const { flips } = rifflePlan(distance);
-    const froms = Array.from({ length: flips }, (_, i) => SPREADS[start + i * step]);
-    let flip = 0;
-    const once = () => {
-      const first = flip === 0;
-      const last = flip === froms.length - 1;
-      set({ direction, progress: 0, pointer: null, from: froms[flip] });
-      animate(
-        TIMING.riffle,
-        (t) => (frame.progress = first ? easeIn(t) : last ? easeOut(t) : t),
-        () => (++flip < froms.length ? once() : navigate(to, href)),
-      );
-    };
-    once();
+    set({ direction, progress: 0, pointer: null, riffle: { from: spread, pages: flips } });
+    animate(riffleDuration(flips), (t) => (frame.progress = t), () => navigate(to, href));
   }
 
   const drag = {
@@ -223,8 +209,8 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
       stop();
       clearTimeout(idleTimer);
       // Reduced motion: follow the gesture without drawing any curl frames.
-      if (reduced()) Object.assign(frame, { direction, from: null });
-      else set({ direction, from: null });
+      if (reduced()) Object.assign(frame, { direction, riffle: null });
+      else set({ direction, riffle: null });
       return true;
     },
     move(pointer: Point | null, progress: number) {
@@ -275,11 +261,11 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
     memory.wheel = result.state;
     if (result.completed) {
       const to = target(result.completed);
-      set({ direction: result.completed, progress: 1, pointer: null, from: null });
+      set({ direction: result.completed, progress: 1, pointer: null, riffle: null });
       if (to) navigate(to);
       return;
     }
-    set({ direction: result.state.direction, progress: result.state.progress, pointer: null, from: null });
+    set({ direction: result.state.direction, progress: result.state.progress, pointer: null, riffle: null });
     clearTimeout(idleTimer);
     idleTimer = setTimeout(() => {
       const decision = wheelIdle(memory.wheel, performance.now());
@@ -333,7 +319,7 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
     stop();
     clearTimeout(idleTimer);
     leaving = false;
-    Object.assign(frame, { direction: null, progress: 0, pointer: null, from: null });
+    Object.assign(frame, { direction: null, progress: 0, pointer: null, riffle: null });
     const { from, fadeIn, turned } = arrive(o().spread);
     const ribbon = o().ribbon();
     if (ribbon && !reduced() && (turned || from)) {
@@ -358,7 +344,7 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
     const direction: Direction | null = from === next ? "forward" : from === previous ? "backward" : null;
     if (!direction) return;
     // The page we left is still "turned"; play the turn back to rest.
-    set({ direction, progress: 1, pointer: null, from: null });
+    set({ direction, progress: 1, pointer: null, riffle: null });
     animate(TIMING.auto, (t) => (frame.progress = 1 - easeInOut(t)), rest);
   }
 

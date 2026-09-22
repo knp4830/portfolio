@@ -15,7 +15,7 @@ import {
   reflect,
   splitPage,
 } from "@/lib/curl/geometry";
-import { ARC } from "@/lib/curl/input";
+import { ARC, riffleLeaves } from "@/lib/curl/input";
 import type { SpreadId } from "@/lib/notebook/spreads";
 import { type TurnFrame, dialogOpen, spreadOf, useTurn } from "./useTurn";
 
@@ -86,8 +86,10 @@ export function MobileCurl({ spread, next, children }: MobileCurlProps) {
 
     const { box, visible } = view();
     const { corner, mirror } = corners();
+    // A riffle has one page to show here: it follows the last page of the fan, which lands as the route changes.
+    const progress = frame.riffle ? riffleLeaves(frame.progress, frame.riffle.pages).at(-1)! : frame.progress;
     // Forward: this page peels away. Backward: the previous page comes back, i.e. a forward peel in reverse.
-    const peel = frame.direction === "forward" ? frame.progress : 1 - frame.progress;
+    const peel = frame.direction === "forward" ? progress : 1 - progress;
     const P =
       frame.pointer && frame.direction === "forward"
         ? frame.pointer

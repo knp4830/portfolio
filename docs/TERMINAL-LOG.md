@@ -314,3 +314,41 @@ git add -A
 git commit -m "Restore the spine line, riffle real pages, show Minced mid-turn, stop turn flashes"
 git push -u origin four-fixes
 ```
+
+## Deploy check (2026-09-22)
+
+```bash
+gh api "repos/knp4830/portfolio/deployments?environment=Production&per_page=3"   # production deploys per merge to main
+gh api repos/knp4830/portfolio/commits/8ab6f21/status   # Vercel: "Deployment has completed" (PR #10 on production)
+curl -s -o /dev/null -w '%{http_code} %{redirect_url}' https://portfolio-minced.vercel.app
+```
+
+**Blocked:** `302` → `vercel.com/sso-api`. Production is behind Vercel Authentication too, not only previews.
+
+**Failed:** the Vercel connector can't see `minced/portfolio` (`list_projects` shows only `mise`; `list_deployments` → 403,
+`list_project_domains` → 404). Deployment settings have to be changed in the Vercel dashboard.
+
+## Fanned riffle, p. 02 hint, frond scale (2026-09-22)
+
+```bash
+pnpm typecheck && pnpm lint && pnpm test   # 73 unit tests (new: riffle fan)
+pnpm build && pnpm start -p 3000
+node fan.mjs             # screenshots of the opening spread and a slowed (12×) opening → contact riffle
+node four.mjs && node curl-dod.mjs && node dod.mjs && node verify-persist.mjs   # 9/9, 22/22, 25/25, 8/8
+```
+
+**Failed:** `pnpm start -p 3000` → `EADDRINUSE :::3000`. Stopping the old background task killed pnpm but not its
+`next start` child. Found it by command line and stopped it (PowerShell):
+
+```powershell
+Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { $_.CommandLine -like '*next*start*3000*' } | ForEach-Object { Stop-Process -Id $_.ProcessId }
+```
+
+```bash
+# Kevin: commit, push, PR
+git fetch
+git checkout -b fanned-riffle origin/main
+git add -A
+git commit -m "Fan the contents riffle, move the turn-the-page hint to p. 02, clear the frond scale"
+git push -u origin fanned-riffle
+```

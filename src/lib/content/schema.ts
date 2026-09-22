@@ -99,6 +99,7 @@ export const pageSchemas = {
       count: text.includes("{sections}").includes("{pages}"),
       jump: text,
       hint: text,
+      erased: text,
     }),
   }),
   timeline: z.strictObject({
@@ -136,7 +137,6 @@ export const pageSchemas = {
       meta: text,
       title: text,
       note: z.array(text).min(1),
-      erased: text,
       pen: text,
       specimen: text,
     }),

@@ -11,8 +11,10 @@ export const TIMING = {
   auto: 450,
   /** Snapping a half-finished turn to done or back. */
   snap: 250,
-  /** Each spread of a contents riffle (real pages turning one after another). */
-  riffle: 220,
+  /** A contents riffle: each page's own turn… */
+  riffle: 600,
+  /** …and how far each page starts behind the one in front, so the pages fan out. */
+  riffleLag: 18,
   /** Wheel quiet time before a half-finished turn snaps. */
   idle: 150,
   /** After a turn completes, wheel input is ignored until it has been quiet this long. */
@@ -42,6 +44,11 @@ export function easeOut(t: number) {
   return 1 - (1 - t) ** 3;
 }
 
+/** Gentler than easeInOut in the middle, so a riffle's pages stay close together. */
+export function easeInOutSine(t: number) {
+  return (1 - Math.cos(Math.PI * t)) / 2;
+}
+
 /** Whether a half-finished turn should complete (true) or fall back (false). */
 export function settles(progress: number, velocity: number): boolean {
   return progress >= COMPLETE_AT || (velocity >= FLICK && progress > 0.05);
@@ -51,6 +58,24 @@ export function settles(progress: number, velocity: number): boolean {
 export function rifflePlan(distance: number): { flips: number; cut: boolean } {
   const spreads = Math.abs(distance);
   return spreads <= 6 ? { flips: spreads, cut: false } : { flips: 3, cut: true };
+}
+
+/** How long a riffle of this many pages takes, first page lifting to last page landing. */
+export function riffleDuration(pages: number): number {
+  return TIMING.riffle + Math.max(0, pages - 1) * TIMING.riffleLag;
+}
+
+/**
+ * A contents riffle turns every page in between together, like flipping a
+ * bundle of pages with one thumb: the front page leads and each page behind it
+ * follows a beat later, so the edges of the pages behind show. One shared
+ * progress (0 → 1) drives the whole riffle; this gives each page's own turn.
+ */
+export function riffleLeaves(progress: number, pages: number): number[] {
+  const elapsed = Math.min(1, Math.max(0, progress)) * riffleDuration(pages);
+  return Array.from({ length: pages }, (_, i) =>
+    easeInOutSine(Math.min(1, Math.max(0, (elapsed - i * TIMING.riffleLag) / TIMING.riffle))),
+  );
 }
 
 // ————— Wheel —————

@@ -8,6 +8,8 @@ import {
   type WheelState,
   easeInOut,
   initialWheel,
+  riffleDuration,
+  riffleLeaves,
   rifflePlan,
   settles,
   wheelIdle,
@@ -100,6 +102,22 @@ describe("snap and riffle", () => {
     assert.deepEqual(rifflePlan(1), { flips: 1, cut: false });
     assert.deepEqual(rifflePlan(-4), { flips: 4, cut: false });
     assert.deepEqual(rifflePlan(9), { flips: 3, cut: true });
+  });
+
+  test("riffle: every page turns together, each a beat behind the one in front", () => {
+    assert.deepEqual(riffleLeaves(0, 4), [0, 0, 0, 0]);
+    assert.deepEqual(riffleLeaves(1, 4), [1, 1, 1, 1]);
+    assert.equal(riffleDuration(1), TIMING.riffle);
+    assert.equal(riffleDuration(4), TIMING.riffle + 3 * TIMING.riffleLag);
+    for (let t = 0.05; t < 1; t += 0.05) {
+      const leaves = riffleLeaves(t, 4);
+      // The front page always leads…
+      for (let i = 1; i < leaves.length; i++) assert.ok(leaves[i - 1] >= leaves[i]);
+      // …but not by much: at any moment all the pages are in motion together, fanned, not one by one.
+      if (leaves[0] > 0 && leaves[0] < 1) assert.ok(leaves[0] - leaves[1] < 0.2, `t=${t.toFixed(2)}: ${leaves}`);
+    }
+    // Midway, every page is mid-turn at once.
+    assert.ok(riffleLeaves(0.5, 4).every((p) => p > 0.1 && p < 0.9));
   });
 
   test("ease-in-out runs 0 → 1 symmetrically", () => {

@@ -83,8 +83,9 @@ export function openingSpread({ site, copy }: OpeningProps): SpreadContent {
         <Marginalia lines={[copy.startHere]} tilt={-3} />
       </div>
       <StartHereArrow className="pointer-events-none absolute top-0 left-0 overflow-visible" />
-      <FrondScale className="pointer-events-none absolute top-0 left-0 overflow-visible" />
-      <div className="absolute top-[640px] left-[478px]">
+      {/* The scale bar and its note sit toward the spine, clear of the fern's leaves. */}
+      <FrondScale className="pointer-events-none absolute top-0 left-[38px] overflow-visible" />
+      <div className="absolute top-[640px] left-[522px]">
         <Marginalia lines={copy.specimenNote} tone="pencil" tilt={-2} indents={[0, 3]} className="text-[22px]" />
       </div>
     </>
@@ -103,6 +104,10 @@ export function openingSpread({ site, copy }: OpeningProps): SpreadContent {
       {contents}
       <div className="h-7" />
       <p className="type-label leading-7 text-ink-soft">{copy.contents.hint}</p>
+      {/* A faint pencil hint by the corner that turns to the timeline. Decorative. */}
+      <div aria-hidden className="absolute top-[744px] right-[56px] opacity-24">
+        <Marginalia lines={[copy.contents.erased]} tone="pencil" tilt={-2} label={null} />
+      </div>
       <DogEar className="absolute top-[784px] left-[574px]" />
     </>
   );
