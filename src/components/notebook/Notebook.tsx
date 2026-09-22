@@ -1,6 +1,7 @@
 import { PATHS, SPREADS, type SpreadId, neighbors, pagesOf } from "@/lib/notebook/spreads";
 import { PageCurl } from "./curl/PageCurl";
 import { Desk } from "./Desk";
+import { DeskContents } from "./DeskContents";
 import { LeatherCover } from "./LeatherCover";
 import { MobilePage } from "./MobilePage";
 import { Page } from "./Page";
@@ -39,6 +40,10 @@ export async function Notebook() {
     `body:not(:has([data-route*="projects:"])) [data-view="projects:${projects[0].slug}"]{display:var(--view-display,block)}`,
     `body:not(:has([data-route*="projects:"])) [data-card="${projects[0].slug}"]{border-color:var(--huckleberry);border-width:1.5px}`,
     `body:not(:has([data-route*="projects:"])) [data-card="${projects[0].slug}"] [data-card-pin]{display:block}`,
+    // The contents box for the spread on screen (DeskContents).
+    ...SPREADS.filter((id) => id !== "opening").map(
+      (id) => `${on(id)} [data-jump="${id}"]{border-color:var(--desk-ink);background:var(--desk-ink);color:var(--desk)}`,
+    ),
     // The selected project's card: huckleberry border and pin.
     ...projects.map(
       ({ slug }) =>
@@ -87,7 +92,8 @@ export async function Notebook() {
             <span className="font-display text-[18px] text-desk-ink [font-variation-settings:'SOFT'_50,'WONK'_0]">{site.name}</span>
             <span className="type-label text-desk-ink-soft">{site.tagline}</span>
           </header>
-          <div className="absolute top-px right-[90px]">
+          <div className="absolute top-px right-[90px] flex items-center gap-5">
+            <DeskContents site={site} />
             <DeskThemeToggle labels={site.theme} />
           </div>
           <main>

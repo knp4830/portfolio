@@ -23,8 +23,8 @@ export const TIMING = {
   crossfade: 200,
 } as const;
 
-/** Wheel or trackpad distance for one full turn. */
-export const SCROLL_PER_TURN = 600;
+/** Wheel or trackpad distance for one full turn (Kevin, Sep 22: 600 was hard work on a trackpad). */
+export const SCROLL_PER_TURN = 420;
 /** Released or idle at or past this, a turn completes; below, it falls back. */
 export const COMPLETE_AT = 0.35;
 /** A flick this fast (progress per ms, toward completion) completes even below COMPLETE_AT. */

@@ -390,3 +390,19 @@ Kevin reported four problems. Each is fixed separately.
 ### Gotchas
 - **Slow time to inspect an animation:** wrap `performance.now` and `requestAnimationFrame`'s timestamp with the same scale (both, or the engine's start and frame times disagree), then screenshot mid-turn.
 - **Stopping a background `pnpm start` leaves `next start` running on Windows** (pnpm dies, its Node child doesn't): the next start fails with `EADDRINUSE`. Find it by command line and stop it.
+
+## Wheel, desk contents, and corner hints (2026-09-22)
+
+### What changed
+1. **The wheel never moves the page.** The spread is `h-dvh overflow-hidden`, so there was nothing to scroll — but the wheel listener was passive, so macOS still rubber-banded the whole page while you turned. Now the listener is non-passive and the curl calls `preventDefault()` on every wheel event it owns (desktop, spread on screen), and `body` has `overscroll-behavior-y: none`. The page stays put; the wheel only turns pages.
+2. **A turn costs less scrolling:** `SCROLL_PER_TURN` 600 → 420px (Kevin: turning was hard work on a trackpad). The idle snap, the 35% threshold, and the inertia lock are unchanged, so one flick still turns exactly one page.
+3. **Contents boxes on the desk** (`DeskContents.tsx`), beside the day/night switch: "CONTENTS" and one numbered box per section, numbered as on the contents page. Plain `<Link>`s, so a click riffles there like the contents page does and they work without JavaScript; the box for the spread on screen is filled in by a route-marker CSS rule (right on first paint), and `aria-current="page"` is set alongside the project cards' announcement.
+4. **The corner hints say what to do.** "turn the page →" (faint pencil, 24% opacity, `aria-hidden`) became "drag to turn →" in huckleberry ink by p. 2's grab corner, and p. 3 gained "← drag back" by its own corner. They're real notes now, not decoration, so screen readers read them.
+
+### Why
+Kevin's point: dragging a corner is the interaction the site is built around, and nothing said so. The old note both named the wrong gesture and was nearly invisible.
+
+### Gotchas
+- **A passive wheel listener can't stop the bounce.** `preventDefault()` in a passive listener is ignored (silently, apart from a console warning). The listener has to be registered with `{ passive: false }`.
+- **`overscroll-behavior-y` belongs on the scrolling element** — here `body`, since the stage is a full-height child.
+- **Tests that scroll a fixed number of pixels encode the turn distance.** Two M2.4 checks failed after the change, not because behaviour regressed but because 180px is 30% of 600 and 43% of 420. They now import `SCROLL_PER_TURN` and scroll in tenths of a turn.

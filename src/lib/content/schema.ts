@@ -99,7 +99,7 @@ export const pageSchemas = {
       count: text.includes("{sections}").includes("{pages}"),
       jump: text,
       hint: text,
-      erased: text,
+      drag: text,
     }),
   }),
   timeline: z.strictObject({
@@ -108,6 +108,7 @@ export const pageSchemas = {
     since: text,
     continued: text,
     continuedNote: text,
+    dragBack: text,
     nowNoteMobile: text,
     strikeNote: text.includes("{struck}").includes("{written}"),
   }),

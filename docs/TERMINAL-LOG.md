@@ -352,3 +352,15 @@ git add -A
 git commit -m "Fan the contents riffle, move the turn-the-page hint to p. 02, clear the frond scale"
 git push -u origin fanned-riffle
 ```
+
+## Wheel, desk contents, corner hints (2026-09-22)
+
+```bash
+node desk.mjs            # 9/9: wheel never scrolls, contents boxes jump and mark the spread, hints in ink
+node hints.mjs           # screenshots of pp. 1–2 and 3–4 with the new corner notes
+node four.mjs && node curl-dod.mjs && node dod.mjs && node verify-persist.mjs && node switch.mjs
+```
+
+**Failed (test, not code):** `M2.4 a 30% scroll snaps back` and `a 40% scroll completes` after `SCROLL_PER_TURN`
+600 → 420. The checks scrolled 18px and 24px per event, which used to be 30% and 40% of a turn. They now import
+`SCROLL_PER_TURN` and scroll in tenths of a turn.

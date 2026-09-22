@@ -287,7 +287,11 @@ export function PageCurl({ pages, links, turnLabel }: PageCurlProps) {
     const view = routeTokens().find((token) => token.startsWith("projects:"));
     const before = last.current;
     last.current = { spread, view };
-    // Announce the selected card.
+    // Announce where we are: the contents box for this spread, and the selected card.
+    for (const box of document.querySelectorAll<HTMLElement>("[data-jump]")) {
+      if (box.dataset.jump === spread) box.setAttribute("aria-current", "page");
+      else box.removeAttribute("aria-current");
+    }
     for (const card of document.querySelectorAll<HTMLElement>("[data-card]")) {
       if (view === `projects:${card.dataset.card}`) card.setAttribute("aria-current", "true");
       else card.removeAttribute("aria-current");

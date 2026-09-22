@@ -104,9 +104,9 @@ export function openingSpread({ site, copy }: OpeningProps): SpreadContent {
       {contents}
       <div className="h-7" />
       <p className="type-label leading-7 text-ink-soft">{copy.contents.hint}</p>
-      {/* A faint pencil hint by the corner that turns to the timeline. Decorative. */}
-      <div aria-hidden className="absolute top-[744px] right-[56px] opacity-24">
-        <Marginalia lines={[copy.contents.erased]} tone="pencil" tilt={-2} label={null} />
+      {/* By the grab corner that turns to the timeline: how to turn the page. */}
+      <div className="absolute top-[744px] right-[56px]">
+        <Marginalia lines={[copy.contents.drag]} tilt={-2} />
       </div>
       <DogEar className="absolute top-[784px] left-[574px]" />
     </>
