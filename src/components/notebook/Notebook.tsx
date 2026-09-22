@@ -33,6 +33,12 @@ export async function Notebook() {
     // Desktop pages before the curl takes over (and without JavaScript): only this spread.
     `[data-page-spread]{visibility:hidden}`,
     ...SPREADS.map((id) => `${on(id)} [data-page-spread="${id}"]{visibility:visible}`),
+    // Away from the projects routes, page 8 still shows the first project, so a
+    // turn toward it (from skills or contact) already has Minced on the page —
+    // exactly what lands at /projects.
+    `body:not(:has([data-route*="projects:"])) [data-view="projects:${projects[0].slug}"]{display:var(--view-display,block)}`,
+    `body:not(:has([data-route*="projects:"])) [data-card="${projects[0].slug}"]{border-color:var(--huckleberry);border-width:1.5px}`,
+    `body:not(:has([data-route*="projects:"])) [data-card="${projects[0].slug}"] [data-card-pin]{display:block}`,
     // The selected project's card: huckleberry border and pin.
     ...projects.map(
       ({ slug }) =>

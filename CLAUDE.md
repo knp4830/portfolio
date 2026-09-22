@@ -213,4 +213,6 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 **The notebook stays mounted** (branch `persistent-notebook`): the notebook lives in the `(notebook)` layout and is built once; routes render only a `RouteMarker`, and CSS (`body:has([data-route~=…])`) shows the right spread, project, and sheet. A turn only reassigns page roles, so the landed page is the element already on screen: no rebuild, no flash. The project slide-in plays only when switching projects. Cost: each page's HTML carries the whole notebook (107 KB gzipped), a target for M3.2.
 
+**Four fixes** (branch `four-fixes`): the spine line, lamp cast, and ribbon paint over the pages again (the curl is `isolate`); contents jumps riffle the real spreads back to back (220ms each, one route change at the end); p. 8 shows Minced by default, so it's there while you turn to it; all pages stay painted and stacked, so an arrow turn only reveals pages the browser has already drawn. Verified: 9/9 targeted, 22/22, 25/25, 8/8 checks; 72 unit tests.
+
 **Next up: M3.1 — Accessibility pass.**
