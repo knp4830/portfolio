@@ -135,7 +135,7 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 ### Phase 0 — Foundations
 - ☑ **M0.1 Scaffold** — Next.js 15 + TS + Tailwind v4 + pnpm, deployed to Vercel. DoD: preview URL loads; lint and typecheck pass in CI.
-- ☐ **M0.2 Tokens and type** — palette (day + night), fonts, type scale, 28px baseline in `globals.css`. DoD: a token test page renders every token in both themes; contrast checks pass.
+- ☑ **M0.2 Tokens and type** — palette (day + night), fonts, type scale, 28px baseline in `globals.css`. DoD: a token test page renders every token in both themes; contrast checks pass.
 - ☐ **M0.3 Content pipeline** — MDX loading, typed frontmatter, 11 timeline entries, skills, and 3 projects stubbed from the brief. DoD: build fails on a missing required frontmatter field.
 
 ### Phase 1 — Static notebook (no curl)
@@ -163,7 +163,7 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 - **Screens delivered:** opening + contents (pp. 1–2), timeline (3–4), skills (5–6), projects + mobile sheet (7–8), colophon (9–10), contact (11–12) — each at 1440 and 390, day and night; a 1920 cabin-table scene (day + night); mid-curl frame; States board (wear levels, note area, dog-ear and lifted turn corner at rest/hover, contents hover, focus rings, empty slots); token sheet; component list; font options board.
 - **Tokens confirmed or changed:** brief palette unchanged. Added: `moss`, `walnut`, `leather`, `leather-dark`, `leather-wear`, `stitch`, `paper-fold`, `desk-ink`, `desk-ink-soft`, `foxing`, `edge-age`, `coffee`, `fiber`, `tape`, `cast` (values in `docs/BRIEF.md` → Color). Texture opacity 9 / 10 / 12% day, 7 / 8 / 9% night. Per-page warm tint dropped. New type role: Special Elite 16/28 (0.88×) for facts values and the chapter line.
 - **Component map:** Notebook, Page, PageCurl, EntryHeader, Contents, Timeline, TimelineEntry, SkillGroup, FactsPanel, ProjectGrid, ProjectCard, ProjectDetail, ProjectSheet, StackChip, Marginalia, HandMark, NoteArea, IndexCard, FieldMark, TapedPhoto, Specimen, PaperEdge, RibbonBookmark, ThemeToggle, ResumeButton, LeatherCover, DeskProps.
-- **Deviations from the brief (all approved and now in the brief):** leather hardcover + table props; Special Elite facts values; lifted turn corners; one paper tone; corrected fold math; rev 6 restructure to six spreads (timeline + skills replace the eleven entry spreads; per-entry specimens retired).
+- **Deviations from the brief (all approved and now in the brief):** leather hardcover + table props; Special Elite facts values; lifted turn corners; one paper tone; corrected fold math; rev 6 restructure to six spreads (timeline + skills replace the eleven entry spreads; per-entry specimens retired); timeline descriptions 15/28, not the token sheet's 16/28 (Kevin, Sep 21).
 - **Assets to produce:** 14 specimen SVGs; 6 crease-map AVIFs with edge aging baked in; leather grain texture; walnut desk texture; table-prop SVGs (map, mug, pencil, compass, magnifier, fir sprig, tie cord); edge-chip / tear masks.
 
 ## Reference docs
@@ -177,6 +177,8 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 **Phase: Design → build.** Design rev 8 (six spreads, twelve pages) is delivered and the handoff above is filled in. Design is settled (rev 8); the build history is in the "Field Notebook — how it was built" doc. Waiting on Kevin to confirm the 11 timeline descriptions and the skills lists (drafts in `docs/BRIEF.md`); body stays Newsreader.
 
-**M0.1 done** (PR #1, merged Sep 21 2026). Next.js 15 scaffold, design export committed, CI runs lint + typecheck on every PR and push to main, and the Vercel project `minced/portfolio` deploys every push (previews sit behind Vercel login by default).
+**M0.1 done** (PR #1). Next.js 15 scaffold, CI, and the Vercel project `minced/portfolio` deploying every push (previews sit behind Vercel login).
 
-**Next up: M0.2 — Tokens and type.** Seed `globals.css` from `design/tokens.css`, load the five fonts with `next/font`, set the type scale and 28px baseline, and build a token test page.
+**M0.2 done** (branch `m0.2-tokens`). Every token lives in `globals.css` (day, night, system preference). Fonts load via `src/app/fonts.ts`. Type roles are `type-*` utilities; `/tokens` shows everything in both themes, and `pnpm test` runs 34 contrast/token checks in CI. Decided: timeline descriptions are 15/28 (Kevin, Sep 21: the extra room is wanted); headings keep the design's 1.15 leading inside a fixed two-line (56px) box, text bottom-aligned, so the page stays on the 28px grid; card copy stays 15/22 as designed.
+
+**Next up: M0.3 — Content pipeline.**
