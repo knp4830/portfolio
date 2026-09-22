@@ -70,7 +70,7 @@ export const siteSchema = z.strictObject({
   location: text,
   theme: z.strictObject({ group: text, day: text, night: text, toDay: text, toNight: text }),
   ribbon: text,
-  turn: z.strictObject({ label: text, previous: text, next: text }),
+  turn: z.strictObject({ label: text, sections: text, previous: text, next: text }),
   resume: z.strictObject({ label: text, format: text, href: text }),
   links: z.array(z.strictObject({ id: text, label: text, display: text, href: z.url() })).min(1),
   sections: z.strictObject({

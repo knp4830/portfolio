@@ -364,3 +364,18 @@ node four.mjs && node curl-dod.mjs && node dod.mjs && node verify-persist.mjs &&
 **Failed (test, not code):** `M2.4 a 30% scroll snaps back` and `a 40% scroll completes` after `SCROLL_PER_TURN`
 600 → 420. The checks scrolled 18px and 24px per event, which used to be 30% and 40% of a turn. They now import
 `SCROLL_PER_TURN` and scroll in tenths of a turn.
+
+## Desk nav: words, not boxes (2026-09-22)
+
+```bash
+node desk.mjs   # 9/9 with the reworked nav checks (words, contents → contact, current underlined)
+node four.mjs && node curl-dod.mjs && node dod.mjs && node verify-persist.mjs   # 9/9, 22/22, 25/25, 8/8
+pnpm test       # 73
+
+# Kevin: commit, push, PR
+git fetch
+git checkout -b desk-nav origin/main
+git add -A
+git commit -m "Make the desk contents a row of section names"
+git push -u origin desk-nav
+```
