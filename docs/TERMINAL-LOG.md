@@ -245,3 +245,21 @@ git add -A
 git commit -m "Phase 2: the curl engine — fold math, auto-curl, drag, scroll, mobile peel, reduced motion"
 git push -u origin m2-curl
 ```
+
+## Polish after local testing (2026-09-21)
+
+```bash
+pnpm build && pnpm start -p 3000     # local test server (production build: the curl runs smoothly)
+node flicker2.mjs                    # rapid screenshots across a turn → found the flap short of landing at the swap
+node flicker4.mjs                    # screencast frames + pixel diffs between consecutive frames (sharp via Next)
+node curl-dod.mjs && node dod.mjs    # 22/22 and 25/25 after the fixes
+```
+
+```bash
+# Kevin: commit, push, PR
+git fetch
+git checkout -b polish-curl origin/main
+git add -A
+git commit -m "Polish: seamless turn handoff, ribbon pull-up, fitted project titles, contact tweaks"
+git push -u origin polish-curl
+```

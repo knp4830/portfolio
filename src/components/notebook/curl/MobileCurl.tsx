@@ -126,7 +126,14 @@ export function MobileCurl({ spread, next, children }: MobileCurlProps) {
     }
   }
 
-  const engine = useTurn({ spread, platform: "mobile", draw, corners, fadeTarget: () => wrap.current });
+  const engine = useTurn({
+    spread,
+    platform: "mobile",
+    draw,
+    corners,
+    fadeTarget: () => wrap.current,
+    ribbon: () => wrap.current?.querySelector<HTMLElement>("[data-ribbon]") ?? null,
+  });
 
   useEffect(() => {
     const page = wrap.current;

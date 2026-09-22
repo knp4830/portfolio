@@ -19,13 +19,15 @@ export const memory = {
 /**
  * Called once by the active renderer when a spread mounts. Returns the spread we
  * came from if the route changed some other way than our own turn (browser
- * back/forward, a typed URL), so the turn can be replayed.
+ * back/forward, a typed URL), so the turn can be replayed, and whether our own
+ * turn brought us here (the ribbon then drops back into place).
  */
-export function arrive(spread: SpreadId): { from: SpreadId | null; fadeIn: boolean } {
-  const from = memory.current !== spread && memory.expected !== spread ? memory.current : null;
+export function arrive(spread: SpreadId): { from: SpreadId | null; fadeIn: boolean; turned: boolean } {
+  const turned = memory.expected === spread;
+  const from = memory.current !== spread && !turned ? memory.current : null;
   const fadeIn = memory.fadeIn;
   memory.current = spread;
   memory.expected = null;
   memory.fadeIn = false;
-  return { from, fadeIn };
+  return { from, fadeIn, turned };
 }

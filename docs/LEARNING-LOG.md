@@ -304,3 +304,16 @@ With reduced motion, every turn is a 200ms crossfade and no curl frame is ever d
 - **`useLayoutEffect` for arrival.** The replay's first frame (fully turned) has to be painted before the browser shows the new route at rest, or the spread flashes before turning back.
 - **Tests that pass for the wrong reason.** The DoD script's "is a flap visible" check first matched the mobile fold-line `<svg>`, which is always visible (only its line hides). The old M1.2 checks needed updating too, because pages now sit inside curl wrappers and replicas add inert copies.
 - **Page weight.** The replicas roughly double each page's HTML (28–43 KB gzipped). If M3.2 needs it, render them after first paint.
+
+## Polish after local testing (2026-09-21)
+
+### What changed
+- **The flicker at the end of a turn.** Frame-by-frame screenshots showed the flap still ~45px short of landing in the last frame before the route swapped: `router.push` ran in the same frame the animation hit 100%, so the fully-landed frame never reached the screen and the page visibly jumped into place. `navigate` now waits two animation frames before pushing, and the landed frame hides the page under the flap (its torn edges differ from the flap's). At 100% the flap's transform is exactly the identity, so the swap is invisible.
+- **The ribbon pulls up while a page turns** and drops back once it lands (`[data-ribbon]`, translated by the turn engine; the link clips it so it slides into the book's top edge). After our own turn or a back/forward replay, the new route's ribbon starts pulled up and drops in.
+- **Project titles fit.** The detail title's size is estimated from its length (40–56px, one line), the link slots move to their own row when the title is long, and when a project's copy leaves room, each part gets one blank ruled line after it so the page fills without leaving the grid (estimates err toward more lines, so nothing overflows).
+- **The "turn the page →" pencil note** moved from the middle of p. 9 to the bottom-right of p. 10, beside the corner that turns to the colophon.
+- **Contact wording:** "Product engineering", "Design engineering", "Open to many locations"; "would love to return to New York" removed (Kevin).
+
+### Gotchas
+- **Change the route after the last frame paints, not in it.** `requestAnimationFrame` callbacks run before paint, so the frame computed at t = 1 is only shown if nothing replaces the DOM first. Two nested rAFs guarantee one presented frame.
+- **Screencast frames only arrive on change.** To find the swap frame, compare frames to each other; don't trust a DOM query made in the event handler (it ran late and read the wrong element).

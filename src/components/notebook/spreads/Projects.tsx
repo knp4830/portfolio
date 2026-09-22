@@ -33,6 +33,49 @@ function splitStatus(status: string) {
 
 const number = (project: Project) => String(project.order).padStart(2, "0");
 
+// ————— Fitting the detail page —————
+// The right page is a fixed 518×728 column. Titles and detail copy vary a lot
+// between projects, so the layout is sized from the copy: estimates, erring
+// toward more lines, so a spread never overflows.
+
+const COLUMN = 518;
+const VALUE_COLUMN = COLUMN - 84 - 16; // label column + gap
+const LINE = 28;
+/** Average glyph widths, generous on purpose (Fraunces display per em; Newsreader 15px; mono 12px). */
+const TITLE_EM = 0.55;
+const DETAIL_CHAR = 7.4;
+const MONO_CHAR = 7.6;
+/** The two "live · after launch" / "GitHub · later" slots, with the gap before them. */
+const SLOTS_WIDTH = 300;
+
+/** Largest display size (40–56px) at which the title fits on one line. */
+export function titleSize(title: string) {
+  return Math.max(40, Math.min(56, Math.floor(COLUMN / (title.length * TITLE_EM))));
+}
+
+const lines = (text: string, width: number, char: number) => Math.max(1, Math.ceil((text.length * char) / width));
+
+/** Detail page layout: title size, whether the slots need their own row, and whether parts can breathe. */
+function fitDetail(project: Project) {
+  const size = titleSize(project.title);
+  const slotsBelow = project.title.length * TITLE_EM * size + SLOTS_WIDTH > COLUMN;
+  const partLines = project.details.map((part) =>
+    // A two-word label ("Key decisions") wraps to two lines in its 84px column.
+    Math.max(lines(part.text, VALUE_COLUMN, DETAIL_CHAR), part.label.includes(" ") ? 2 : 1),
+  );
+  const chipsWidth = project.stack.reduce((sum, chip) => sum + chip.name.length * MONO_CHAR + 22, 0);
+  const stackLines = Math.max(1, Math.ceil(chipsWidth / VALUE_COLUMN));
+  const lineageLines = project.lineage
+    ? lines(project.lineage.map((step) => `${step.name} ${step.date}`).join(" → "), VALUE_COLUMN, MONO_CHAR)
+    : 0;
+  const available = Math.floor((728 - LINE /* header */ - 2 * LINE /* title */ - (slotsBelow ? LINE : 0)) / LINE);
+  const used = partLines.reduce((a, b) => a + b, 0) + stackLines + lineageLines;
+  // One blank ruled line after each part when there's room for all of them plus
+  // a spare line: the page fills while every line stays on the rules.
+  const breathe = available - used >= project.details.length + 1;
+  return { size, slotsBelow, breathe };
+}
+
 export function projectsSpread({ copy, projects, selected, open }: ProjectsProps): SpreadContent {
   const count = copy.count.replace("{count}", String(projects.length));
 
@@ -139,6 +182,13 @@ function ProjectCard({ project, copy, selected, fluid = false }: { project: Proj
 // and lineage. `stacked` puts labels above values for the mobile sheet.
 function ProjectDetail({ project, copy, stacked = false }: { project: Project; copy: PageCopy<"projects">; stacked?: boolean }) {
   const { detail } = splitStatus(project.status);
+  const fit = fitDetail(project);
+  const slots = (
+    <div className={`flex gap-2 ${stacked ? "" : fit.slotsBelow ? "h-7 items-center" : "pb-1.5"}`}>
+      <EmptySlot label={copy.detail.live} />
+      <EmptySlot label={copy.detail.github} />
+    </div>
+  );
   const row = stacked ? "flex flex-col" : "grid grid-cols-[84px_minmax(0,1fr)] gap-x-4";
   const label = `type-label type-caps text-huckleberry ${stacked ? "h-7 pt-2" : "pt-[7px]"}`;
 
@@ -146,14 +196,15 @@ function ProjectDetail({ project, copy, stacked = false }: { project: Project; c
     <>
       <PageHeader label={`${copy.detail.label} ${number(project)}`} tag={detail} meta={stacked ? undefined : project.dates} />
       <div className={stacked ? "flex flex-col" : "flex h-14 items-end justify-between"}>
-        <h2 className={`type-display ${stacked ? "flex min-h-14 items-end" : "leading-none"}`}>{project.title}</h2>
-        {!stacked && (
-          <div className="flex gap-2 pb-1.5">
-            <EmptySlot label={copy.detail.live} />
-            <EmptySlot label={copy.detail.github} />
-          </div>
-        )}
+        <h2
+          className={`type-display ${stacked ? "flex min-h-14 items-end" : "leading-none whitespace-nowrap"}`}
+          style={stacked ? undefined : { fontSize: fit.size }}
+        >
+          {project.title}
+        </h2>
+        {!stacked && !fit.slotsBelow && slots}
       </div>
+      {!stacked && fit.slotsBelow && slots}
       {stacked && (
         <>
           <p className="type-body">{project.oneLiner}</p>
@@ -163,16 +214,13 @@ function ProjectDetail({ project, copy, stacked = false }: { project: Project; c
           <div className="h-7" />
           <span aria-hidden className="block aspect-[4/3] w-full rounded-chip border border-dashed border-ink-soft" />
           <div className="h-7" />
-          <div className="flex gap-2">
-            <EmptySlot label={copy.detail.live} />
-            <EmptySlot label={copy.detail.github} />
-          </div>
+          {slots}
           <div className="h-7" />
         </>
       )}
       <dl className="flex flex-col">
         {project.details.map((part) => (
-          <div key={part.label} className={row}>
+          <div key={part.label} className={`${row} ${!stacked && fit.breathe ? "mb-7" : ""}`}>
             <dt className={label}>{part.label}</dt>
             <dd className="type-detail">{part.text}</dd>
           </div>
