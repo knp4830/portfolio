@@ -1,20 +1,20 @@
 # Portfolio build brief — Field Notebook
 
-Kevin Pham · September 2026
+Kevin Pham · September 2026 · rev 8 (six spreads; wave trail, moss chips, ink contact links, beaver — Sep 21)
 
 ## Overview
 
-Kevin Pham's personal portfolio is a naturalist's field notebook: a career told as numbered versions, turned page by page with a draggable page curl. It has to prove two things at once: that he engineers well and that he designs well.
+Kevin Pham's personal portfolio is a naturalist's field notebook: six two-page spreads (twelve pages) turned with a draggable page curl — who he is, a two-page timeline of his career as numbered versions, skills, projects, how the notebook was built, and how to reach him. It has to prove two things at once: that he engineers well and that he designs well.
 
 | Audience | What they need | Where they get it |
 | --- | --- | --- |
-| Recruiters (30-second skim) | Role, dates, stack, outcomes, resume | Table of contents and resume on the first screen; right-hand facts page on every spread |
-| Hiring managers and designers | Process, taste, decision-making | Left-hand story page, marginalia, colophon |
+| Recruiters (30-second skim) | Role, dates, stack, outcomes, resume | Table of contents and resume on the first screen; the whole timeline on one spread; skills one turn later |
+| Hiring managers and designers | Process, taste, decision-making | Timeline, project detail pages, marginalia, colophon |
 | Engineers | Craft and code quality | The custom page-curl engine, performance, accessibility |
 
 **Success criteria**
 
-- Any version's facts reachable in one click from the landing screen
+- Every section reachable in one click from the contents page; the whole career readable on one spread
 - Resume downloadable from two places only: the opening spread and the contact page
 - Lighthouse 95+ on performance and accessibility
 - Visitors remember the notebook, not a template
@@ -25,14 +25,14 @@ The site is a field notebook whose entries are software releases: each career ch
 
 | Element | Decision |
 | --- | --- |
-| Narrative | **Versions** — career as a changelog; each chapter is a release with a one-line "what changed" |
+| Narrative | **Versions** — career as a changelog; each chapter is a release on a two-page roadmap, with a two-sentence "what changed" |
 | Metaphor | **Field Notebook** — naturalist journal: ruled paper, entry numbers, specimen-style labels, pressed-leaf illustrations |
-| Tone | Warm and human; an archaeologist's working notebook read by lamplight at night — worn, handled, imperfect, but always legible |
+| Tone | Warm and human; an archaeologist's leather-bound working notebook, found on a cabin table and read by lamplight at night — worn, handled, imperfect, but always legible |
 | Handwriting | Imperfect fine-pen notes: 2–4 per spread plus one note area (see Handwriting and note areas) |
-| Illustration | Pacific Northwest specimen line drawings in salal, one per entry (see Specimens) |
+| Illustration | Pacific Northwest specimen line drawings in salal, one per spread (see Specimens) |
 | Voice | First person, plain, specific; entries read like honest observations ("First production release. Users never read the docs.") |
 
-The reference is an old archaeologist's field notebook: carried for years, written in on-site, a little battered. Pages are not uniformly clean — some are more worn than others. The tension that makes it work: that wear sits on top of a rigorous grid and versioned structure, so it always reads as intentional. The type, spacing, and facts pages stay precise; the paper and the handwriting carry the age.
+The reference is an old archaeologist's field notebook: a leather hardcover carried for years, written in on-site, a little battered — the feeling of discovering someone's journal left on a table in a cabin. Pages are not uniformly clean — some are more worn than others. The tension that makes it work: that wear sits on top of a rigorous grid and versioned structure, so it always reads as intentional. The type, spacing, and facts pages stay precise; the paper and the handwriting carry the age.
 
 ### Paper details
 
@@ -40,16 +40,20 @@ The paper should look genuinely used. Wear should be visible at a glance, not so
 
 | Detail | Where | How it's built |
 | --- | --- | --- |
-| Wrinkles | Every page, varied in strength | Crease texture (AVIF), multiply blend at 8–14% on day, screen blend on night; 6 crease maps rotated so no two adjacent pages match; a few pages noticeably more crumpled than others |
+| Paper tone | Every page | One base tone for every page; left and right pages never differ in overall colour. Discolouration lives only in local marks (coffee rings, foxing) |
+| Wrinkles | Every page, varied in strength | Crease texture (AVIF), multiply blend at 9–12% on day (light / medium / heavy), 7–9% screen blend on night; 6 crease maps rotated so no two adjacent pages match; a few pages noticeably more crumpled than others |
 | Crease folds | Several pages | Visible fold lines where a page was folded in half or dog-eared and flattened again |
-| Aging | Every page | Faint foxing spots, slightly darker page edges, a few pages with a warmer, older tint |
-| Edge chips | Outer page edges, 2–5 per page | Small nicks, worn corners, a slightly frayed bottom edge via SVG `clip-path`; varied per page |
+| Aging | Every page | Faint foxing spots (mostly near the edges) and slightly darker page edges, the same strength on every page |
+| Coffee stains | Occasional, 1 per spread at most | Natural spills in `coffee`, not drawn rings: an irregular faded pool (≈ 8%), a soft blurred tide line (≈ 14%), a spill tongue and a few droplets; partly off the page or in margins |
+| Tears | 1–2 pages in the notebook | A short natural tear (25–40px) running in from the top edge (near the spine works) or the middle of an outer edge — never a corner, never into text; exposed `fiber` along the tear |
+| Turn corner | Every turnable page | The grab corner is already slightly lifted, as if someone has started to turn it — bottom-right on right pages, bottom-left on left pages. 34px fold, flap in `paper-back` foreshortened to 60% of a flat fold with a slight curl, 1px fold line; lifts a further 16px on hover. Not on the first or last page; the contents page keeps its dog-ear instead |
+| Edge chips | Outer edge: 2–5 larger chips (3.5–7.5px deep) plus 3–8 tiny ones (2–5px); top and bottom edges: 2–5 tiny chips each; the spine edge stays clean. Never at a tear or corner | A mix of rounded bites, jagged notches, shallow flakes and the occasional V cut; worn corners and a slightly frayed bottom edge via SVG `clip-path`; varied per page. The page block under each page is an aged tone (`paper-back` mixed with `edge-age`), so chips read as darker nicks |
 | Dog-ear | Table of contents, bottom-right | Folded corner that peels on hover |
 | Field marks | Scattered, 1–2 per spread | Pencil smudges, a faint erased note still visible, a small ink blot, a tape strip holding something in |
-| Strike-through | Entry 004 | "Public health" crossed out in pen with "CS + Econ" written above it |
+| Strike-through | Timeline, entry 004 | "Public health" crossed out in pen with "CS + Econ" written above it, beside the 004 title |
 | Scissor cut | Tipped-in items (tickets, photos) | Straight notch cuts where an item is tucked into the page |
 
-Rules: no text ever sits on a crease line; wear never drops body text below 4.5:1 contrast; cuts combine with the curl clip through one SVG mask.
+Rules: no text ever sits on a crease line; wear never drops body text below 4.5:1 contrast; cuts and tears combine with the curl clip through one SVG mask; decorative corner folds stay at the top corners so bottom corners only ever signal "turn".
 
 ### Handwriting and note areas
 
@@ -57,55 +61,68 @@ The handwriting should look like a real person wrote it in the field — quickly
 
 - **Imperfect by design:** each note gets its own slight rotation (−4° to 3°), a wavering baseline, and uneven letter spacing; no two notes sit at the same angle
 - **Hand-drawn marks:** rough underlines, circled words, arrows pointing at the printed text, brackets, a crossed-out word or two — drawn as slightly wobbly SVG strokes, never perfect geometry
-- **Note areas:** every story page has a margin column for notes; some spreads also have a tipped-in index card, a small sketch with a measurement label, or a sticky-note-style scrap holding a longer note
-- **Density:** 2–4 notes per spread plus one note area; the facts page stays clean so recruiters can scan it
+- **Note areas:** notes live in page margins and the gaps between timeline entries; some spreads also have a tipped-in index card, a small sketch with a measurement label, or a sticky-note-style scrap holding a longer note
+- **Density:** 2–4 notes per spread; timeline descriptions and facts values stay clean so recruiters can scan them
 - **Ink:** huckleberry for most notes; the occasional note in graphite pencil (`ink-soft`), as if written on a different day
 
 ### Specimens
 
-Every entry gets one Pacific Northwest specimen, chosen to echo its story. Drawn as fine line work in salal.
+One Pacific Northwest specimen per spread, drawn as fine line work in salal.
 
-| Entry | Specimen | Why |
+| Spread | Specimen | Why |
 | --- | --- | --- |
-| Opening spread | Sword fern | The most common PNW understory plant — the ground everything starts from |
-| 001 Kent-Meridian | Western hemlock | Washington's state tree — home |
-| 002 Pre-health | Pacific yew | Source of taxol, a cancer drug — medicine |
-| 003 ReuMo | Oregon beaked moss | The company literally filters stormwater with moss |
-| 004 The switch | Vine maple | Famous for changing color |
-| 005 Paris Baguette | Thimbleberry | Soft, sweet, bakery-adjacent |
-| 006 Madrid | Pacific madrone | Its Spanish cousin, the madroño, is on Madrid's coat of arms |
-| 007 Fer and OBAO | Salal | Dense, tangled, thrives under pressure — ten tables at once |
-| 008 Math minor | Douglas fir cone | Its scales spiral in Fibonacci numbers |
-| 009 Release candidate | Western red cedar | Built to last; the building tree |
-| 010 Graduation | Coast rhododendron | Washington's state flower |
-| 011 Now | Evergreen huckleberry | The palette's namesake |
+| Opening | Sword fern | The most common PNW understory plant — the ground everything starts from |
+| Timeline | — | The dashed trail is the illustration |
+| Skills | North American beaver, front-facing and upright, paws clasped at the chest, paddle tail hanging from the body in a U (drawn in `walnut`, the one non-salal specimen) | The builder |
 | Projects | Licorice fern | Grows on other trees — things built on things |
+| Colophon | Fig. 1, the fold sketch | The engine is the specimen |
 | Contact | Banana slug | The easter egg — slow, friendly, unmistakably PNW |
+
+The per-entry specimens from earlier drafts (hemlock, yew, moss, vine maple, thimbleberry, madrone, salal, fir cone, cedar, rhododendron, huckleberry) are retired; they can return later as tiny icons beside timeline nodes.
 
 ## Information architecture
 
-Desktop (1024px and up) shows two-page spreads; below 1024px each spread merges into one scrolling page with the facts on top.
+The notebook is **six spreads, twelve pages**. Desktop (1024px and up) shows two-page spreads, one flip per section; below 1024px each spread merges into one scrolling page.
 
 ```mermaid
 flowchart LR
-  A[Opening spread<br/>intro + contents + resume] --> B[Entries 001–010]
-  B --> C[011 Now]
-  C --> D[Projects spread<br/>grid + detail]
-  D --> E[Colophon]
-  E --> F[Contact<br/>+ resume]
-  A -. jump from contents .-> B
-  A -. jump from contents .-> D
+  A[pp. 1–2 Opening<br/>intro + contents + resume] --> B[pp. 3–4 Timeline<br/>001 → 011]
+  B --> C[pp. 5–6 Skills]
+  C --> D[pp. 7–8 Projects<br/>grid + detail]
+  D --> E[pp. 9–10 Colophon]
+  E --> F[pp. 11–12 Contact<br/>+ resume]
+  A -. jump from contents .-> B & C & D & E & F
 ```
 
-The contents page links to every entry directly; the ribbon bookmark returns to it from anywhere.
+| Pages | Screen | Desktop spread (left / right) | Mobile merged page | Route |
+| --- | --- | --- | --- | --- |
+| 1–2 | Opening | "Property of Kevin Pham" intro + resume download / table of contents | Intro line, resume, then contents | `/` |
+| 3–4 | Timeline | 001–005 / 006–011 as a dashed roadmap | All 11 entries on one page | `/timeline` (entries anchored `#v0-4`) |
+| 5–6 | Skills | Tool groups as stack chips / foundations & practice | Tool groups, then a foundations card | `/skills` |
+| 7–8 | Projects | Project cards, up to 9 / detail of the selected project | Card list; tapping a card expands it to a full sheet, X closes back to the cards | `/projects`, `/projects/<slug>` |
+| 9–10 | Colophon | How the notebook was built / stack, curl engine notes | Single page | `/colophon` |
+| 11–12 | Contact | Closing note / email, LinkedIn, GitHub (84px rows, 20px links in `ink` with an `ink-soft` underline, not indented), resume download | Single page | `/contact` |
 
-| Screen | Desktop spread (left / right) | Mobile merged page | Route |
-| --- | --- | --- | --- |
-| Opening | "Property of Kevin Pham" intro + resume download / table of contents | Intro line, resume, then contents list | `/` |
-| Version entry | Story + marginalia / facts (role, dates, stack, outcomes, links) | Facts summary card, then story | `/v/0-1` … `/v/1-1` |
-| Projects | Project cards, up to 9 / detail of the selected project | Card list; tapping a card expands it to a full sheet, X closes back to the cards | `/projects`, `/projects/<slug>` |
-| Colophon | How the notebook was built / stack, curl engine notes | Single page | `/colophon` |
-| Contact | Closing note / email, LinkedIn, GitHub, resume download | Single page | `/contact` |
+**Table of contents (page 2)**
+
+- Five numbered sections — 1 Timeline, 2 Skills, 3 Projects, 4 Colophon, 5 Contact — numbers in huckleberry, each with a one-line subtitle and its page range (`pp. 3–4`, `pp. 5–6`, `pp. 7–8`, `pp. 9–10`, `pp. 11–12`)
+- Hover (and keyboard focus): the title turns huckleberry with a soft huckleberry highlighter swash behind it, the dotted leader and page range tint huckleberry, and "jump →" appears. Huckleberry rather than white, because white disappears on day paper
+- Click: riffles straight to that section's spread (Jump behavior below) and updates the route
+- The ribbon bookmark returns to the contents from anywhere
+
+**Timeline spread (pages 3–4)**
+
+- A trail map: 001–005 on the left page, 006–011 on the right. Entries indent and un-indent in a gentle wave (0 → 19 → 49 → 49 → 19px, repeating), and a dashed huckleberry trail joins the nodes with smooth S-curves. No line crosses the spine; a pencil "cont. p. 4 →" bridges the pages
+- The wave is final. Considered and rejected: a topographic contour map (too noisy), switchbacks, and a bottom-up ascent
+- Each entry: entry number in `ink-soft` gray and version tag in huckleberry (mono), title (Fraunces 20px), date range, and a two-sentence description (Newsreader 15/28, ≤ 125 characters, two lines)
+- 011 Now: filled huckleberry node, title circled by hand in huckleberry, and a "← you are here" note
+- 004 keeps the strike-through note: "public health" crossed out, "CS + Econ" above it
+- Mobile: one page, the trail runs down the left edge
+
+**Skills spread (pages 5–6)**
+
+- Left: tool groups (Languages, Frontend, Backend & data, Infra & delivery, Design & tools). Group labels in huckleberry; the skills themselves are StackChips in `moss`, with a mono "used in" reference to projects or versions; dashed chips for anything unconfirmed
+- Right: Foundations & practice as a facts grid (mono labels, Special Elite values), one blank ruled line between rows so the list fills the page; each tagged with the timeline version it came from
 
 **Projects spread behavior**
 
@@ -119,7 +136,7 @@ The contents page links to every entry directly; the ribbon bookmark returns to 
 
 - Ribbon bookmark (top edge) → table of contents
 - Day / night journal toggle
-- Entry number and version tag in the page header
+- Section label and tag in the page header
 
 The resume download appears only on the opening spread and the contact page.
 
@@ -129,7 +146,7 @@ The resume download appears only on the opening spread and the contact page.
 | --- | --- | --- |
 | Forward | Scroll down; drag or click right page corner; right arrow key | Pull past the bottom of the page; peel right corner; swipe left |
 | Back | Scroll up; drag or click left page corner; left arrow key | Pull past the top of the page; swipe right (curl plays in reverse) |
-| Jump | Contents link → quick riffle through pages | Contents link → riffle |
+| Jump | Contents section → quick riffle to its spread (at most 5 flips) | Contents section → riffle |
 
 ## Color — Huckleberry
 
@@ -147,20 +164,39 @@ Huckleberry is the only accent for anything readable; salal is decoration only. 
 | `desk` | `#1C1714` | `#110E0C` | Dark walnut tabletop behind the notebook |
 | `desk-grain` | `#2A221D` | `#1A1512` | Wood grain lines on the desk |
 | `lamp` | `#F4D9A8` at 18% | `#F4D9A8` at 10% | Warm pool of lamplight centered on the notebook |
+| `leather` | `#5B3A29` | `#4A2E20` | Hardcover leather wrap; mobile edge strip |
+| `leather-dark` | `#3A2419` | `#2C1A11` | Spine hinge, tie cord |
+| `leather-wear` | `#7E5842` | `#654433` | Rubbed lighter cover edges, scuffs |
+| `stitch` | `#9A785C` | `#7A5B45` | Cover stitching |
+| `paper-fold` | `#E9E6DD` | `#222526` | Half-step shade for folds, creases, spine gutter |
+| `desk-ink` | `#E6E2D8` | `#E6E2D8` | Text and focus rings on the desk (huckleberry is 1.9:1 on the day desk) |
+| `desk-ink-soft` | `#A9A69E` | `#A9A69E` | Secondary text on the desk |
+| `foxing` | `#9C7A52` | `#7A6248` | Foxing spots |
+| `edge-age` | `#8A6A45` | `#000000` | Darkened page edges (baked into the page texture) |
+| `coffee` | `#8A5A36` | `#8A6242` | Coffee rings on the paper |
+| `moss` | `#3A5340` | `#9CBA9F` | Skill chips — the earthy counterpart to huckleberry (7.2:1 day, 7.7:1 night) |
+| `walnut` | `#5B3A29` | `#B08A6E` | The beaver sketch on the skills page (illustration only) |
+| `fiber` | `#FAF8F2` | `#33383A` | Exposed paper along a tear |
+| `tape` | `#F4D9A8` at 55% | `#F4D9A8` at 16% | Tape strips |
+| `cast` | `#F4D9A8` at 14% | `#F4D9A8` at 6% | Warm lamp cast on the paper |
 
-**The scene:** the notebook lies open on a dark wooden desk at night, lit by a single warm lamp. The desk is dark in both themes. Light falls off toward the screen edges, so the notebook glows and everything around it recedes. The paper picks up a faint warm cast where the light is strongest.
+**The scene:** a leather-bound notebook lies open on a dark wooden cabin table at night, lit by a single warm lamp. The desk is dark in both themes. Light falls off toward the screen edges, so the notebook glows and everything around it recedes. The paper picks up a faint warm cast where the light is strongest.
+
+- **Cover:** a leather hardcover wraps the page block, overhanging 22px left/right and 18px top/bottom, with rubbed lighter edges, a stitched border, a darker spine hinge, and a tie cord trailing onto the table. On mobile (one page at a time) the cover shows as an 8px leather strip along the top, right, and bottom edges; the spine side stays open.
+- **Table props:** an old topographic map tucked under the notebook, an enamel tin mug with coffee rings, a pencil, a brass compass, a magnifying glass, and a Douglas fir sprig with a cone. Decorative and `aria-hidden`, drawn under the lamp's falloff, and never over a page corner (the curl zones).
 
 **Rules**
 
 - Salal fails small-text contrast on day paper — never use it for text under 24px
 - No gradients in UI elements; the one exception is the lamp — a soft radial falloff on the desk and a faint warm cast on the paper
+- Blur appears only inside baked textures (page-edge aging, smudges), never on UI elements
 - Page depth comes from flat shade steps (`paper` → `paper-back`), fold lines, and the paper texture; a soft shadow under the notebook is allowed so it sits on the desk
 - Theme follows `prefers-color-scheme` first; the toggle overrides and persists in `localStorage`
-- Keep clear of navy and amber so it never resembles the photography site
+- Keep clear of navy and amber so it never resembles the photography site; brass props stay dark and muted
 
 ## Typography — Soft editorial
 
-Fraunces for display, Newsreader for reading, JetBrains Mono for labels, Nanum Pen Script for marginalia — all on a 28px baseline that matches the ruled lines.
+Fraunces for display, Newsreader for reading, JetBrains Mono for labels, Special Elite (typewriter) for facts values, Nanum Pen Script for marginalia — all on a 28px baseline that matches the ruled lines.
 
 | Role | Face | Size / leading (desktop) | Mobile | Notes |
 | --- | --- | --- | --- | --- |
@@ -168,6 +204,7 @@ Fraunces for display, Newsreader for reading, JetBrains Mono for labels, Nanum P
 | Heading | Fraunces 400 | 28px / 1.15 | 24px | `SOFT` 50, `WONK` 0 |
 | Body | Newsreader 400 | 18px / 28px | 17px / 28px | Sits on the ruled lines |
 | Facts labels, tags, dates | JetBrains Mono 400 | 12px / 16px | 12px | Huckleberry; entry numbers and version tags |
+| Facts values, chapter line | Special Elite 400 | 16px / 28px | 15px / 28px | Typewriter face for the facts values and the chapter line under each title — what an archaeologist's typed field notes would look like. Set at 0.88× because it runs wide; Patrick Hand is the fallback. Project detail paragraphs stay in Newsreader |
 | Marginalia | Nanum Pen Script | 24px | 22px | Huckleberry or pencil gray; rotated −4° to 3° with a wavering baseline; 2–4 per spread |
 
 **Grid**
@@ -185,7 +222,7 @@ Every page turn is a corner curl built on the real DOM — a custom engine, no p
 
 **Mechanics**
 
-- The dragged corner P moves toward its mirror across the spine, Q; the fold line is the perpendicular bisector of P and Q
+- The dragged corner moves from its rest point C toward its mirror across the spine, Q; the fold line is the perpendicular bisector of C and the pointer P (bisecting P and Q would just give the spine)
 - The page in place is clipped with a CSS `clip-path` polygon on the fold line
 - The flap is the region past the fold, reflected across it with one CSS `matrix()` transform
 - Desktop: the flap shows the next spread's left page, mirrored; mobile: the flap shows `paper-back`
@@ -195,7 +232,7 @@ Every page turn is a corner curl built on the real DOM — a custom engine, no p
 | --- | --- |
 | Auto-curl (click, key, tap) | 450ms, ease-in-out; corner arcs up about 55% of page height mid-turn |
 | Drag | Corner follows the pointer exactly; release past 40% completes the turn, otherwise it springs back |
-| Hover hint (desktop) | Corner lifts about 16px on hover to signal it's grabbable |
+| Hover hint (desktop) | The turn corner is lifted 34px at rest; on hover it lifts about 16px more to signal it's grabbable |
 | Riffle (contents jump) | About 150ms per page, capped at 6 pages; beyond that, riffle 3 then cut |
 | Back, mobile | Swipe right plays the curl in reverse (page settles back into place) |
 | Vertical scroll | Never hijacked on mobile; curl gestures start only from the corner zones, horizontal swipes, or pulling past the page edge |
@@ -216,7 +253,7 @@ Scrolling scrubs the curl directly, and a half-finished turn snaps to completion
 | Back | Scroll up at progress 0 curls the left page back | Pull past the top of the page |
 | Reduced motion | Wheel still steps pages, with a crossfade | Same |
 
-**Design constraint this creates:** desktop pages never scroll internally, so every spread must fit the viewport. Budget about 180 words per story page (18 ruled lines at 18/28). Longer stories split across two spreads.
+**Design constraint this creates:** desktop pages never scroll internally, so every spread must fit the viewport. The timeline holds 11 entries at 4 ruled lines each (title, two description lines, a gap): descriptions stay at or under 125 characters. Skills groups stay to two chip rows each.
 
 **Considered and rejected:** plain continuous scroll. It's the simplest to build but drops the page-turn metaphor that the whole concept rests on.
 
@@ -228,39 +265,48 @@ Claude Design should wireframe five screens at desktop (1440px) and mobile (390p
 
 **Screens to wireframe**
 
-1. **Opening spread** — left: "Property of Kevin Pham", positioning headline, resume download, sword fern specimen, handwritten notes; right: table of contents (entry number · version · title · date range) with a dog-eared bottom-right corner
-2. **Version spread** — left: display title, story on the ruled grid (≤ 180 words), specimen, margin note column; right: facts page (role, org, dates, stack chips, up to 3 outcome bullets, links)
-3. **Projects spread** — left: grid of project cards (3 cards now, 3×3 at full); right: selected project detail — problem, role, decisions, a rejected idea, stack, status; screenshot and link slots left empty for now
-4. **Colophon** — how the notebook and curl engine were built
-5. **Contact / back cover** — closing note, email, LinkedIn, GitHub, resume download, banana slug
+1. **Opening spread (pp. 1–2)** — left: "Property of Kevin Pham", positioning headline, resume download, sword fern specimen, handwritten notes; right: table of contents with five sections, page ranges, hover state, and a dog-eared bottom-right corner
+2. **Timeline (pp. 3–4)** — the dashed roadmap from 001 to 011, Now circled, the 004 strike-through
+3. **Skills (pp. 5–6)** — tool groups / foundations & practice
+4. **Projects spread (pp. 7–8)** — left: grid of project cards (3 cards now, 3×3 at full); right: selected project detail — problem, role, decisions, a rejected idea, stack, status; screenshot and link slots left empty for now
+5. **Colophon (pp. 9–10)** — how the notebook and curl engine were built
+6. **Contact / back cover (pp. 11–12)** — closing note, email, LinkedIn, GitHub, resume download, banana slug
 
-Also wireframe the mobile project sheet (card expanded, X in the top corner) and the entry 004 strike-through marginalia.
+Also wireframe the mobile project sheet (card expanded, X in the top corner).
 
 **Components**
 
 | Component | Description |
 | --- | --- |
-| `Notebook` | Lamplit desk surface + spread container; handles breakpoints and theme |
-| `Page` | Ruled paper, 28px lines, texture overlay, aging, edge chips, page number in footer |
+| `Notebook` | Lamplit cabin-table scene, table props, leather hardcover + spread container; handles breakpoints and theme |
+| `Page` | Ruled paper, 28px lines, texture overlay, aging, edge chips, lifted turn corner, page number in footer |
 | `PageCurl` | Shared turn progress; wheel scrub, drag, keys, riffle, snap and fall-back, reduced-motion fallback |
-| `EntryHeader` | Entry number + version tag in mono, huckleberry outline |
-| `FactsPanel` | Label/value grid; merges into a summary card on mobile |
+| `EntryHeader` | Section label or entry number + tag in mono, huckleberry outline |
+| `Contents` | Five sections with page ranges; hover/focus highlight in huckleberry; click riffles to the section |
+| `Timeline` | Two-page roadmap: dashed trail, nodes, 5 entries left / 6 right; single page on mobile |
+| `TimelineEntry` | Gray entry number, huckleberry version tag, title, dates, two-sentence description; indent follows the trail; anchored `#v0-4` |
+| `SkillGroup` | Huckleberry label, "used in" refs, `moss` StackChip row; dashed chip for unconfirmed items |
+| `FactsPanel` | Mono huckleberry labels + Special Elite values (skills foundations, colophon); merges into a summary card on mobile |
 | `ProjectGrid` | Left-page card grid, 2×2 or 3×3 by count |
 | `ProjectCard` | Specimen-label card: name, one-liner, stack chips, status; selected state with huckleberry pin |
 | `ProjectDetail` | Right-page detail; index-card slide-in on selection |
 | `ProjectSheet` | Mobile full-height sheet expanded from a card; X, swipe down, and back close it |
-| `StackChip` | Mono label in a thin huckleberry outline |
+| `StackChip` | Mono label in a thin outline — huckleberry on project cards, `moss` on the skills page |
 | `Marginalia` | Imperfect Nanum Pen note with hand-drawn underline, circle, or arrow; aria-hidden if purely decorative |
+| `HandMark` | Wobbly SVG mark attached to printed text: underline, double underline, circle, strike, bracket, arrow |
+| `IndexCard` | Tipped-in ruled card with tape, lines on the same 28px baseline |
 | `NoteArea` | Margin column, tipped-in index card, sketch, or scrap holding a longer note |
 | `FieldMark` | Smudges, ink blots, erased-note ghosts, tape |
 | `TapedPhoto` | Screenshot with a flat tape strip and slight rotation (used once screenshots exist) |
-| `Specimen` | PNW line illustration in salal, one per entry |
-| `PaperEdge` | Edge chips, worn corners, and scissor-cut shapes as SVG masks |
+| `Specimen` | PNW line illustration in salal, one per spread |
+| `PaperEdge` | Edge chips, worn corners, tears, and scissor-cut shapes as SVG masks |
 | `RibbonBookmark` | Top-edge ribbon linking to contents |
 | `ThemeToggle` | Day / night journal switch |
 | `ResumeButton` | PDF download — opening spread and contact page only |
+| `LeatherCover` | Leather hardcover behind the page block (desktop) or 8px edge strip (mobile); part of `Notebook` |
+| `DeskProps` | Cabin-table objects around the notebook; decorative, `aria-hidden` |
 
-**States to show**: the notebook on the lamplit desk, a heavily worn page next to a lighter one, a note area with hand-drawn marks, corner hover lift, mid-curl frame, focus rings on all links, empty stack chip row, night journal.
+**States to show**: contents hover and focus, the notebook on the lamplit cabin table, the lifted turn corner at rest, a heavily worn page next to a lighter one, a note area with hand-drawn marks, corner hover lift, mid-curl frame, focus rings on all links, empty stack chip row, night journal.
 
 ## Accessibility and performance
 
@@ -270,54 +316,52 @@ Target WCAG 2.1 AA and Lighthouse 95+ in all four categories; the curl must neve
 | --- | --- |
 | Contrast | Body and labels ≥ 4.5:1 in both themes, including on worn paper; salal never for small text |
 | Keyboard | Arrow keys turn pages; Tab reaches every link; visible huckleberry focus ring |
-| Screen readers | Each page is a landmark with its entry title; curl flap is `aria-hidden`; decorative marginalia `aria-hidden`, meaningful notes kept as text |
+| Screen readers | Each page is a landmark with its section title; the timeline is an ordered list of articles; curl flap is `aria-hidden`; decorative marginalia `aria-hidden`, meaningful notes kept as text |
 | Motion | `prefers-reduced-motion` → crossfade; no auto-playing animation |
 | No-JS fallback | Pages render as normal routes with plain next/previous links |
 | Load | LCP < 2.0s on 4G; curl engine lazy-loaded after first paint; fonts subset; textures compressed |
 | Images | `next/image`, AVIF/WebP, explicit dimensions (no layout shift) |
-| SEO | Per-route titles and descriptions, Open Graph image per entry, sitemap |
+| SEO | Per-route titles and descriptions, Open Graph image per section, sitemap |
 
 ## Tech stack and build notes
 
-Next.js App Router with TypeScript and Tailwind, deployed on Vercel; content lives in MDX so each version is one file.
+Next.js App Router with TypeScript and Tailwind, deployed on Vercel; content lives in MDX: one file per timeline entry and per project.
 
 | Layer | Choice | Notes |
 | --- | --- | --- |
-| Framework | Next.js 15 (App Router), TypeScript | Static generation for every entry route |
+| Framework | Next.js 15 (App Router), TypeScript | Static generation for every route |
 | Styling | Tailwind CSS v4 with CSS variables for tokens | Theme via `data-theme` on `<html>` |
 | Motion | Custom curl engine (pointer events + `requestAnimationFrame`); Framer Motion only for small UI transitions | No page-flip library |
-| Content | MDX in `/content/entries` and `/content/projects` with typed frontmatter | Facts page renders from frontmatter; story from the MDX body |
+| Content | MDX in `/content/timeline`, `/content/skills.mdx`, and `/content/projects` with typed frontmatter | Timeline entries are frontmatter only |
 | Hosting | Vercel + Vercel Analytics | Custom domain after launch |
 
 **Suggested structure**
 
 ```
 src/app/
-  page.tsx                  opening spread
-  v/[slug]/page.tsx         version entries
-  projects/page.tsx
+  page.tsx                  opening spread (pp. 1–2)
+  timeline/page.tsx         pp. 3–4
+  skills/page.tsx           pp. 5–6
+  projects/page.tsx         pp. 7–8
   projects/[slug]/page.tsx
-  colophon/page.tsx
-  contact/page.tsx
-src/components/notebook/    Notebook, Page, PageCurl, FactsPanel …
+  colophon/page.tsx         pp. 9–10
+  contact/page.tsx          pp. 11–12
+src/components/notebook/    Notebook, Page, PageCurl, Contents, Timeline, SkillGroup …
 src/lib/curl/               fold math, clip + reflection helpers
-content/entries/*.mdx
+content/timeline/*.mdx      one per entry, frontmatter only
+content/skills.mdx
 content/projects/*.mdx
 ```
 
-**Version frontmatter**
+**Timeline entry frontmatter**
 
 ```
 entry: 4
 version: "0.4"
 title: "Breaking change"
-chapter: "Switched to Economics + Computer Science"
 dates: "2023–24"
-specimen: "vine-maple"
-facts: []
-stack: []
-links: []
-marginalia: []
+description: "An intro CS class pulled me back to engineering and math. Same goal of helping people, a new way to do it."
+marginalia: "~~public health~~ CS + Econ"
 ```
 
 **Build order**
@@ -344,7 +388,7 @@ All copy below is final-draft content for the build. Versions below 1.0 are the 
 | Also open to | Product engineer, design engineer |
 | Location | Based in Seattle; open to many locations; would love to return to New York |
 
-**Version list**
+**Version list** (source for the timeline)
 
 | Entry | Version | Title | Chapter | Dates | Facts page highlights |
 | --- | --- | --- | --- | --- | --- |
@@ -360,9 +404,48 @@ All copy below is final-draft content for the build. Versions below 1.0 are the 
 | 010 | v1.0 | Stable release | Graduated NYU: B.A. Economics and Computer Science, minor in Mathematics | May 2026 | Degree, coursework |
 | 011 | v1.1 | Now | Full-stack engineer in Seattle, eyeing a return to New York; shipping Minced | 2026 – | Open to full-stack, product, and design engineering roles |
 
-### Story drafts
+### Timeline descriptions (draft — Kevin to confirm)
 
-Drafts stay under the 180-word story-page budget; each is followed by its marginalia line.
+Condensed from the long drafts below. Each stays at or under 125 characters so it fits two lines.
+
+| Entry | Title | Dates | Description |
+| --- | --- | --- | --- |
+| 001 · v0.1 | Hello, world | June 2022 | Graduated Kent-Meridian, set on becoming a doctor. Chose NYU because it was the farthest thing from comfortable. |
+| 002 · v0.2 | Pre-health build | Sep 2022 | Arrived at NYU on the pre-health track, aiming for pediatrics. Volunteered at hospitals and taught kids martial arts. |
+| 003 · v0.3 | First commit | June 2023 – present | Built ReuMo's website while teaching myself HTML, CSS, and JavaScript. Our team won a $20,000 VentureWell Propel award. |
+| 004 · v0.4 | Breaking change | 2023–24 | An intro CS class pulled me back to engineering and math. Same goal of helping people, a new way to do it. |
+| 005 · v0.5 | Proofing | Summer 2024 | Front of house lead for a brand-new Paris Baguette. Launch month taught me that running a store is running people. |
+| 006 · v0.6 | Localization | Aug – Dec 2024 | Studied abroad at NYU Madrid, where lunch took two hours. Came home just as ambitious, clearer about what for. |
+| 007 · v0.7 | Concurrency | May 2025 – Feb 2026 | Served at Fer and OBAO at once, ten tables a shift. A packed section is a real-time system. |
+| 008 · v0.8 | Added dependency: math | 2025–26 | Added a math minor: algorithms, OS, data structures. Economics taught me tradeoffs; math taught me to prove them. |
+| 009 · v0.9 | Release candidate | Sep 2025 – present | Shipped PolyPaper with a team of five, CI/CD on every commit. Built Momentum and MyRecipePal, the prototypes of Minced. |
+| 010 · v1.0 | Stable release | May 2026 | Graduated NYU: B.A. Economics and Computer Science, minor in Mathematics. The destination changed; the reason didn't. |
+| 011 · v1.1 | Now | 2026 – | Back in the Pacific Northwest, building Minced. Open to full-stack, product, and design engineering roles. |
+
+### Skills (draft — Kevin to confirm)
+
+Drawn only from the projects and timeline above.
+
+| Group | Items | Used in |
+| --- | --- | --- |
+| Languages | TypeScript, JavaScript, Python, SQL, HTML, CSS | Minced · PolyPaper · v0.3 |
+| Frontend | Next.js, React, Tailwind CSS, shadcn/ui, d3 | Minced · World Map Photo Album |
+| Backend & data | Supabase, Postgres + RLS, Flask, FastAPI, MongoDB, Redis, Zod | Minced · PolyPaper |
+| Infra & delivery | Vercel, Docker Compose, GitHub Actions, DigitalOcean, CI/CD | PolyPaper · Minced |
+| Design & tools | UI design, prototyping, *[design tools to confirm]* | This notebook · Minced |
+
+| Foundation | Detail | From |
+| --- | --- | --- |
+| Computer science | Algorithms, data structures, operating systems, computer systems organization | v0.8 |
+| Mathematics | Minor in mathematics: proving why something is fast or slow | v0.8 |
+| Economics | B.A. in Economics: thinking in tradeoffs | v1.0 |
+| Product | Customer discovery, writing specs, shipping in weekly sprints | v0.3 · v0.9 |
+| Teamwork | Standups, code review, issue assignment, GitHub done properly | v0.9 |
+| Under pressure | Ran a launch-month floor; ten tables at once | v0.5 · v0.7 |
+
+### Archive — long-form story drafts
+
+No longer shown on the site (the timeline replaced the per-entry spreads). Kept as source material for descriptions, the About copy, and interviews.
 
 **001 · v0.1 · Hello, world**
 
@@ -398,7 +481,7 @@ Medicine is a long road: years of school, fierce competition, and real cost. I w
 
 Then I took an intro to computer science class, and something from childhood came back: the pull of engineering, math, and a problem that won't let go. I took more classes, and added economics to make every semester and every dollar count.
 
-I never stopped wanting to help people. I changed how. Today that means building apps that help people learn, get organized, and take care of themselves, including their health. If good tools keep people healthier, maybe fewer of them need the doctor I almost became.
+I never stopped wanting to help people. I changed how. Today that means building apps that help people learn, get organized, and take care of themselves, including their health. If good tools keep people healthier, maybe fewer of them need the doctor I wanted to become.
 
 Marginalia: ~~public health~~ → CS + Econ
 
@@ -534,7 +617,8 @@ Each detail page follows the same five parts: problem, role, key decisions, a re
 - [x] Resume, dates, roles, positioning, targets, contact
 - [x] Story drafts for all 11 entries
 - [x] Project detail drafts for Minced, PolyPaper, and World Map Photo Album
-- [ ] Review every story draft and marginalia line
+- [ ] Confirm the 11 timeline descriptions (≤ 125 characters each)
+- [ ] Confirm the skills lists: languages, design tools, anything to add or drop
 - [ ] Update the resume PDF: Minced replaces MyRecipePal and Momentum; add Fer (May – Dec 2025); OBAO July 2025 – Feb 2026; PolyPaper as a team of 5; fix typos
 - [ ] Links and screenshots for each project (after development)
 - [ ] Domain (after launch)
