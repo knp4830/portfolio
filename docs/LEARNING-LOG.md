@@ -33,7 +33,7 @@ They don't know about each other. A PR can deploy fine on Vercel and still fail 
 - **pnpm blocks install scripts by default.** `unrs-resolver` (pulled in by `eslint-config-next`) needs its postinstall, so it's allow-listed in `pnpm-workspace.yaml`. Without that the install aborts.
 - **pnpm 12 stores the `packageManager` pin in the lockfile.** Adding the field without re-running `pnpm install` made `--frozen-lockfile` fail in a clean clone. Always re-run install after touching `package.json`.
 - **Local success isn't CI success.** Locally, `.next/` and `next-env.d.ts` already exist; CI starts with neither (both are gitignored). Testing in a fresh `git clone` of the branch reproduces what CI sees.
-- **Preview URLs are behind a login.** Vercel's default Deployment Protection sends anyone not logged in to your Vercel team to a login page (`302`). Production is public. Keep this in mind before sharing a preview link.
+- **Preview URLs are behind a login.** Vercel's default Deployment Protection sends anyone not logged in to your Vercel team to a login page (`302`). (Correction, Sep 22: production is behind it too. `portfolio-minced.vercel.app` also redirects to the login, so the site isn't public until protection is changed or a custom domain is added.)
 - **The Vercel connector said the project creation failed, but it had worked.** The project 404'd right afterwards but was linked; the first PR built it. Check the PR's status checks before retrying, or you could end up with a duplicate project.
 
 ## M0.2 — Tokens and type (2026-09-21)
@@ -366,3 +366,27 @@ Kevin reported four problems. Each is fixed separately.
 ### Gotchas
 - **`elementsFromPoint` skips `pointer-events: none` elements.** The spine line has it, so a hit-test said it was "missing". To test paint order, turn pointer events back on for the check.
 - **`z-index` on a positioned child escapes to the nearest stacking context**, not to its parent. `isolation: isolate` is the cheapest way to contain it: no transform, no opacity change.
+
+## Fanned riffle, p. 02 hint, frond scale (2026-09-22)
+
+### What changed
+1. **"turn the page →" moved to p. 02** (bottom right, beside the dog-ear). The copy moved from `contact.mdx` (`backCover.erased`) to `opening.mdx` (`contents.erased`), and the schema moved with it.
+2. **The frond's scale bar and "frond ≈ 1 m" moved 38–44px toward the spine**, so the note no longer sits among the fern's leaves (`Opening.tsx`).
+3. **Contents jumps fan the pages.** Before, a jump turned the pages one after another. Now every page in between turns *at once*, each starting a beat behind the one in front, like flipping a bundle with one thumb. You see the edges of the pages behind the leading one, and they land stacked.
+
+4. **Switching projects fades instead of sliding.** The new detail used to slide in from the page edge (200ms), which read as a quick UI panel, not paper. Now it fades in place over 180ms, opacity only, like ink settling (Kevin, Sep 22: "instant, or a transition that suits the portfolio better"). It's still one Web Animations call in `PageCurl.tsx`, and still only on an actual switch. Rejected: instant (the swap of two dense pages of text is jarring with no transition at all) and a card-drop with rotation (too playful beside the curl, which is the notebook's one big motion).
+
+### How the fan works
+- **Still one shared progress.** `TurnFrame.riffle = { from, pages }` replaces `from`, and `frame.progress` is the whole riffle's 0 → 1. `riffleLeaves(progress, pages)` in `src/lib/curl/input.ts` turns that one number into each page's own progress. Page *i* starts `i × TIMING.riffleLag` (18ms) late, and each page eases over `TIMING.riffle` (600ms) with a sine ease-in-out. The total is `riffleDuration(pages)`: 654ms for four pages.
+- **Why sine, not the cubic ease of a single turn:** the cubic is steep in the middle (slope 3), so an 18ms lag would open a wide gap mid-turn. The sine's slope tops out at π/2, which keeps the pages within about 0.05 of each other: "a slight edge", not a spread fan.
+- **Stacking** (`drawRiffle` in `PageCurl.tsx`): the pages' fronts stack with the leader on top, and their backs (flaps) stack with each follower above the ones ahead of it. That matches a real fan: on the side it's leaving, the most-turned page is highest; on the side it's landing, the least-turned is highest. So the last flap to land is the new spread's left page, exactly the page at rest when the route changes.
+- **One turn, one riffle, same math.** `turnPage()` (clip the front along the fold, reflect the back with one matrix) is now shared by single turns and every page of a riffle. It raises the back page only once a fold exists, so a turn at progress 0 never shows an unclipped back page.
+- **Mobile** has one page to peel, so during a riffle it follows the fan's last page, which lands as the route changes.
+
+### Rejected
+- **Separate animations per page:** it breaks "one shared progress", and a riffle couldn't be reasoned about as a single turn.
+- **A wider lag (50ms, then 25ms):** tried and screenshotted. Mid-turn the pages spread like a hand of cards, not a bundle.
+
+### Gotchas
+- **Slow time to inspect an animation:** wrap `performance.now` and `requestAnimationFrame`'s timestamp with the same scale (both, or the engine's start and frame times disagree), then screenshot mid-turn.
+- **Stopping a background `pnpm start` leaves `next start` running on Windows** (pnpm dies, its Node child doesn't): the next start fails with `EADDRINUSE`. Find it by command line and stop it.

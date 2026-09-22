@@ -78,10 +78,6 @@ export function contactSpread({ site, copy }: ContactProps): SpreadContent {
       <div className="h-7" />
       <p className="type-label leading-7 text-ink-soft">{contact.roles}</p>
       <p className="type-label leading-7 text-ink-soft">{contact.location}</p>
-      {/* A faint pencil hint by the corner that turns to the colophon. Decorative. */}
-      <div aria-hidden className="absolute top-[744px] right-[56px] opacity-24">
-        <Marginalia lines={[backCover.erased]} tone="pencil" tilt={-2} label={null} />
-      </div>
     </>
   );
 

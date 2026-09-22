@@ -22,8 +22,8 @@ import {
   restCorner,
   splitPage,
 } from "@/lib/curl/geometry";
-import { ARC, type Direction } from "@/lib/curl/input";
-import { type SpreadId, neighbors, pagesOf } from "@/lib/notebook/spreads";
+import { ARC, type Direction, riffleLeaves } from "@/lib/curl/input";
+import { SPREADS, type SpreadId, neighbors, pagesOf } from "@/lib/notebook/spreads";
 import { type TurnFrame, spreadOf, useTurn } from "./useTurn";
 
 // The desktop page curl, drawn on the real DOM in stage coordinates (the
@@ -61,6 +61,9 @@ const PAGE_OF: Record<Direction, Rect> = { forward: RIGHT, backward: LEFT };
 const mirrorSpine = (p: Point): Point => ({ x: 2 * SPINE - p.x, y: p.y });
 const points = (list: Point[]) => list.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
 const Z = { stack: "0", beneath: "1", current: "2", flap: "3" } as const;
+/** A riffle stacks several turning pages: fronts from here up, flaps above those. */
+const RIFFLE_FRONT = 10;
+const RIFFLE_FLAP = 20;
 
 type TurnLink = { href: string; label: string };
 
@@ -132,9 +135,76 @@ export function PageCurl({ pages, links, turnLabel }: PageCurlProps) {
     if (wrap.inert !== inert) wrap.inert = inert;
   }
 
+  /**
+   * One page turning: its front is clipped along the fold, and its back (the page
+   * that lands on the other side) is pre-mirrored across the spine and reflected
+   * across the fold with one matrix(). Returns the fold, or null at rest.
+   */
+  function turnPage(
+    side: Direction,
+    front: number,
+    back: number | undefined,
+    progress: number,
+    pointer: Point | null,
+    flapZ: string,
+  ) {
+    const wrap = wraps.current[front];
+    const { corner: C, mirror: Q } = CORNERS[side];
+    const P = pointer ?? cornerPath(C, Q, progress, ARC * PAGE_HEIGHT);
+    const fold = foldLine(C, P);
+    if (!wrap || !fold) return null;
+    const page = PAGE_OF[side];
+    const { flat, lifted } = splitPage(page, fold);
+    wrap.style.clipPath = polygonCss(flat);
+    const flap = back ? wraps.current[back] : null;
+    if (flap) {
+      place(back, flapZ);
+      flap.style.transform = matrixCss(compose(reflectionMatrix(fold), mirrorX(SPINE)));
+      flap.style.clipPath = polygonCss(lifted.map(mirrorSpine));
+      // The back of the page is shaded paper-back as it lifts, fading out as it
+      // lands so the finished turn is exactly the page at rest.
+      const shade = shades.current[back!];
+      if (shade) shade.style.opacity = String(0.35 * (1 - progress));
+    }
+    return { fold, P };
+  }
+
+  function hideCorners() {
+    for (const d of ["forward", "backward"] as const) {
+      restFlaps[d].current?.setAttribute("visibility", "hidden");
+      restFolds[d].current?.setAttribute("visibility", "hidden");
+    }
+    turnFold.current?.setAttribute("visibility", "hidden");
+    corner.current = null;
+  }
+
+  /**
+   * A contents jump: every page between here and there turns at once, the front
+   * page leading and each one behind it a beat later (riffleLeaves), so you see
+   * the edges of the pages behind the one in front. Front pages stack with the
+   * leader on top; their backs stack with each follower landing over the ones
+   * ahead of it, so the last page to land is the new spread's page.
+   */
+  function drawRiffle(side: Direction, from: SpreadId, count: number, progress: number) {
+    const step = side === "forward" ? 1 : -1;
+    const at = (i: number) => SPREADS[SPREADS.indexOf(from) + i * step];
+    const front = (id: SpreadId) => pagesOf(id)[side === "forward" ? 1 : 0];
+    const back = (id: SpreadId) => pagesOf(id)[side === "forward" ? 0 : 1];
+
+    for (const n of PAGE_NUMBERS) place(n, Z.stack);
+    place(back(at(0)), Z.current); // the page that stays put (forward: this spread's left)
+    place(front(at(count)), Z.beneath); // what the riffle uncovers on the turning side
+    riffleLeaves(progress, count).forEach((leaf, i) => {
+      place(front(at(i)), String(RIFFLE_FRONT + count - i));
+      if (leaf > 0) turnPage(side, front(at(i)), back(at(i + 1)), leaf, null, String(RIFFLE_FLAP + i));
+    });
+  }
+
   function draw(frame: TurnFrame) {
-    // A riffle turns through spreads the route hasn't reached yet.
-    const showing = frame.from ?? current.current;
+    hideCorners();
+    if (frame.riffle && frame.direction) return drawRiffle(frame.direction, frame.riffle.from, frame.riffle.pages, frame.progress);
+
+    const showing = current.current;
     const roles = rolesFor(showing);
     // No lifted corner before the first page or after the last; the contents page keeps its dog-ear.
     const rest: Record<Direction, boolean> = {
@@ -150,39 +220,20 @@ export function PageCurl({ pages, links, turnLabel }: PageCurlProps) {
     place(roles.previousLeft, Z.beneath);
     place(roles.left, Z.current, true);
     place(roles.right, Z.current, true);
-    for (const d of ["forward", "backward"] as const) {
-      restFlaps[d].current?.setAttribute("visibility", "hidden");
-      restFolds[d].current?.setAttribute("visibility", "hidden");
-    }
-    turnFold.current?.setAttribute("visibility", "hidden");
-    corner.current = null;
 
     for (const side of ["forward", "backward"] as const) {
       const turning = side === "forward" ? roles.right : roles.left;
       const wrap = wraps.current[turning];
       if (!wrap) continue;
       const page = PAGE_OF[side];
-      const { corner: C, mirror: Q } = CORNERS[side];
+      const { corner: C } = CORNERS[side];
 
       if (frame.direction === side) {
-        const P = frame.pointer ?? cornerPath(C, Q, frame.progress, ARC * PAGE_HEIGHT);
-        corner.current = P;
-        const fold = foldLine(C, P);
-        if (!fold) continue;
-        const { flat, lifted } = splitPage(page, fold);
-        wrap.style.clipPath = polygonCss(flat);
         const back = side === "forward" ? roles.nextLeft : roles.previousRight;
-        const flap = back ? wraps.current[back] : null;
-        if (flap) {
-          flap.style.zIndex = Z.flap;
-          flap.style.transform = matrixCss(compose(reflectionMatrix(fold), mirrorX(SPINE)));
-          flap.style.clipPath = polygonCss(lifted.map(mirrorSpine));
-          // The back of the page is shaded paper-back as it lifts, fading out as it
-          // lands so the finished turn is exactly the page at rest.
-          const shade = shades.current[back!];
-          if (shade) shade.style.opacity = String(0.35 * (1 - frame.progress));
-        }
-        showLine(turnFold.current, fold, page);
+        const turned = turnPage(side, turning, back, frame.progress, frame.pointer, Z.flap);
+        if (!turned) continue;
+        corner.current = turned.P;
+        showLine(turnFold.current, turned.fold, page);
       } else if (rest[side]) {
         // The resting lifted corner: the curl's rest state, from the same fold math.
         const P = restCorner(C, SPINE, REST_LEGS + HOVER_LIFT * hover.current[side]);
@@ -229,8 +280,8 @@ export function PageCurl({ pages, links, turnLabel }: PageCurlProps) {
     }
   }, [spread]);
 
-  // Switching projects slides the new detail in like an index card from under the
-  // page edge. Only a switch: arriving on the projects spread doesn't replay it.
+  // Switching projects fades the new detail in, like ink settling on the page — no
+  // sliding panel (Kevin, Sep 22). Only a switch: arriving on the projects spread doesn't replay it.
   const last = useRef<{ spread: SpreadId; view: string | undefined } | null>(null);
   useEffect(() => {
     const view = routeTokens().find((token) => token.startsWith("projects:"));
@@ -245,7 +296,7 @@ export function PageCurl({ pages, links, turnLabel }: PageCurlProps) {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     root.current
       ?.querySelector<HTMLElement>(`[data-view="${view}"]`)
-      ?.animate([{ translate: "100% 0" }, { translate: "0 0" }], { duration: 200, easing: "ease-out" });
+      ?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: "ease-out" });
   }, [spread, pathname]);
 
   // ————— Pointer: drag a corner, or catch a turn already under way —————

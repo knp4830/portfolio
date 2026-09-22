@@ -215,4 +215,8 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 **Four fixes** (branch `four-fixes`): the spine line, lamp cast, and ribbon paint over the pages again (the curl is `isolate`); contents jumps riffle the real spreads back to back (220ms each, one route change at the end); p. 8 shows Minced by default, so it's there while you turn to it; all pages stay painted and stacked, so an arrow turn only reveals pages the browser has already drawn. Verified: 9/9 targeted, 22/22, 25/25, 8/8 checks; 72 unit tests.
 
+**Deploy check** (Sep 22): every merge to `main` deploys to production, but production is behind Vercel Authentication too (`portfolio-minced.vercel.app` → login). Kevin to switch Deployment Protection to previews only. `public/resume.pdf` still missing.
+
+**Fanned riffle** (branch `fanned-riffle`): contents jumps turn every page in between at once, each 18ms behind the one in front (`riffleLeaves`, one shared progress), so the edges of the pages behind show and they land stacked; "turn the page →" moved from p. 10 to p. 02 (Kevin, Sep 22); the frond scale and note moved toward the spine, clear of the leaves; switching projects fades the new detail in (180ms, opacity only) instead of sliding. Verified: 9/9, 22/22, 25/25, 8/8; 73 unit tests.
+
 **Next up: M3.1 — Accessibility pass.**
