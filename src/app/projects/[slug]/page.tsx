@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ProjectsSpread } from "@/components/notebook/spreads/Projects";
-import { loadPage, loadProjects, loadSite } from "@/lib/content/load";
+import { renderNotebook } from "@/components/notebook/renderNotebook";
+import { loadProjects } from "@/lib/content/load";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -22,8 +21,5 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 // opened as a sheet over the card list (mobile).
 export default async function ProjectPage({ params }: Params) {
   const { slug } = await params;
-  const [site, copy, projects] = await Promise.all([loadSite(), loadPage("projects"), loadProjects()]);
-  const selected = projects.find((project) => project.slug === slug);
-  if (!selected) notFound();
-  return <ProjectsSpread site={site} copy={copy} projects={projects} selected={selected} open />;
+  return renderNotebook("projects", { project: slug, open: true });
 }

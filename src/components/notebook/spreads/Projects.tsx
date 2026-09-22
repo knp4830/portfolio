@@ -1,17 +1,16 @@
 import Link from "next/link";
-import type { PageCopy, Project, Site } from "@/lib/content/schema";
+import type { PageCopy, Project } from "@/lib/content/schema";
+import type { SpreadContent } from "../spreadContent";
 import { LinkIcon } from "../art/icons";
 import { ProjectsArrow } from "../art/marks";
 import { LicoriceFern } from "../art/specimens";
 import { Marginalia } from "../Marginalia";
-import { Notebook } from "../Notebook";
 import { PageHeader } from "../PageHeader";
 import { ProjectSheet } from "../ProjectSheet";
 import { ChipRow, StackChip } from "../StackChip";
 import { Tape } from "../Tape";
 
 type ProjectsProps = {
-  site: Site;
   copy: PageCopy<"projects">;
   projects: Project[];
   /** From the URL: /projects selects the first project, /projects/<slug> that one. */
@@ -34,7 +33,7 @@ function splitStatus(status: string) {
 
 const number = (project: Project) => String(project.order).padStart(2, "0");
 
-export function ProjectsSpread({ site, copy, projects, selected, open }: ProjectsProps) {
+export function projectsSpread({ copy, projects, selected, open }: ProjectsProps): SpreadContent {
   const count = copy.count.replace("{count}", String(projects.length));
 
   const left = (
@@ -98,16 +97,7 @@ export function ProjectsSpread({ site, copy, projects, selected, open }: Project
     </>
   );
 
-  return (
-    <Notebook
-      spread="projects"
-      site={site}
-      labels={[copy.title, `${copy.detail.label} — ${selected.title}`]}
-      left={left}
-      right={right}
-      mobile={mobile}
-    />
-  );
+  return { spread: "projects", labels: [copy.title, `${copy.detail.label} — ${selected.title}`], left: left, right: right, mobile };
 }
 
 function ProjectCard({ project, copy, selected, fluid = false }: { project: Project; copy: PageCopy<"projects">; selected: boolean; fluid?: boolean }) {
@@ -115,7 +105,7 @@ function ProjectCard({ project, copy, selected, fluid = false }: { project: Proj
   const more = project.stack.length - shown.length;
   return (
     <Link
-      id={project.slug}
+      id={fluid ? project.slug : undefined}
       href={`/projects/${project.slug}`}
       scroll={false}
       aria-current={selected ? "true" : undefined}

@@ -1,12 +1,12 @@
 import Link from "next/link";
 import type { PageCopy, Site } from "@/lib/content/schema";
+import type { SpreadContent } from "../spreadContent";
 import { PATHS, SPREADS, type SectionId, TOTAL_PAGES, pageRange } from "@/lib/notebook/spreads";
 import { ExternalIcon } from "../art/icons";
 import { DogEar, FrondScale, StartHereArrow } from "../art/marks";
 import { SwordFern } from "../art/specimens";
 import { HandMark } from "../HandMark";
 import { Marginalia } from "../Marginalia";
-import { Notebook } from "../Notebook";
 import { PageHeader } from "../PageHeader";
 import { ResumeButton } from "../ResumeButton";
 
@@ -16,7 +16,7 @@ const SOFT_HEADING = "[font-variation-settings:'SOFT'_50,'WONK'_0]";
 
 // Pages 1–2: whose notebook this is, the positioning line, the resume, and the
 // table of contents.
-export function OpeningSpread({ site, copy }: OpeningProps) {
+export function openingSpread({ site, copy }: OpeningProps): SpreadContent {
   const linkedin = site.links.find((link) => link.id === "linkedin");
   const sections = SPREADS.filter((id): id is SectionId => id !== "opening");
 
@@ -96,7 +96,7 @@ export function OpeningSpread({ site, copy }: OpeningProps) {
         label={copy.contents.label}
         meta={copy.contents.count.replace("{sections}", String(sections.length)).replace("{pages}", String(TOTAL_PAGES))}
       />
-      <h2 id="contents" className="type-heading flex h-14 items-end pb-1.5">
+      <h2 className="type-heading flex h-14 items-end pb-1.5">
         {copy.contents.title}
       </h2>
       <div className="h-7" />
@@ -136,16 +136,7 @@ export function OpeningSpread({ site, copy }: OpeningProps) {
     </div>
   );
 
-  return (
-    <Notebook
-      spread="opening"
-      site={site}
-      labels={[site.name, copy.contents.title]}
-      left={left}
-      right={right}
-      mobile={mobile}
-    />
-  );
+  return { spread: "opening", labels: [site.name, copy.contents.title], left: left, right: right, mobile };
 }
 
 type ContentsEntryProps = { number: number; href: string; title: string; subtitle: string; range: string; jump: string };

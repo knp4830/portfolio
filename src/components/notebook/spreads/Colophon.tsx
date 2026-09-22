@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import type { PageCopy, Site } from "@/lib/content/schema";
+import type { SpreadContent } from "../spreadContent";
 import { BisectorArrow } from "../art/marks";
 import { FoldFigure } from "../art/specimens";
 import { FactsPanel } from "../FactsPanel";
 import { HandMark } from "../HandMark";
 import { Marginalia } from "../Marginalia";
-import { Notebook } from "../Notebook";
 import { PageHeader } from "../PageHeader";
 
 type ColophonProps = { site: Site; copy: PageCopy<"colophon"> };
@@ -13,7 +13,7 @@ type ColophonProps = { site: Site; copy: PageCopy<"colophon"> };
 // Pages 11–12, the last spread: how the notebook was built. The curl engine is
 // the specimen here — Fig. 1 shows the fold as the perpendicular bisector of the
 // corner's rest point C and the pointer P.
-export function ColophonSpread({ site, copy }: ColophonProps) {
+export function colophonSpread({ site, copy }: ColophonProps): SpreadContent {
   const notes = copy.buildNotes;
   const body = copy.body.map((paragraph, i) => (
     <p key={i} className={`type-body ${i < copy.body.length - 1 ? "mb-7" : ""}`}>
@@ -96,16 +96,7 @@ export function ColophonSpread({ site, copy }: ColophonProps) {
     </>
   );
 
-  return (
-    <Notebook
-      spread="colophon"
-      site={site}
-      labels={[copy.title, notes.label]}
-      left={left}
-      right={right}
-      mobile={mobile}
-    />
-  );
+  return { spread: "colophon", labels: [copy.title, notes.label], left: left, right: right, mobile };
 }
 
 function Label({ x, y, tilt, text, pencil = false }: { x: number; y: number; tilt: number; text: string; pencil?: boolean }) {
