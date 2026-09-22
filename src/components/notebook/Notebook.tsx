@@ -1,49 +1,78 @@
-import type { Site } from "@/lib/content/schema";
-import { PATHS, type SpreadId, neighbors, pagesOf } from "@/lib/notebook/spreads";
+import { PATHS, SPREADS, type SpreadId, neighbors, pagesOf } from "@/lib/notebook/spreads";
 import { PageCurl } from "./curl/PageCurl";
 import { Desk } from "./Desk";
 import { LeatherCover } from "./LeatherCover";
 import { MobilePage } from "./MobilePage";
 import { Page } from "./Page";
+import { buildNotebook } from "./buildNotebook";
 import { RibbonBookmark } from "./RibbonBookmark";
-import type { SpreadContent } from "./spreadContent";
 import { DeskThemeToggle } from "./ThemeToggle";
 import { spreadTitle } from "./TurnLinks";
 
-type NotebookProps = {
-  site: Site;
-  current: SpreadContent;
-  /** The spreads either side, rendered as hidden replicas for the page curl. */
-  previous?: SpreadContent;
-  next?: SpreadContent;
-};
+// The whole notebook, rendered once in the (notebook) layout — which Next keeps
+// mounted across navigations — so a page turn never rebuilds it. All twelve
+// desktop pages sit in the page curl, which gives each one a role (this spread,
+// the back of the turning page, the page beneath, or off); the page that lands
+// at the end of a turn is the very element that was already on screen.
+//
+// Which spread, project, and mobile sheet show comes from the route's marker
+// (RouteMarker) through the rules below, so the right page is there on first
+// paint and without JavaScript. Mobile renders one merged page per spread.
+export async function Notebook() {
+  const { site, spreads, projects, sheets } = await buildNotebook();
 
-// The open notebook on the desk. At 1024px and up: the 1440×952 scene, scaled
-// down to fit so the spread never scrolls (wheel input belongs to the curl).
-// Below that: one merged page that scrolls normally. Both are server-rendered;
-// CSS shows one, and display: none keeps the other out of the accessibility
-// tree. The mobile tree comes first so in-page anchors (#contents, #v0-4)
-// resolve to it; the desktop scene doesn't scroll to anchors.
-export function Notebook({ site, current, previous, next }: NotebookProps) {
-  const { spread } = current;
-  const [first, second] = pagesOf(spread);
-  const around = neighbors(spread);
+  const views = [
+    ...SPREADS.map((id) => `mobile:${id}`),
+    ...projects.map((project) => `projects:${project.slug}`),
+    ...projects.map((project) => `sheet:${project.slug}`),
+  ];
+  const on = (token: string) => `body:has([data-route~="${token}"])`;
+  const css = [
+    `[data-view]{display:none}`,
+    ...views.map((view) => `${on(view)} [data-view="${view}"]{display:var(--view-display,block)}`),
+    // Desktop pages before the curl takes over (and without JavaScript): only this spread.
+    `[data-page-spread]{visibility:hidden}`,
+    ...SPREADS.map((id) => `${on(id)} [data-page-spread="${id}"]{visibility:visible}`),
+    // The selected project's card: huckleberry border and pin.
+    ...projects.map(
+      ({ slug }) =>
+        `${on(`projects:${slug}`)} [data-card="${slug}"]{border-color:var(--huckleberry);border-width:1.5px}` +
+        `${on(`projects:${slug}`)} [data-card="${slug}"] [data-card-pin]{display:block}`,
+    ),
+  ].join("\n");
 
-  const link = (id: SpreadId | undefined, word: string) =>
-    id && { href: PATHS[id], label: `${word}: ${spreadTitle(site, id)}` };
-  const replica = (content: SpreadContent | undefined, side: "left" | "right") =>
-    content && (
-      <Page number={pagesOf(content.spread)[side === "left" ? 0 : 1]} label="" replica>
-        {content[side]}
-      </Page>
-    );
+  const link = (id: SpreadId | undefined, word: string) => id && { href: PATHS[id], label: `${word}: ${spreadTitle(site, id)}` };
+  const links = Object.fromEntries(
+    SPREADS.map((id) => {
+      const { previous, next } = neighbors(id);
+      return [id, { previous: link(previous, site.turn.previous), next: link(next, site.turn.next) }];
+    }),
+  ) as Record<SpreadId, { previous?: { href: string; label: string }; next?: { href: string; label: string } }>;
+
+  const pages = spreads.flatMap((content) => {
+    const [first, second] = pagesOf(content.spread);
+    return [
+      { number: first, spread: content.spread, node: <Page number={first} label={content.labels[0]}>{content.left}</Page> },
+      { number: second, spread: content.spread, node: <Page number={second} label={content.labels[1]}>{content.right}</Page> },
+    ];
+  });
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{ __html: css }} />
       <div className="spread:hidden">
-        <MobilePage spread={spread} site={site} number={first} label={current.labels[0]}>
-          {current.mobile}
-        </MobilePage>
+        {spreads.map((content) => (
+          <div key={content.spread} data-view={`mobile:${content.spread}`}>
+            <MobilePage spread={content.spread} site={site} number={pagesOf(content.spread)[0]} label={content.labels[0]}>
+              {content.mobile}
+            </MobilePage>
+          </div>
+        ))}
+        {sheets.map(({ slug, sheet }) => (
+          <div key={slug} data-view={`sheet:${slug}`}>
+            {sheet}
+          </div>
+        ))}
       </div>
       <div className="stage-scale relative hidden h-dvh overflow-hidden spread:block">
         <Desk />
@@ -59,28 +88,7 @@ export function Notebook({ site, current, previous, next }: NotebookProps) {
             <LeatherCover />
             <div aria-hidden className="absolute top-[70px] left-[84px] h-[838px] w-[1272px] bg-[color-mix(in_srgb,var(--rule)_55%,var(--edge-age))]" />
             <div aria-hidden className="absolute top-[67px] left-[87px] h-[840px] w-[1266px] bg-[color-mix(in_srgb,var(--paper-back)_50%,var(--edge-age))]" />
-            <PageCurl
-              spread={spread}
-              left={
-                <Page number={first} label={current.labels[0]}>
-                  {current.left}
-                </Page>
-              }
-              right={
-                <Page number={second} label={current.labels[1]}>
-                  {current.right}
-                </Page>
-              }
-              previousLeft={replica(previous, "left")}
-              previousRight={replica(previous, "right")}
-              nextLeft={replica(next, "left")}
-              nextRight={replica(next, "right")}
-              previous={link(around.previous, site.turn.previous)}
-              next={link(around.next, site.turn.next)}
-              // No lifted corner before the first page or after the last; the contents page keeps its dog-ear.
-              restCorners={{ backward: !!around.previous, forward: !!around.next && spread !== "opening" }}
-              turnLabel={site.turn.label}
-            />
+            <PageCurl pages={pages} links={links} turnLabel={site.turn.label} />
             <div aria-hidden className="pointer-events-none absolute top-[64px] left-[720px] h-[840px] w-px bg-rule" />
             <div
               aria-hidden

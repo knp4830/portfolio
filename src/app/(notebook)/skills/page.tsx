@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { renderNotebook } from "@/components/notebook/renderNotebook";
+import { RouteMarker } from "@/components/notebook/RouteMarker";
 import { loadSite } from "@/lib/content/load";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -7,6 +7,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // Skills (pp. 5–6).
-export default async function SkillsPage() {
-  return renderNotebook("skills");
+export default function SkillsPage() {
+  return <RouteMarker spread="skills" />;
 }

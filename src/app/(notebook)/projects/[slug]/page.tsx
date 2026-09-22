@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { renderNotebook } from "@/components/notebook/renderNotebook";
+import { RouteMarker } from "@/components/notebook/RouteMarker";
 import { loadProjects } from "@/lib/content/load";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -21,5 +21,5 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 // opened as a sheet over the card list (mobile).
 export default async function ProjectPage({ params }: Params) {
   const { slug } = await params;
-  return renderNotebook("projects", { project: slug, open: true });
+  return <RouteMarker spread="projects" project={slug} sheet />;
 }

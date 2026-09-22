@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import type { PageCopy, Project } from "@/lib/content/schema";
 import type { SpreadContent } from "../spreadContent";
 import { LinkIcon } from "../art/icons";
@@ -13,15 +14,14 @@ import { Tape } from "../Tape";
 type ProjectsProps = {
   copy: PageCopy<"projects">;
   projects: Project[];
-  /** From the URL: /projects selects the first project, /projects/<slug> that one. */
-  selected: Project;
-  /** True on /projects/<slug>: on mobile the project opens as a sheet. */
-  open: boolean;
 };
 
 // Pages 7–8: specimen-label cards on the left, the selected project's detail on
 // the right. Selection is a link to /projects/<slug>, so every project has its
 // own URL, works without JavaScript, and back/forward move between selections.
+// Every project's detail (and mobile sheet) is rendered once; the route's marker
+// picks which one shows (data-view, see Notebook), so switching projects never
+// rebuilds the page — and only an actual switch plays the slide-in.
 
 const CARD_CHIPS = 3;
 
@@ -76,7 +76,7 @@ function fitDetail(project: Project) {
   return { size, slotsBelow, breathe };
 }
 
-export function projectsSpread({ copy, projects, selected, open }: ProjectsProps): SpreadContent {
+export function projectsSpread({ copy, projects }: ProjectsProps): SpreadContent {
   const count = copy.count.replace("{count}", String(projects.length));
 
   const left = (
@@ -88,7 +88,7 @@ export function projectsSpread({ copy, projects, selected, open }: ProjectsProps
           sit on top so the page number tucks under the last card instead of printing over it. */}
       <div className={`relative z-10 grid gap-7 ${projects.length > 4 ? "grid-cols-3" : "grid-cols-2"}`}>
         {projects.map((project) => (
-          <ProjectCard key={project.slug} project={project} copy={copy} selected={project === selected} />
+          <ProjectCard key={project.slug} project={project} copy={copy} />
         ))}
         {projects.length < 4 && (
           <figure className="relative flex h-[308px] w-[245px] flex-col items-center justify-end pb-1">
@@ -108,11 +108,11 @@ export function projectsSpread({ copy, projects, selected, open }: ProjectsProps
     </>
   );
 
-  const right = (
-    <div key={selected.slug} className="flex grow flex-col motion-safe:animate-[card-in_200ms_ease-out]">
-      <ProjectDetail project={selected} copy={copy} />
+  const right = projects.map((project) => (
+    <div key={project.slug} data-view={`projects:${project.slug}`} className="grow flex-col" style={{ "--view-display": "flex" } as CSSProperties}>
+      <ProjectDetail project={project} copy={copy} />
     </div>
-  );
+  ));
 
   const mobile = (
     <>
@@ -121,7 +121,7 @@ export function projectsSpread({ copy, projects, selected, open }: ProjectsProps
       <div className="h-7" />
       <div className="flex flex-col gap-7">
         {projects.map((project) => (
-          <ProjectCard key={project.slug} project={project} copy={copy} selected={open && project === selected} fluid />
+          <ProjectCard key={project.slug} project={project} copy={copy} fluid />
         ))}
       </div>
       <div className="h-7" />
@@ -132,18 +132,27 @@ export function projectsSpread({ copy, projects, selected, open }: ProjectsProps
           <Marginalia lines={[copy.specimenNote]} tone="pencil" tilt={-1.5} className="text-[22px]" />
         </figcaption>
       </figure>
-      {open && (
-        <ProjectSheet title={selected.title} closeLabel={`${copy.detail.close} ${selected.title}`} closeHref={`/projects#${selected.slug}`}>
-          <ProjectDetail project={selected} copy={copy} stacked />
-        </ProjectSheet>
-      )}
     </>
   );
 
-  return { spread: "projects", labels: [copy.title, `${copy.detail.label} — ${selected.title}`], left: left, right: right, mobile };
+  return { spread: "projects", labels: [copy.title, copy.detail.label], left, right, mobile };
 }
 
-function ProjectCard({ project, copy, selected, fluid = false }: { project: Project; copy: PageCopy<"projects">; selected: boolean; fluid?: boolean }) {
+/** Mobile: each project's full-height sheet, shown when its /projects/<slug> route is open. */
+export function projectSheets({ copy, projects }: ProjectsProps) {
+  return projects.map((project) => ({
+    slug: project.slug,
+    sheet: (
+      <ProjectSheet title={project.title} closeLabel={`${copy.detail.close} ${project.title}`} closeHref={`/projects#${project.slug}`}>
+        <ProjectDetail project={project} copy={copy} stacked />
+      </ProjectSheet>
+    ),
+  }));
+}
+
+// The selected card (huckleberry border and pin) is styled from the route marker
+// in CSS (see Notebook), so selection needs no re-render.
+function ProjectCard({ project, copy, fluid = false }: { project: Project; copy: PageCopy<"projects">; fluid?: boolean }) {
   const shown = project.stack.slice(0, CARD_CHIPS);
   const more = project.stack.length - shown.length;
   return (
@@ -151,14 +160,16 @@ function ProjectCard({ project, copy, selected, fluid = false }: { project: Proj
       id={fluid ? project.slug : undefined}
       href={`/projects/${project.slug}`}
       scroll={false}
-      aria-current={selected ? "true" : undefined}
-      className={`relative flex h-[308px] scroll-mt-4 flex-col rounded-chip bg-paper p-3.5 text-ink no-underline ${
+      data-card={project.slug}
+      className={`relative flex h-[308px] scroll-mt-4 flex-col rounded-chip border border-ink-soft bg-paper p-3.5 text-ink no-underline hover:border-huckleberry ${
         fluid ? "w-full" : "w-[245px]"
-      } ${selected ? "border-[1.5px] border-huckleberry" : "border border-ink-soft hover:border-huckleberry"}`}
+      }`}
     >
-      {selected && (
-        <span aria-hidden className="absolute -top-2 left-1/2 -ml-2 size-4 rounded-full border-[3px] border-paper bg-huckleberry" />
-      )}
+      <span
+        aria-hidden
+        data-card-pin
+        className="absolute -top-2 left-1/2 -ml-2 hidden size-4 rounded-full border-[3px] border-paper bg-huckleberry"
+      />
       {/* Screenshot slot: a blank square until Kevin adds pictures. */}
       <span aria-hidden className="h-[70px] shrink-0 rounded-chip border border-dashed border-ink-soft" />
       <span className="mt-2.5 font-display text-[24px] leading-7 [font-variation-settings:'SOFT'_50,'WONK'_0]">{project.title}</span>

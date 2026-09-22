@@ -32,8 +32,9 @@ Fonts (Google Fonts via `next/font`): Fraunces (display), Newsreader (body), Jet
 portfolio/
 ├── src/
 │   ├── app/
-│   │   ├── layout.tsx
-│   │   ├── page.tsx                  # opening spread (intro + contents + resume)
+│   │   ├── layout.tsx                # html/body, fonts, theme script
+│   │   ├── (notebook)/layout.tsx     # the notebook, built once and kept mounted across routes
+│   │   ├── (notebook)/page.tsx       # opening (pp. 1–2); every route renders only a RouteMarker
 │   │   ├── timeline/page.tsx         # pp. 3–4, entries 001–011 anchored #v0-1 … #v1-1
 │   │   ├── skills/page.tsx           # pp. 5–6
 │   │   ├── projects/page.tsx         # projects spread
@@ -209,5 +210,7 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 - `public/resume.pdf` is still missing (from M1.2).
 
 **Polish after local testing** (branch `polish-curl`): seamless handoff at the end of a turn (landed frame painted before the route swaps), the ribbon pulls up while a page turns, project detail titles fit one line and parts get breathing room when there's space, "turn the page →" sits bottom-right of p. 10, contact wording updated (Kevin: "Product engineering · Design engineering", "Based in Seattle · Open to many locations").
+
+**The notebook stays mounted** (branch `persistent-notebook`): the notebook lives in the `(notebook)` layout and is built once; routes render only a `RouteMarker`, and CSS (`body:has([data-route~=…])`) shows the right spread, project, and sheet. A turn only reassigns page roles, so the landed page is the element already on screen: no rebuild, no flash. The project slide-in plays only when switching projects. Cost: each page's HTML carries the whole notebook (107 KB gzipped), a target for M3.2.
 
 **Next up: M3.1 — Accessibility pass.**

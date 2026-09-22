@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { renderNotebook } from "@/components/notebook/renderNotebook";
+import { RouteMarker } from "@/components/notebook/RouteMarker";
 import { loadSite } from "@/lib/content/load";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -7,6 +7,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // Colophon (pp. 11–12), the last spread.
-export default async function ColophonPage() {
-  return renderNotebook("colophon");
+export default function ColophonPage() {
+  return <RouteMarker spread="colophon" />;
 }

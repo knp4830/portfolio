@@ -317,3 +317,28 @@ With reduced motion, every turn is a 200ms crossfade and no curl frame is ever d
 ### Gotchas
 - **Change the route after the last frame paints, not in it.** `requestAnimationFrame` callbacks run before paint, so the frame computed at t = 1 is only shown if nothing replaces the DOM first. Two nested rAFs guarantee one presented frame.
 - **Screencast frames only arrive on change.** To find the swap frame, compare frames to each other; don't trust a DOM query made in the event handler (it ran late and read the wrong element).
+
+## The notebook stays mounted (2026-09-21)
+
+### What changed
+Kevin still saw a glitch after an arrow-key turn: for a moment the neighbouring page (before or after, by direction) showed through before the new page settled. And on arriving at the projects spread, Minced's detail slid in from the right every time.
+
+**The cause was structural.** Every spread was its own route, and each route rendered its own `Notebook`. When a turn finished and the route changed, Next unmounted the whole notebook and mounted a new one, even though the new page had just been on screen as the flap. In a GPU-rendered browser, the fresh page layers need rasterizing and their textures decoding again. For a frame or two, what was underneath (the neighbour pages) showed through. Headless Chrome rasterizes synchronously, so it never reproduced there.
+
+**The fix: build the notebook once.**
+- **Where it lives:** the notebook moved into the `(notebook)` route-group layout. Next keeps a layout mounted while navigating between its routes.
+- **Page roles:** all twelve desktop pages are rendered once, and the curl gives each a role every frame: this spread, the back of the turning page, the page beneath, or off. When a turn lands, the roles shift by one spread. The flap page *is* the new left page, so nothing is added, removed, or re-rastered. (Verified: 0 page nodes change during a turn.)
+- **Route markers:** each route renders only `<RouteMarker>`, a hidden `data-route` span. A generated stylesheet shows the right spread, project detail, mobile page, and sheet with `body:has([data-route~="…"])`. So first paint is right and the site works without JavaScript; once hydrated, the curl sets roles with inline styles.
+- **Projects:** every project's detail and mobile sheet is rendered once, and the marker picks which shows. Card selection (border, pin) is CSS from the marker, and `aria-current` is set by the client. The slide-in is a Web Animations call that runs only when the selected project actually changes.
+- **Neighbour textures** are decoded ahead of time (`new Image().decode()` on their background URLs) when a spread comes on screen.
+
+### Why not the placeholder ("Click a project to learn more")
+It would hide the symptom but cost every visitor, including a recruiter skimming for 30 seconds, an extra click. The brief asks for the most recent project to be preselected so the page is never empty. The real bug was the animation replaying on mount.
+
+### Trade-off
+Every page's HTML now carries the whole notebook: 107 KB gzipped, up from ~35. About 55% of that is Next's serialized RSC payload. In exchange, navigating between spreads fetches only the tiny marker. Candidates for M3.2: slimmer handwriting markup (292 per-glyph spans) and deferring the mobile tree on desktop.
+
+### Gotchas
+- **Hidden dialogs still match `[role="dialog"]`.** All project sheets are now in the DOM, so "is a sheet open?" has to check that one is displayed (`dialogOpen()`). The old check disabled every key and swipe.
+- **Git Bash rewrites `/timeline` into a Windows path** when it's a command-line argument (`MSYS_NO_PATHCONV=1` stops it). My debug script silently loaded a 404 page and the key "did nothing".
+- **`visibility: hidden` elements keep an `offsetParent`.** Tests that meant "the visible page" had to check computed visibility.
