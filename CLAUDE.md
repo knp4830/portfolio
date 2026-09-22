@@ -134,7 +134,7 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 ## Roadmap
 
 ### Phase 0 — Foundations
-- ☐ **M0.1 Scaffold** — Next.js 15 + TS + Tailwind v4 + pnpm, deployed to Vercel. DoD: preview URL loads; lint and typecheck pass in CI.
+- ☑ **M0.1 Scaffold** — Next.js 15 + TS + Tailwind v4 + pnpm, deployed to Vercel. DoD: preview URL loads; lint and typecheck pass in CI.
 - ☐ **M0.2 Tokens and type** — palette (day + night), fonts, type scale, 28px baseline in `globals.css`. DoD: a token test page renders every token in both themes; contrast checks pass.
 - ☐ **M0.3 Content pipeline** — MDX loading, typed frontmatter, 11 timeline entries, skills, and 3 projects stubbed from the brief. DoD: build fails on a missing required frontmatter field.
 
@@ -177,4 +177,6 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 **Phase: Design → build.** Design rev 8 (six spreads, twelve pages) is delivered and the handoff above is filled in. Design is settled (rev 8); the build history is in the "Field Notebook — how it was built" doc. Waiting on Kevin to confirm the 11 timeline descriptions and the skills lists (drafts in `docs/BRIEF.md`); body stays Newsreader.
 
-**M0.1 in progress** on branch `m0.1-scaffold`. Scaffolded with `create-next-app@15` (TS, Tailwind v4, ESLint, App Router, `src/`, pnpm). Design export committed. CI (`.github/workflows/ci.yml`) runs `pnpm lint` + `pnpm typecheck` on every push to main and every PR; verified in a clean clone. Vercel project `minced/portfolio` is linked to the repo; PR #1 got a completed preview build (`portfolio-n6zep6wm5-minced.vercel.app`, behind Vercel login) and a green CI check. Still to do for the DoD: Kevin opens the preview while logged in and confirms it loads.
+**M0.1 done** (PR #1, merged Sep 21 2026). Next.js 15 scaffold, design export committed, CI runs lint + typecheck on every PR and push to main, and the Vercel project `minced/portfolio` deploys every push (previews sit behind Vercel login by default).
+
+**Next up: M0.2 — Tokens and type.** Seed `globals.css` from `design/tokens.css`, load the five fonts with `next/font`, set the type scale and 28px baseline, and build a token test page.

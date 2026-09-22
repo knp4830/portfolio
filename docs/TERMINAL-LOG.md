@@ -75,3 +75,15 @@ curl -I https://portfolio-n6zep6wm5-minced.vercel.app
 
 **Blocked (expected):** `302` → Vercel login. Preview URLs are behind Vercel Authentication (Deployment Protection) by
 default, so it only loads for a logged-in team member.
+
+## M0.1 — Close-out (2026-09-21)
+
+```bash
+# After PR #1 merged: move the close-out edits onto a fresh branch from main
+git checkout main
+git pull
+git checkout -b m0.1-closeout
+git add CLAUDE.md docs/LEARNING-LOG.md docs/TERMINAL-LOG.md
+git commit -m "Close out M0.1"
+git push -u origin m0.1-closeout
+```
