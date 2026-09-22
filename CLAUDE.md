@@ -208,4 +208,6 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 - The neighbour replicas roughly double page HTML (28–43 KB gzipped); M3.2 can defer them if Lighthouse wants.
 - `public/resume.pdf` is still missing (from M1.2).
 
+**Polish after local testing** (branch `polish-curl`): seamless handoff at the end of a turn (landed frame painted before the route swaps), the ribbon pulls up while a page turns, project detail titles fit one line and parts get breathing room when there's space, "turn the page →" sits bottom-right of p. 10, contact wording updated (Kevin: "Product engineering · Design engineering", "Based in Seattle · Open to many locations").
+
 **Next up: M3.1 — Accessibility pass.**

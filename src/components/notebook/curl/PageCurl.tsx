@@ -106,6 +106,12 @@ export function PageCurl(props: PageCurlProps) {
       restFolds[d].current?.setAttribute("visibility", "hidden");
     }
     blankFlap.current?.style.setProperty("visibility", "hidden");
+    // Landed: the page under the flap is fully covered, except where its torn edges
+    // differ from the flap's. Hide it so the next route (which doesn't draw it) matches.
+    const landed = frame.direction !== null && frame.progress >= 1;
+    for (const side of ["forward", "backward"] as const) {
+      wraps[side].current?.style.setProperty("visibility", landed && frame.direction !== side ? "hidden" : "visible");
+    }
     blankUnder.current?.style.setProperty("visibility", "hidden");
     turnFold.current?.setAttribute("visibility", "hidden");
     corner.current = null;
@@ -165,6 +171,7 @@ export function PageCurl(props: PageCurlProps) {
     draw,
     corners: (d) => CORNERS[d],
     fadeTarget: () => root.current,
+    ribbon: () => root.current?.closest("main")?.querySelector<HTMLElement>("[data-ribbon]") ?? null,
   });
 
   // Paint the resting corners before the first frame shows.

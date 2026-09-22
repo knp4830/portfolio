@@ -42,6 +42,8 @@ export type TurnOptions = {
   corners: (direction: Direction) => { corner: Point; mirror: Point };
   /** What fades out and in when reduced motion replaces the curl. */
   fadeTarget: () => HTMLElement | null;
+  /** The ribbon bookmark: it pulls up while a page turns and drops back once it lands. */
+  ribbon: () => HTMLElement | null;
 };
 
 const REDUCED = "(prefers-reduced-motion: reduce)";
@@ -68,7 +70,11 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
   const reduced = () => matchMedia(REDUCED).matches;
   const around = () => neighbors(o().spread);
   const target = (direction: Direction) => (direction === "forward" ? around().next : around().previous);
-  const paint = () => o().draw(frame);
+  const paint = () => {
+    o().draw(frame);
+    const ribbon = o().ribbon();
+    if (ribbon && !reduced()) ribbon.style.translate = frame.direction ? "0 -100%" : "0 0";
+  };
   const set = (patch: Partial<TurnFrame>) => {
     Object.assign(frame, patch);
     paint();
@@ -103,7 +109,11 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
     memory.expected = to;
     // Whatever wheel input is still arriving belongs to the turn that just finished.
     memory.wheel = { ...initialWheel(), lockedUntil: performance.now() + TIMING.lock };
-    push(href, o().platform === "mobile");
+    // Let the landed frame reach the screen before the route swaps. At a full turn
+    // the flap is pixel-identical to the page the next route draws, so the swap is
+    // invisible — but only if that frame is actually shown first. Pushing in the
+    // same frame showed the flap ~45px short of landing, then a jump.
+    requestAnimationFrame(() => requestAnimationFrame(() => push(href, o().platform === "mobile")));
   }
 
   /** Reduced motion: no curl frames at all, just a 200ms crossfade across the route change. */
@@ -296,7 +306,15 @@ function createEngine(options: () => TurnOptions, push: (href: string, scroll: b
 
   /** On mount: fade in after a crossfade, or replay the turn after back/forward. */
   function arrived() {
-    const { from, fadeIn } = arrive(o().spread);
+    const { from, fadeIn, turned } = arrive(o().spread);
+    const ribbon = o().ribbon();
+    if (ribbon && !reduced() && (turned || from)) {
+      // Arriving mid-turn: the ribbon starts pulled up, then drops back once the page lands.
+      ribbon.style.transition = "none";
+      ribbon.style.translate = "0 -100%";
+      ribbon.getBoundingClientRect();
+      ribbon.style.transition = "";
+    }
     paint();
     const element = o().fadeTarget();
     if (fadeIn && element) {
