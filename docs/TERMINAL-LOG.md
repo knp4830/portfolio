@@ -379,3 +379,28 @@ git add -A
 git commit -m "Make the desk contents a row of section names"
 git push -u origin desk-nav
 ```
+
+## Content round (2026-09-28)
+
+```bash
+pnpm content:check      # "content ok: 11 timeline entries, 5 skill groups (30 chips), 4 projects, site + 6 page files"
+pnpm test               # 73 (load.test.ts asserts the project slugs, so a new project updates it)
+node round.mjs          # screenshots every spread and reports anything past the page edge
+node four.mjs && node curl-dod.mjs && node dod.mjs && node verify-persist.mjs && node desk.mjs
+```
+
+**Failed:** two content tests after editing MDX with a Python script. Python's `open(path, "w")` writes CRLF on
+Windows, so sixteen files changed on every line and the loader test's `^title:.*\n` regex stopped matching.
+
+```bash
+for f in $(git diff --name-only); do grep -qU $'\r' "$f" && perl -pi -e 's/\r\n/\n/' "$f"; done   # back to LF
+```
+
+```bash
+# Kevin: commit, push, PR
+git fetch
+git checkout -b content-round origin/main
+git add -A
+git commit -m "Rewrite the timeline, update skills, add the Blackjack Odds project"
+git push -u origin content-round
+```

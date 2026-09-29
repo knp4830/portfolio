@@ -77,11 +77,10 @@ function fitDetail(project: Project) {
 }
 
 export function projectsSpread({ copy, projects }: ProjectsProps): SpreadContent {
-  const count = copy.count.replace("{count}", String(projects.length));
 
   const left = (
     <>
-      <PageHeader label={copy.label} tag={count} meta={copy.meta} />
+      <PageHeader label={copy.label} meta={copy.meta} />
       <h1 className="type-display flex h-14 items-end">{copy.title}</h1>
       <div className="h-7" />
       {/* Two rows of cards run 28px past the footer line (as in the design); the cards
@@ -116,7 +115,7 @@ export function projectsSpread({ copy, projects }: ProjectsProps): SpreadContent
 
   const mobile = (
     <>
-      <PageHeader label={copy.label} tag={count} meta={copy.meta} />
+      <PageHeader label={copy.label} meta={copy.meta} />
       <h1 className="type-display flex h-14 items-end pb-1.5">{copy.title}</h1>
       <div className="h-7" />
       <div className="flex flex-col gap-7">

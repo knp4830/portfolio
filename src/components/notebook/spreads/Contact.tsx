@@ -57,7 +57,7 @@ export function contactSpread({ site, copy }: ContactProps): SpreadContent {
 
   const left = (
     <>
-      <PageHeader label={backCover.label} tag={site.version} meta={backCover.meta} />
+      <PageHeader label={backCover.label} meta={backCover.meta} />
       <h1 className="type-display flex h-[140px] items-end pb-2">{backCover.title}</h1>
       <div className="h-7" />
       {card(480)}
@@ -83,7 +83,7 @@ export function contactSpread({ site, copy }: ContactProps): SpreadContent {
 
   const mobile = (
     <>
-      <PageHeader label={backCover.label} tag={site.version} meta={backCover.meta} />
+      <PageHeader label={backCover.label} meta={backCover.meta} />
       <h1 className="type-display flex min-h-[112px] items-end pb-2">{backCover.title}</h1>
       <div className="h-7" />
       {card()}

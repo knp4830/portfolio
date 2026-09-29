@@ -223,4 +223,8 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 **Flagged, not changed:** the colophon's fold diagram still says "600px of scroll = 1 turn" — now 420. Needs Kevin's word.
 
+**Content round** (branch `content-round`, Kevin Sep 28): timeline titles are plain descriptions instead of release names (version tags stay); 003/004 swapped; descriptions rewritten for 001, 002, 005–010; MyRecipePal gone everywhere; skills groups and foundations updated (no version tags, no "Under pressure", GitHub moved to design & tools); a fourth project, **Blackjack Odds**, drafted from the local repo, with the Python Spanish 21 simulator as its lineage; version chips off the back cover and colophon; the skills "draft" chip and the projects "4 of 9" count gone. Contents: timeline reads "June 2022 – now", projects lists all four names. Verified: every spread fits at 1440×952; 9/9, 22/22, 25/25, 8/8, 9/9 browser checks; 73 unit tests.
+
+**Waiting on Kevin:** the Product row's wording (options offered); whether 005 should still say "front of house lead"; Blackjack Odds' title, status, and framing (exact engine vs Monte Carlo); the colophon's "600px of scroll = 1 turn" (now 420).
+
 **Next up: M3.1 — Accessibility pass.**

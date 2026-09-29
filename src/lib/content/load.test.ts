@@ -17,7 +17,7 @@ test("the real content is valid", async () => {
   assert.equal(skills.groups.length, 5);
   assert.deepEqual(
     projects.map((project) => project.slug),
-    ["minced", "polypaper", "world-map-photo-album"],
+    ["minced", "polypaper", "world-map-photo-album", "blackjack-odds"],
   );
 });
 

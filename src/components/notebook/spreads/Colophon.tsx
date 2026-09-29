@@ -43,7 +43,7 @@ export function colophonSpread({ site, copy }: ColophonProps): SpreadContent {
 
   const left = (
     <>
-      <PageHeader label={copy.label} tag={site.version} meta={copy.meta} />
+      <PageHeader label={copy.label} meta={copy.meta} />
       <h1 className="type-display flex h-[140px] items-end pb-2">{copy.title}</h1>
       <div className="h-7" />
       <div className="flex h-[448px] gap-5">
@@ -76,7 +76,7 @@ export function colophonSpread({ site, copy }: ColophonProps): SpreadContent {
 
   const mobile = (
     <>
-      <PageHeader label={copy.label} tag={site.version} meta={copy.meta} />
+      <PageHeader label={copy.label} meta={copy.meta} />
       <h1 className="type-display flex min-h-[112px] items-end pb-2">{copy.title}</h1>
       <div className="h-7" />
       {body}

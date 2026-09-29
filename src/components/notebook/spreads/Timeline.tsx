@@ -166,7 +166,7 @@ function Entry({ entry, indent, now, copy }: { entry: TimelineEntry; indent: num
 function StrikeNote({ note, template }: { note: string; template: string }) {
   const [, struck = "", written = ""] = note.match(/~~(.+?)~~\s*(.*)/) ?? [];
   return (
-    <div role="note" className="absolute -top-[30px] left-[350px] h-16 w-32">
+    <div role="note" className="absolute -top-[30px] left-[336px] h-16 w-32">
       <span className="sr-only">{template.replace("{struck}", struck).replace("{written}", written)}</span>
       <div className="absolute -top-1.5 left-[22px]">
         <Marginalia lines={[written]} tilt={-4} label={null} />
