@@ -12,7 +12,7 @@ type SkillsProps = { copy: PageCopy<"skills">; skills: Skills };
 // foundations & practice as a typewritten facts grid tagged with the timeline
 // version it came from. Mobile: the groups, then the foundations as a card.
 export function skillsSpread({ copy, skills }: SkillsProps): SpreadContent {
-  const facts = skills.foundations.map((item) => ({ label: item.name, value: item.detail, reference: item.from }));
+  const facts = skills.foundations.map((item) => ({ label: item.name, value: item.detail }));
 
   const groups = skills.groups.map((group) => (
     <section key={group.name} aria-label={group.name} className="mb-7 flex flex-col">
@@ -30,7 +30,7 @@ export function skillsSpread({ copy, skills }: SkillsProps): SpreadContent {
 
   const left = (
     <>
-      <PageHeader label={copy.label} tag={copy.tag} meta={copy.meta} />
+      <PageHeader label={copy.label} meta={copy.meta} />
       <h1 className="type-display flex h-14 items-end">{copy.title}</h1>
       <div className="h-7" />
       {groups}
@@ -57,7 +57,7 @@ export function skillsSpread({ copy, skills }: SkillsProps): SpreadContent {
 
   const mobile = (
     <>
-      <PageHeader label={copy.label} tag={copy.tag} meta={copy.meta} />
+      <PageHeader label={copy.label} meta={copy.meta} />
       <h1 className="type-display flex h-14 items-end pb-1.5">{copy.title}</h1>
       <div className="h-7" />
       {groups}

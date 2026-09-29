@@ -1,0 +1,30 @@
+---
+# Drafted from the repo at C:\Users\Kevin Pham\Blackjack odds (Kevin to confirm).
+order: 4
+title: "Blackjack Odds"
+oneLiner: "Desktop odds calculator for blackjack and Spanish 21: exact odds for any hand, deck, and count, plus a Monte Carlo bankroll simulator"
+cardLine: "Exact odds for any blackjack hand, and a Monte Carlo run of the bankroll behind it."
+stack: ["TypeScript", "React", "Electron", "Vite", "Tailwind v4", "Web Workers", "Recharts", "Vitest"]
+dates: "Sep 2026 – present"
+status: "In development"
+details:
+  - label: "Problem"
+    text: "Strategy charts tell you what to do, not what it is worth. I wanted the real numbers for any hand: my chances of winning, pushing, and losing from here, how they move at a running count of +6 with two decks left, and how they differ in Spanish 21."
+  - label: "Role"
+    text: "Solo. Engine, interface, and tests."
+  - label: "Key decisions"
+    text: "Two engines, because they answer different questions. Per-hand odds are exact: dynamic programming over the deck's composition, not sampling. Bankroll is Monte Carlo, because risk of ruin depends on the order hands arrive in. Both run in Web Workers so the interface never freezes, and the simulator's random numbers are seeded, so any run can be replayed exactly."
+  - label: "Rejected idea"
+    text: "Spanish 21's Super Bonus and the progressive side bet. Rare enough to model later, complex enough to delay everything else."
+  - label: "Result"
+    text: "In development. The exact engine is checked against published Wizard of Odds figures across 20 test files, with ten million simulated hands as an independent second opinion. The simulator charts the bankroll for a run, a median line and a 10th-90th percentile band across runs, risk of ruin, and expected value per 100 hands."
+lineage:
+  - name: "Spanish 21 Probability"
+    version: "v0.1"
+    note: "Python simulator in the terminal"
+    date: "Dec 2025"
+  - name: "Blackjack Odds"
+    version: "v0.2"
+    note: "exact engine and a desktop app"
+    date: "2026"
+---

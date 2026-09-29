@@ -406,3 +406,25 @@ Kevin's point: dragging a corner is the interaction the site is built around, an
 - **A passive wheel listener can't stop the bounce.** `preventDefault()` in a passive listener is ignored (silently, apart from a console warning). The listener has to be registered with `{ passive: false }`.
 - **`overscroll-behavior-y` belongs on the scrolling element** — here `body`, since the stage is a full-height child.
 - **Tests that scroll a fixed number of pixels encode the turn distance.** Two M2.4 checks failed after the change, not because behaviour regressed but because 180px is 30% of 600 and 43% of 420. They now import `SCROLL_PER_TURN` and scroll in tenths of a turn.
+
+## Content round: timeline, skills, a fourth project (2026-09-28)
+
+### What changed
+All of this is content, not engine work. Kevin gave the substance; the drafting followed his notes.
+
+1. **Timeline titles are plain now.** The release-style names ("Hello, world", "Breaking change", "Concurrency") became what actually happened: high school graduation, started NYU as pre-med, changed majors, front end at a startup, part time at a new bakery, studied abroad, balanced jobs with school, added a math minor, learned software engineering, graduated, Now. The version tags (v0.1 → v1.1) stay, so the notebook's "every chapter is a release" premise still reads, but the titles no longer make a recruiter decode a metaphor.
+2. **003 and 004 swapped.** Changing majors came before the startup work, so the entries traded places (each kept its own dates, and the struck "~~public health~~ CS + Econ" note moved with the major change to 003).
+3. **Descriptions rewritten** for 001 (the hospital volunteering and martial arts moved up from 002, where they didn't belong), 002, 005, 006, 007, 008, 009, 010. MyRecipePal is gone from the timeline and from Minced's lineage.
+4. **Skills:** languages gained Java, C, C++, R; frontend gained 21st.dev; Zod left backend; design & tools gained Product development and GitHub (moved out of teamwork). Foundations & practice lost its version tags and the "Under pressure" row, and each row's list is Kevin's.
+5. **A fourth project, Blackjack Odds**, drafted from the repo at `C:\Users\Kevin Pham\Blackjack odds` (Electron + React + TypeScript; exact DP engine for per-hand odds, Monte Carlo for bankroll paths; checked against Wizard of Odds figures). Its lineage points back to the Python Spanish 21 simulator from Dec 2025.
+6. **Header chips removed:** the projects count ("4 of 9" — it advertised empty slots, Kevin Sep 28), and the version chips (the notebook version already sits on p. 1), and the skills page lost its "draft" chip.
+
+### Layout consequences (the page is fixed; content has to fit)
+- Longer titles cost width in the entry rows, which are one nowrap line of number, tag, title, and dates. "Learned software engineering" pushed "Sep 2025 – present" off the page, so the date became "Sep 2025 –" (as entry 011 already reads).
+- Entry 004's description wrapped to three lines at its indent, breaking the 4-ruled-line rhythm; it was trimmed to two.
+- The struck marginalia sat on the date at 003's indent, so it moved to `left-[336px]` — the gap between title and dates.
+- **The projects grid already handled four**: at four cards it switches from three cards plus the licorice fern to a 2×2 of cards. The fern is only on the mobile page now.
+
+### Gotchas
+- **Python's `open(path, "w")` rewrites a file with CRLF on Windows.** Sixteen content and source files quietly changed every line, which git saw as a full rewrite. The loader test caught it: its `^title:.*\n` regex no longer matched (there's a `\r` before the `\n`), so "a missing required field fails" stopped failing. Normalized with `perl -pi -e 's/\r\n/\n/'`. Use `newline="\n"` (or the Edit tool) next time.
+- **Tests encode content counts.** `load.test.ts` asserts the exact list of project slugs, so a new project is a test change too — deliberately, since it's the check that content and code agree.

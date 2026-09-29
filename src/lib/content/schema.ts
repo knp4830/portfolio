@@ -31,7 +31,7 @@ export const skillsSchema = z.strictObject({
   groups: z
     .array(z.strictObject({ name: text, usedIn: text, items: z.array(chipSchema).min(1) }))
     .min(1),
-  foundations: z.array(z.strictObject({ name: text, detail: text, from: text })).min(1),
+  foundations: z.array(z.strictObject({ name: text, detail: text })).min(1),
 });
 
 // Every detail page has these parts; projects add their own (Rejected idea, Pipeline,
@@ -114,7 +114,6 @@ export const pageSchemas = {
   }),
   skills: z.strictObject({
     label: text,
-    tag: text,
     meta: text,
     title: text,
     note: text,
@@ -123,7 +122,6 @@ export const pageSchemas = {
   }),
   projects: z.strictObject({
     label: text,
-    count: text.includes("{count}"),
     meta: text,
     title: text,
     note: text,
