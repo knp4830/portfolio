@@ -404,3 +404,43 @@ git add -A
 git commit -m "Rewrite the timeline, update skills, add the Blackjack Odds project"
 git push -u origin content-round
 ```
+
+## Day's close (2026-09-28)
+
+```bash
+git fetch && git status -sb                 # main up to date with origin/main, clean
+git log --oneline -3                        # 7c1f1cf Merge pull request #14 from knp4830/content-round
+gh api "repos/knp4830/portfolio/deployments?environment=Production&per_page=1"   # 7c1f1cf, 2026-09-29T03:23Z
+gh api repos/knp4830/portfolio/commits/7c1f1cf/status                            # Vercel: success
+```
+
+Merged today: PR #12 (fanned riffle, project fade, desk nav, wheel, corner hints), PR #13 (wording and layout),
+PR #14 (timeline rewrite, skills, Blackjack Odds, header chips). All live in production.
+
+## Blackjack Odds card: photo and links (2026-10-09)
+
+The scratchpad was empty this session (it does not survive), so the CDP helpers from September
+are gone. Headless Chrome screenshots are enough for layout checks:
+
+```bash
+chrome --headless=new --disable-gpu --hide-scrollbars --virtual-time-budget=4000 \
+  --window-size=1440,952 --screenshot=card.png http://localhost:3000/projects/blackjack-odds
+```
+
+**Failed:** the same command at `--window-size=390,844` does not emulate a phone — content
+renders wider than the window and looks clipped. Use the desktop app's browser pane with the
+mobile preset (it sets device metrics properly), or CDP `Emulation.setDeviceMetricsOverride`.
+
+```bash
+cp "<the pasted screenshot>" public/projects/blackjack-odds.webp
+pnpm content:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
+```
+
+```bash
+# Kevin: commit, push, PR
+git fetch
+git checkout -b blackjack-card origin/main
+git add -A
+git commit -m "Add the Blackjack Odds screenshot and GitHub link"
+git push -u origin blackjack-card
+```

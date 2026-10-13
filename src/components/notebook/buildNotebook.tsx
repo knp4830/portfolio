@@ -23,7 +23,7 @@ export async function buildSpread(id: SpreadId): Promise<SpreadContent> {
     case "contact":
       return contactSpread({ site, copy: await loadPage("contact") });
     case "colophon":
-      return colophonSpread({ site, copy: await loadPage("colophon") });
+      return colophonSpread({ copy: await loadPage("colophon") });
   }
 }
 

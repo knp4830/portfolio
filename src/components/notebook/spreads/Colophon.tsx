@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { PageCopy, Site } from "@/lib/content/schema";
+import type { PageCopy } from "@/lib/content/schema";
 import type { SpreadContent } from "../spreadContent";
 import { BisectorArrow } from "../art/marks";
 import { FoldFigure } from "../art/specimens";
@@ -8,12 +8,12 @@ import { HandMark } from "../HandMark";
 import { Marginalia } from "../Marginalia";
 import { PageHeader } from "../PageHeader";
 
-type ColophonProps = { site: Site; copy: PageCopy<"colophon"> };
+type ColophonProps = { copy: PageCopy<"colophon"> };
 
 // Pages 11–12, the last spread: how the notebook was built. The curl engine is
 // the specimen here — Fig. 1 shows the fold as the perpendicular bisector of the
 // corner's rest point C and the pointer P.
-export function colophonSpread({ site, copy }: ColophonProps): SpreadContent {
+export function colophonSpread({ copy }: ColophonProps): SpreadContent {
   const notes = copy.buildNotes;
   const body = copy.body.map((paragraph, i) => (
     <p key={i} className={`type-body ${i < copy.body.length - 1 ? "mb-7" : ""}`}>

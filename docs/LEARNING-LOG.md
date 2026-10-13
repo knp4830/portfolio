@@ -428,3 +428,51 @@ All of this is content, not engine work. Kevin gave the substance; the drafting 
 ### Gotchas
 - **Python's `open(path, "w")` rewrites a file with CRLF on Windows.** Sixteen content and source files quietly changed every line, which git saw as a full rewrite. The loader test caught it: its `^title:.*\n` regex no longer matched (there's a `\r` before the `\n`), so "a missing required field fails" stopped failing. Normalized with `perl -pi -e 's/\r\n/\n/'`. Use `newline="\n"` (or the Edit tool) next time.
 - **Tests encode content counts.** `load.test.ts` asserts the exact list of project slugs, so a new project is a test change too — deliberately, since it's the check that content and code agree.
+
+### Settled in review (same day)
+- **005 keeps "front of house lead"** — it was true, and it is the line that earns "running a store is running people".
+- **The colophon's fold diagram reads "420px of scroll = 1 turn"**, matching `SCROLL_PER_TURN`. Worth remembering that the colophon quotes real constants: changing one is a content change too.
+- **The Blackjack Odds card is a draft from reading the repo.** Kevin is having Claude inside that repo fill the fields properly (the request is in the chat log): title, cardLine (110 characters or fewer), oneLiner, stack, dates, status, Problem/Role/Key decisions/Result within ~900 characters total, and lineage — plus confirmation that per-hand odds are exact dynamic programming while Monte Carlo covers only the bankroll.
+
+## Taped screenshots and real links (2026-10-09)
+
+### What changed
+The Blackjack Odds entry came back from the project's own repo (the request is
+`docs/PROJECT-INTAKE.md`), and with it the first real screenshot. Cards gained two optional
+content fields:
+
+- **`image: { src, alt }`** — renders through a new `TapedPhoto`: the screenshot inside a paper
+  border, tilted 1.2°, with two tape strips down its right side (Kevin's call). A dark app
+  screenshot sitting flat in a dashed slot reads as a hole cut in the page; taped to the paper it
+  reads as a print someone stuck there, which is what the notebook is pretending to be.
+- **`links: { github?, live? }`** — a huckleberry chip linking out, in place of the dashed
+  "live · after launch" / "GitHub · later" slot. Both slots keep their old behaviour when a
+  project has no links, so three of the four cards are unchanged.
+
+Role lines now say how much of each project Claude wrote: Blackjack Odds is "project manager, not
+author" (Kevin set the rules and checked the numbers; Fable wrote the code, and seeing how far it
+could go was the point), World Map is "I designed all of it and reviewed every change; Claude
+built much of it."
+
+### What the page made us change
+A fixed page pushes back on content, every time:
+
+- **The photo costs exactly what the blank slot cost.** 62px of image plus its 8px border is the
+  70px the dashed square used, so the spread's cards stay 308px and aligned. Mobile cards are
+  full width and stacked, so there the photo gets 150px and the card grows (`min-h` instead of a
+  fixed height).
+- **The detail page was three lines too long** with the fuller copy. Trimming Key decisions by a
+  line and tightening Problem and Result brought it back; `fitDetail`'s estimate said 25 lines
+  against 22 available, and the real wrap was 22 — the estimate is conservative, so trust the
+  screenshot over the arithmetic.
+- **"Working build, not packaged" overflowed the card's footer row**, which is one nowrap line.
+  Written as `"Working build; not packaged"` the card shows the stage and the detail page's
+  header chip shows the rest — the split the status field was designed for.
+
+### Gotchas
+- **The mobile tree renders before the desktop one**, so `document.querySelector('img')` finds the
+  hidden mobile copy: zero box, never loaded, looks like a broken image. Filter by `offsetParent`.
+- **Lazy images aren't painted when you screenshot right after scrolling.** Twice I thought the
+  photo was blank; it just hadn't decoded. Wait, then shoot.
+- **Python's `open(path, "w")` writes CRLF on Windows** (again — see Sep 28). Reading with the
+  default newline translation and writing with `newline="\n"` keeps the diff honest.
