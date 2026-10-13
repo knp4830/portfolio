@@ -138,6 +138,11 @@ Paste it into the portfolio session. What happens here:
 2. `order` is set so the spread reads the way we want; the grid is 2x2 up to four projects and
    three columns after that.
 3. The image is sized and saved under `public/`.
-4. Links wait: the card has no link or screenshot fields yet (CLAUDE.md → Content keeps the
-   slots empty until there's something real). Both get added when the first project has a live
-   URL, so a launch is one content change, not a layout change.
+4. The image is saved under `public/projects/` and set as the project's `image` (src + alt);
+   it renders as a photo taped onto the card. A `links.github` or `links.live` URL turns the
+   dashed "later" slot on the detail page into a real link. Both fields are optional, so a
+   project without them keeps the empty slots.
+
+Worth knowing before you ask: a card's copy has to fit a fixed page. Expect the detail parts to
+come back around 1,000 characters and get trimmed to about 950, and a long `status` to be split
+into "Stage; detail" so the card's footer row fits.

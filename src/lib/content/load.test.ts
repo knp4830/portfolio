@@ -34,7 +34,10 @@ async function broken(file: string, edit: (source: string) => string) {
   const dir = await mkdtemp(path.join(root, "case-"));
   await cp(realRoot, dir, { recursive: true });
   const target = path.join(dir, file);
-  await writeFile(target, edit(await readFile(target, "utf8")));
+  // Normalize first: git hands Windows checkouts CRLF, so an edit whose pattern ends in a
+  // newline would match nothing and the case would pass by never breaking the file.
+  const source = (await readFile(target, "utf8")).replaceAll("\r\n", "\n");
+  await writeFile(target, edit(source));
   return dir;
 }
 

@@ -1,25 +1,32 @@
 ---
-# Drafted from the repo at C:\Users\Kevin Pham\Blackjack odds (Kevin to confirm).
+# Written by the project's own repo (Kevin, Oct 9) and trimmed to the page.
 order: 4
 title: "Blackjack Odds"
-oneLiner: "Desktop odds calculator for blackjack and Spanish 21: exact odds for any hand, deck, and count, plus a Monte Carlo bankroll simulator"
-cardLine: "Exact odds for any blackjack hand, and a Monte Carlo run of the bankroll behind it."
-stack: ["TypeScript", "React", "Electron", "Vite", "Tailwind v4", "Web Workers", "Recharts", "Vitest"]
+oneLiner: "An exact solver for six blackjack games: win, push and loss odds for every play, under any rules and any count, in a desktop app."
+cardLine: "Desktop app that works out blackjack odds exactly, for any rules, deck count and card count."
+stack: ["TypeScript", "Electron", "React", "Web Workers", "Zustand", "Comlink", "Tailwind CSS", "Recharts", "Vitest"]
 dates: "Sep 2026 – present"
-status: "In development"
+# "Stage; detail": the card shows the stage, the detail page tags the detail.
+status: "Working build; not packaged"
+image:
+  src: "/projects/blackjack-odds.webp"
+  alt: "The app's opening screen: one hand dealt, with the expected value of surrendering, hitting, standing and doubling listed beside it."
+links:
+  # 404s for anyone else until Kevin makes the repo public.
+  github: "https://github.com/knp4830/blackjack-odds"
 details:
   - label: "Problem"
-    text: "Strategy charts tell you what to do, not what it is worth. I wanted the real numbers for any hand: my chances of winning, pushing, and losing from here, how they move at a running count of +6 with two decks left, and how they differ in Spanish 21."
+    text: "Strategy charts say which play is best, not how often it wins, or how that shifts with the rules, the deck count or the count. I wanted those numbers exact, for Spanish 21 and the other variants too."
   - label: "Role"
-    text: "Solo. Engine, interface, and tests."
+    text: "Project manager, not author. I set the ground rules, reviewed the work and checked the numbers; Claude's Fable model wrote the code. Seeing how far it could go was half the point."
   - label: "Key decisions"
-    text: "Two engines, because they answer different questions. Per-hand odds are exact: dynamic programming over the deck's composition, not sampling. Bankroll is Monte Carlo, because risk of ruin depends on the order hands arrive in. Both run in Web Workers so the interface never freezes, and the simulator's random numbers are seeded, so any run can be replayed exactly."
+    text: "Exact recursion over the cards left in the shoe, not simulation: slower, but every number is reproducible. It keeps every payoff's probability, not one average, so it shows win, push and loss and prices Spanish 21's bonuses. Workers keep the window responsive."
   - label: "Rejected idea"
-    text: "Spanish 21's Super Bonus and the progressive side bet. Rare enough to model later, complex enough to delay everything else."
+    text: "An infinite-deck shortcut for instant solves. Every number would be slightly off; caching and parallel workers gave the speed instead."
   - label: "Result"
-    text: "In development. The exact engine is checked against published Wizard of Odds figures across 20 test files, with ten million simulated hands as an independent second opinion. The simulator charts the bankroll for a run, a median line and a 10th-90th percentile band across runs, risk of ruin, and expected value per 100 hands."
+    text: "Six games, four side bets, a coached play table and a bankroll simulator. 1,134 tests pin it to published figures: a basic strategy chart cell for cell, a house edge of -0.40%, and 10M simulated hands within three standard errors."
 lineage:
-  - name: "Spanish 21 Probability"
+  - name: "Spanish 21"
     version: "v0.1"
     note: "Python simulator in the terminal"
     date: "Dec 2025"

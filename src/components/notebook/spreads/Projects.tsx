@@ -10,6 +10,7 @@ import { PageHeader } from "../PageHeader";
 import { ProjectSheet } from "../ProjectSheet";
 import { ChipRow, StackChip } from "../StackChip";
 import { Tape } from "../Tape";
+import { TapedPhoto } from "../TapedPhoto";
 
 type ProjectsProps = {
   copy: PageCopy<"projects">;
@@ -45,6 +46,9 @@ const LINE = 28;
 const TITLE_EM = 0.55;
 const DETAIL_CHAR = 7.4;
 const MONO_CHAR = 7.6;
+/** A taped screenshot stands in for the blank slot, so it costs the same 70px on a spread: image plus its 8px border.
+ *  The mobile card is full width, so the photo gets the room to be worth looking at. */
+const PHOTO_HEIGHT = { spread: 62, mobile: 150 };
 /** The two "live · after launch" / "GitHub · later" slots, with the gap before them. */
 const SLOTS_WIDTH = 300;
 
@@ -160,8 +164,9 @@ function ProjectCard({ project, copy, fluid = false }: { project: Project; copy:
       href={`/projects/${project.slug}`}
       scroll={false}
       data-card={project.slug}
-      className={`relative flex h-[308px] scroll-mt-4 flex-col rounded-chip border border-ink-soft bg-paper p-3.5 text-ink no-underline hover:border-huckleberry ${
-        fluid ? "w-full" : "w-[245px]"
+      className={`relative flex scroll-mt-4 flex-col rounded-chip border border-ink-soft bg-paper p-3.5 text-ink no-underline hover:border-huckleberry ${
+        // On a spread every card is the same height; stacked on mobile each one takes what it needs.
+        fluid ? "min-h-[308px] w-full" : "h-[308px] w-[245px]"
       }`}
     >
       <span
@@ -169,8 +174,12 @@ function ProjectCard({ project, copy, fluid = false }: { project: Project; copy:
         data-card-pin
         className="absolute -top-2 left-1/2 -ml-2 hidden size-4 rounded-full border-[3px] border-paper bg-huckleberry"
       />
-      {/* Screenshot slot: a blank square until Kevin adds pictures. */}
-      <span aria-hidden className="h-[70px] shrink-0 rounded-chip border border-dashed border-ink-soft" />
+      {/* A taped-in screenshot once Kevin has one; a blank square until then. */}
+      {project.image ? (
+        <TapedPhoto src={project.image.src} alt={project.image.alt} height={fluid ? PHOTO_HEIGHT.mobile : PHOTO_HEIGHT.spread} />
+      ) : (
+        <span aria-hidden className="h-[70px] shrink-0 rounded-chip border border-dashed border-ink-soft" />
+      )}
       <span className="mt-2.5 font-display text-[24px] leading-7 [font-variation-settings:'SOFT'_50,'WONK'_0]">{project.title}</span>
       <span className="type-card mt-1">{project.cardLine}</span>
       <span className="mt-2.5 flex flex-wrap gap-1.5">
@@ -195,8 +204,8 @@ function ProjectDetail({ project, copy, stacked = false }: { project: Project; c
   const fit = fitDetail(project);
   const slots = (
     <div className={`flex gap-2 ${stacked ? "" : fit.slotsBelow ? "h-7 items-center" : "pb-1.5"}`}>
-      <EmptySlot label={copy.detail.live} />
-      <EmptySlot label={copy.detail.github} />
+      {project.links?.live ? <SlotLink href={project.links.live} label={copy.detail.liveLink} /> : <EmptySlot label={copy.detail.live} />}
+      {project.links?.github ? <SlotLink href={project.links.github} label={copy.detail.githubLink} /> : <EmptySlot label={copy.detail.github} />}
     </div>
   );
   const row = stacked ? "flex flex-col" : "grid grid-cols-[84px_minmax(0,1fr)] gap-x-4";
@@ -269,6 +278,21 @@ function ProjectDetail({ project, copy, stacked = false }: { project: Project; c
 
 // A dashed placeholder for a link or screenshot that doesn't exist yet. Not a
 // link: CLAUDE.md says no project links until Kevin provides them.
+/** A slot that goes somewhere: the same shape as EmptySlot, drawn as a link. */
+function SlotLink({ href, label }: { href: string; label: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="type-label inline-flex h-[22px] items-center gap-1.5 rounded-chip border border-huckleberry px-2 whitespace-nowrap text-huckleberry no-underline"
+    >
+      <LinkIcon />
+      {label}
+    </a>
+  );
+}
+
 function EmptySlot({ label }: { label: string }) {
   return (
     <span className="type-label inline-flex h-[22px] items-center gap-1.5 rounded-chip border border-dashed border-ink-soft px-2 whitespace-nowrap text-ink-soft">

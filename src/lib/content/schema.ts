@@ -57,7 +57,10 @@ export const projectSchema = z.strictObject({
   lineage: z
     .array(z.strictObject({ name: text, version: text.optional(), note: text, date: text }))
     .optional(),
-  // No links or screenshots yet (CLAUDE.md → Content); fields get added when Kevin provides them.
+  // A screenshot Kevin has provided, taped onto the card. Without one the slot stays blank.
+  image: z.strictObject({ src: text.startsWith("/"), alt: text }).optional(),
+  // Real links replace the "after launch" / "later" slots once a project has them.
+  links: z.strictObject({ live: z.url().optional(), github: z.url().optional() }).optional(),
 });
 
 const section = z.strictObject({ title: text, subtitle: text });
@@ -127,7 +130,7 @@ export const pageSchemas = {
     note: text,
     specimen: text,
     specimenNote: text,
-    detail: z.strictObject({ label: text, stack: text, lineage: text, live: text, github: text, close: text }),
+    detail: z.strictObject({ label: text, stack: text, lineage: text, live: text, github: text, liveLink: text, githubLink: text, close: text }),
     card: z.strictObject({ link: text }),
   }),
   contact: z.strictObject({

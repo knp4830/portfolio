@@ -96,7 +96,7 @@ portfolio/
 - **The notebook is exactly 12 pages** — 1–2 opening, 3–4 timeline, 5–6 skills, 7–8 projects, 9–10 contact, 11–12 colophon (Kevin moved the colophon last, Sep 21). The order lives in `src/lib/notebook/spreads.ts`; page numbers, contents ranges, and previous/next all derive from it.
 - **Contents:** five sections with page ranges. Hover and keyboard focus turn the title huckleberry with a highlighter swash, tint the leader and range, and show "jump →"; click riffles straight to the section and updates the route.
 - No phone number anywhere. No LeetCode.
-- Project cards have **no links or screenshots** until Kevin provides them — leave the slots empty, don't invent placeholders that look real.
+- Project cards show a **taped-in screenshot** when the project's `image` is set and a **real link chip** when `links.github` or `links.live` is set; without them the dashed slots stay empty. Never invent either (CLAUDE.md → Do NOT: no placeholders that look real).
 - Salal (`--salal`) is never used for text under 24px — it fails contrast.
 - Huckleberry is 1.9:1 on the day desk: text and focus rings **on the desk** use `--desk-ink`.
 - Facts values use Special Elite at 0.88×; labels stay JetBrains Mono in huckleberry. Project detail paragraphs stay Newsreader.
@@ -221,10 +221,17 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 **Wheel, desk contents, corner hints** (same branch): the curl swallows wheel events (non-passive listener + `overscroll-behavior-y: none`), so the page never rubber-bands; `SCROLL_PER_TURN` 600 → 420; a row of section links (Contents · Timeline · Skills · Projects · Contact, words not boxes) sits on the desk beside the day/night switch, so any spread can jump to any section; "drag to turn →" (p. 2, ink) and "← drag back" (p. 3) name the gesture. Kevin's new p. 9 line: "I'm in Seattle for now, and I'd love to travel anywhere for work." Verified: 9/9 new, 9/9, 22/22, 25/25, 8/8; 73 unit tests.
 
-**Flagged, not changed:** the colophon's fold diagram still says "600px of scroll = 1 turn" — now 420. Needs Kevin's word.
-
 **Content round** (branch `content-round`, Kevin Sep 28): timeline titles are plain descriptions instead of release names (version tags stay); 003/004 swapped; descriptions rewritten for 001, 002, 005–010; MyRecipePal gone everywhere; skills groups and foundations updated (no version tags, no "Under pressure", GitHub moved to design & tools); a fourth project, **Blackjack Odds**, drafted from the local repo, with the Python Spanish 21 simulator as its lineage; version chips off the back cover and colophon; the skills "draft" chip and the projects "4 of 9" count gone. Contents: timeline reads "June 2022 – now", projects lists all four names. Verified: every spread fits at 1440×952; 9/9, 22/22, 25/25, 8/8, 9/9 browser checks; 73 unit tests.
 
-**Waiting on Kevin:** the Product row's wording (options offered); whether 005 should still say "front of house lead"; Blackjack Odds' title, status, and framing (exact engine vs Monte Carlo); the colophon's "600px of scroll = 1 turn" (now 420).
+**Closed out Sep 28 (PR #14 merged; production deploy `7c1f1cf` succeeded):** 005 keeps "front of house lead"; the colophon's fold diagram now reads "420px of scroll = 1 turn"; the Product row stands as drafted ("Customer discovery, design mockups, shipping deliverables, and building for accessibility and reliability") — revisit if Kevin picks differently from the list in the LEARNING-LOG entry.
+
+**Blackjack Odds entry** (branch `blackjack-card`, Oct 9): the card copy came from the project's own repo via `docs/PROJECT-INTAKE.md`, trimmed to the page. Cards gained two optional content fields — `image` (a taped-in screenshot: paper border, slight tilt, two tape strips down the right side) and `links` (a real chip replacing the "after launch" / "later" slot). Role lines now say plainly how much Claude wrote: Blackjack Odds "project manager, not author" (Fable wrote the code), World Map "I designed all of it and reviewed every change; Claude built much of it."
+
+**Open, in Kevin's court:**
+- **Make `knp4830/blackjack-odds` public.** The card links to it; until then the link 404s for everyone but Kevin. Nothing else is blocking it — MIT licence is in, no secrets committed; the repo's own session flagged two Wizard of Odds test fixtures (attributed, factual tables) and that `CLAUDE.md` goes public with it.
+- **Screenshots for Minced and PolyPaper** — their slots stay dashed until Kevin has pictures; one card with a photo and three without is fine for now.
+- **A live link for Blackjack Odds** needs packaging (`electron-builder`, a new package — ask first) and unsigned builds warn on install.
+- **`public/resume.pdf` still missing** — both resume buttons 404 in production.
+- **Production is still behind Vercel Authentication** — Settings → Deployment Protection → "Only Preview Deployments".
 
 **Next up: M3.1 — Accessibility pass.**
