@@ -444,3 +444,28 @@ git add -A
 git commit -m "Add the Blackjack Odds screenshot and GitHub link"
 git push -u origin blackjack-card
 ```
+
+## Domain and material pass (2026-10-13)
+
+```bash
+pnpm dev -p 3100        # fast iteration while adjusting the cover, ribbon, and marginalia
+pnpm bake:paper         # re-render the baked textures after a palette change
+```
+
+Cropping a region of a screenshot to judge detail, using the sharp that ships inside Next:
+
+```bash
+node -e "const r=require('module').createRequire(require.resolve('next/package.json'));const sharp=r('sharp');sharp('v2.png').extract({left:720,top:25,width:90,height:150}).resize({width:270,kernel:'nearest'}).png().toFile('crop.png')"
+```
+
+**Failed:** edited `--leather` and `--stitch` in `globals.css`, ran `pnpm bake:paper`, and the textures came out
+byte-identical. The bake injects `design/tokens.css`, not the app's stylesheet. Changed both, re-baked.
+
+```bash
+# Kevin: commit, push, PR
+git fetch
+git checkout -b cover-ribbon origin/main
+git add -A
+git commit -m "Round and darken the cover, velvet ribbon, point the note at Minced"
+git push -u origin cover-ribbon
+```

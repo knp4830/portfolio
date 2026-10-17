@@ -115,7 +115,7 @@ portfolio/
 - Do not add a page-flip, carousel, or scroll-hijacking library.
 - Do not write or rewrite site copy — it comes from `docs/BRIEF.md` via `content/`. Flag copy problems instead.
 - Do not add features that aren't in the current milestone.
-- Do not use gradients, drop shadows, or blur in UI elements. The only exceptions: the lamp's radial falloff on the desk, its faint warm cast on the paper, and one soft shadow under the notebook (on the leather cover). Blur is allowed only inside baked paper textures (edge aging, smudges).
+- Do not use gradients, drop shadows, or blur in UI elements. The only exceptions, all of them materials rather than controls: the lamp's radial falloff on the desk, its faint warm cast on the paper, one soft shadow under the notebook (on the leather cover), and the ribbon's velvet sheen (Kevin, Oct 13). Blur is allowed only inside baked paper textures (edge aging, smudges).
 - Do not make the paper or handwriting clean and uniform. Wear varies page to page, and notes are deliberately imperfect (see the brief's "Paper details" and "Handwriting and note areas").
 
 ## Working agreement
@@ -233,5 +233,9 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 - **A live link for Blackjack Odds** needs packaging (`electron-builder`, a new package — ask first) and unsigned builds warn on install.
 - **`public/resume.pdf` still missing** — both resume buttons 404 in production.
 - **Production is still behind Vercel Authentication** — Settings → Deployment Protection → "Only Preview Deployments".
+
+**Live on its own domain** (Oct 13): `kevinpham.page` (Porkbun, apex A record + `www` CNAME, `www` 308s to the apex), Deployment Protection down to previews only, so the site is public. Minced will get `minced.app` rather than a subdomain, so its Google OAuth config is set up once.
+
+**Material pass** (branch `cover-ribbon`, Oct 13): the projects note points at Minced; the cover has rounded corners and darker leather; the stitching is darker; the ribbon is velvet with a sheen. **Palette changes now need editing twice** — `globals.css` for runtime, `design/tokens.css` for anything `pnpm bake:paper` renders.
 
 **Next up: M3.1 — Accessibility pass.**

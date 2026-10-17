@@ -103,10 +103,10 @@ export function projectsSpread({ copy, projects }: ProjectsProps): SpreadContent
           </figure>
         )}
       </div>
-      <div className="absolute top-[96px] left-[330px]">
+      <div className="absolute top-[60px] left-[258px]">
         <Marginalia lines={[copy.note]} tilt={2} />
       </div>
-      <ProjectsArrow className="pointer-events-none absolute top-0 left-0 overflow-visible" />
+      <ProjectsArrow className="pointer-events-none absolute top-[-34px] left-[-112px] overflow-visible" />
       <Tape tilt={4} className="top-[500px] left-[360px]" />
     </>
   );

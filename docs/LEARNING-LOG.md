@@ -476,3 +476,18 @@ A fixed page pushes back on content, every time:
   photo was blank; it just hadn't decoded. Wait, then shoot.
 - **Python's `open(path, "w")` writes CRLF on Windows** (again — see Sep 28). Reading with the
   default newline translation and writing with `newline="\n"` keeps the diff honest.
+
+## Cover, ribbon, and a note that points at the right card (2026-10-13)
+
+Four small material changes after seeing the site on its own domain.
+
+- **"shipping this one" points at Minced.** The note and its arrow sat above PolyPaper's column and pointed into the gap between cards. Both moved left and up (note to `top-[60px] left-[258px]`, the baked arrow offset to match), so the arrowhead lands on Minced's top edge.
+- **The cover's corners are rounded** (`rounded-[14px]` on `LeatherCover`). The baked texture is a background image, so the radius clips it; the stitching is inset far enough that nothing gets cut.
+- **Darker leather and stitching.** `--leather`, `--leather-dark`, `--leather-wear` and `--stitch` all came down a step, day and night.
+- **The ribbon is velvet.** Two gradients: a band of sheen across its width (dark edge → body → sheen at 44% → body → dark edge) and the lamp catching its top, fading out by 38% of its length.
+
+### The thing that cost the most time
+**The bake reads `design/tokens.css`, not `globals.css`.** I changed the app's tokens, re-baked, and nothing moved — the cover is an AVIF rendered from the design export, which carries its own copy of the palette. The colours have to change in *both* files: `globals.css` for anything drawn at runtime, `design/tokens.css` for anything baked. Worth remembering for any future palette change: `pnpm bake:paper` is only as current as the design tokens.
+
+### A rule bent on purpose
+CLAUDE.md bans gradients in UI elements. The ribbon now has two. The ban is about UI chrome that looks machine-made — buttons, panels, bars — and the exceptions already listed (the lamp's falloff, its cast on paper, the notebook's shadow) are all *material* rendering. A velvet ribbon is the same category: it's a physical object in the scene, and flat huckleberry read as a sticker. Noted here and in CLAUDE.md so it doesn't get "fixed" later.
