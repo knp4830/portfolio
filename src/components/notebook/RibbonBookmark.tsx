@@ -1,6 +1,8 @@
 import Link from "next/link";
 
-// The huckleberry ribbon hanging from the top edge; it always leads back to the
+// The velvet ribbon hanging from the top edge: a band of sheen across its width
+// and the lamp catching its top (Kevin, Oct 13 — the one gradient the UI allows,
+// because it's a material, not a control).; it always leads back to the
 // table of contents. Desktop: over the right page by the spine. Mobile: top left.
 // While a page turns, the curl engine pulls it up out of the way (translate on
 // [data-ribbon]); it drops back once the page has landed. The link clips it, so
@@ -17,7 +19,7 @@ export function RibbonBookmark({ label, placement }: { label: string; placement:
       <span
         aria-hidden
         data-ribbon
-        className="absolute inset-y-0 left-3 w-5 bg-huckleberry transition-[translate] duration-300 ease-out [clip-path:polygon(0_0,100%_0,100%_100%,50%_calc(100%-9px),0_100%)]"
+        className="absolute inset-y-0 left-3 w-5 bg-[linear-gradient(to_bottom,color-mix(in_srgb,var(--ribbon-sheen)_85%,transparent),transparent_38%),linear-gradient(to_right,var(--ribbon-edge),var(--ribbon)_26%,var(--ribbon-sheen)_44%,var(--ribbon)_66%,var(--ribbon-edge))] transition-[translate] duration-300 ease-out [clip-path:polygon(0_0,100%_0,100%_100%,50%_calc(100%-9px),0_100%)]"
       />
     </Link>
   );

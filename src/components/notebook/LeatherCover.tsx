@@ -8,7 +8,7 @@ export function LeatherCover() {
   return (
     <div
       aria-hidden
-      className="absolute top-[46px] left-[68px] h-[876px] w-[1304px] bg-leather bg-[image:var(--img-day)] bg-size-[100%_100%] shadow-[0_36px_70px_var(--cover-shadow),0_8px_18px_var(--cover-shadow-near)] night:bg-[image:var(--img-night)]"
+      className="absolute top-[46px] left-[68px] h-[876px] w-[1304px] rounded-[14px] bg-leather bg-[image:var(--img-day)] bg-size-[100%_100%] shadow-[0_36px_70px_var(--cover-shadow),0_8px_18px_var(--cover-shadow-near)] night:bg-[image:var(--img-night)]"
       style={{ "--img-day": `url(${COVER.day})`, "--img-night": `url(${COVER.night})` } as CSSProperties}
     />
   );
