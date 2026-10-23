@@ -469,3 +469,27 @@ git add -A
 git commit -m "Round and darken the cover, velvet ribbon, point the note at Minced"
 git push -u origin cover-ribbon
 ```
+
+## Nightside Atlas entry (2026-10-23)
+
+```bash
+node -e "const r=require('module').createRequire(require.resolve('next/package.json'));const sharp=r('sharp');sharp('../nightside-atlas/portfolio-card.png').resize({width:1400}).webp({quality:82}).toFile('public/projects/nightside-atlas.webp')"
+git rm content/projects/world-map-photo-album.mdx
+pnpm content:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
+```
+
+A 2774×1750 PNG became a 1400×883 webp at 35KB. The card crops it, so the source only needs to
+be about twice the rendered width.
+
+```bash
+# Kevin: commit, push, PR
+git fetch
+git checkout -b nightside-atlas origin/main
+git add -A
+git commit -m "Replace the World Map placeholder with the Nightside Atlas entry"
+git push -u origin nightside-atlas
+```
+
+**Failed:** `pnpm build` ended with `<Html> should not be imported outside of pages/_document`
+while prerendering `/404`. Nothing to do with the code — `pnpm dev` had been running against
+the same `.next` directory. `rm -rf .next && pnpm build` is clean.

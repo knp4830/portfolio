@@ -58,10 +58,16 @@ export const projectSchema = z.strictObject({
     .array(z.strictObject({ name: text, version: text.optional(), note: text, date: text }))
     .optional(),
   // A screenshot Kevin has provided, taped onto the card. Without one the slot stays blank.
-  image: z.strictObject({ src: text.startsWith("/"), alt: text }).optional(),
+  // `focus` is the image's object-position inside the card's crop; it defaults to the middle.
+  image: z.strictObject({ src: text.startsWith("/"), alt: text, focus: text.optional() }).optional(),
   // Real links replace the "after launch" / "later" slots once a project has them.
   links: z.strictObject({ live: z.url().optional(), github: z.url().optional() }).optional(),
-});
+}).refine(
+  // A photo costs the card 70px, which is three wrapped lines of cardLine; past this the
+  // card's footer row slides out from under its own border.
+  (project) => !project.image || project.cardLine.length <= 92,
+  { path: ["cardLine"], message: "must be 92 characters or fewer on a card that also has an image" },
+);
 
 const section = z.strictObject({ title: text, subtitle: text });
 
