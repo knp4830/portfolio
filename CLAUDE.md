@@ -229,7 +229,8 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 **Open, in Kevin's court:**
 - **Make `knp4830/blackjack-odds` public.** The card links to it; until then the link 404s for everyone but Kevin. Nothing else is blocking it — MIT licence is in, no secrets committed; the repo's own session flagged two Wizard of Odds test fixtures (attributed, factual tables) and that `CLAUDE.md` goes public with it.
-- **Screenshots for Minced and PolyPaper** — their slots stay dashed until Kevin has pictures; one card with a photo and three without is fine for now.
+- **Screenshots for Minced and PolyPaper** — their slots stay dashed until Kevin has pictures.
+- **`docs/BRIEF.md` still says "World Map Photo Album"** — the project shipped as Nightside Atlas. Renaming it in the brief is Kevin's call.
 - **A live link for Blackjack Odds** needs packaging (`electron-builder`, a new package — ask first) and unsigned builds warn on install.
 - **`public/resume.pdf` still missing** — both resume buttons 404 in production.
 - **Production is still behind Vercel Authentication** — Settings → Deployment Protection → "Only Preview Deployments".
@@ -237,5 +238,9 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 **Live on its own domain** (Oct 13): `kevinpham.page` (Porkbun, apex A record + `www` CNAME, `www` 308s to the apex), Deployment Protection down to previews only, so the site is public. Minced will get `minced.app` rather than a subdomain, so its Google OAuth config is set up once.
 
 **Material pass** (branch `cover-ribbon`, Oct 13): the projects note points at Minced; the cover has rounded corners and darker leather; the stitching is darker; the ribbon is velvet with a sheen. **Palette changes now need editing twice** — `globals.css` for runtime, `design/tokens.css` for anything `pnpm bake:paper` renders.
+
+**Nightside Atlas** (branch `nightside-atlas`, Oct 23): the photography project shipped and replaced its World Map Photo Album placeholder at `order: 3`, written from that repo's `HANDOFF.md`. First card with a real live link (`photography.kevinpham.page`); its GitHub repo is private, so that slot stays dashed. Cards gained `image.focus` (per-image crop position) and a schema guard: with an image, `cardLine` is capped at 92 characters, because a photo costs the card three wrapped lines.
+
+**Still four project cards**, so the second-spread restructure isn't needed yet. The open design decisions from Oct 12 stand: whether PolyPaper drops to the index card, and whether to build the second spread + index now or when a fifth project lands.
 
 **Next up: M3.1 — Accessibility pass.**

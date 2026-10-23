@@ -491,3 +491,36 @@ Four small material changes after seeing the site on its own domain.
 
 ### A rule bent on purpose
 CLAUDE.md bans gradients in UI elements. The ribbon now has two. The ban is about UI chrome that looks machine-made — buttons, panels, bars — and the exceptions already listed (the lamp's falloff, its cast on paper, the notebook's shadow) are all *material* rendering. A velvet ribbon is the same category: it's a physical object in the scene, and flat huckleberry read as a sticker. Noted here and in CLAUDE.md so it doesn't get "fixed" later.
+
+## Nightside Atlas replaces the World Map placeholder (2026-10-23)
+
+### What changed
+The photography project shipped, under a name. `content/projects/world-map-photo-album.mdx` —
+a placeholder with `d3`, "To be added" and no dates — is gone; `nightside-atlas.mdx` takes its
+`order: 3` slot, written from that repo's own `HANDOFF.md` (commit `3358ab8`) and trimmed to
+the page. It is the same project: the globe that morphs to a flat map, a room per country,
+the Portugal tram and the Switzerland gondola both appear in the old placeholder's copy.
+
+It is also the first card with a **live link** (`photography.kevinpham.page`), so the detail
+page now shows one real chip and one dashed slot side by side, which is exactly what that
+design was for.
+
+### Two small pieces of plumbing
+- **`image.focus`** — the card crops a photo to 207×62 (desktop) or ~300×150 (mobile), and
+  where the crop lands matters. It was hard-coded to `72% 22%` for the blackjack screenshot.
+  It is now a per-image field defaulting to the middle; blackjack keeps its old value.
+- **A guard on `cardLine`.** The schema's limit was 110 characters, written before cards could
+  hold photos. A photo costs 70px — about three wrapped lines — so 97 characters pushed this
+  card's footer row out from under its own border. The limit is now 92 *when the project has an
+  image*, enforced by a `refine` on the whole object rather than on the field, so the build
+  fails instead of the layout.
+
+### What the handoff did that was worth copying
+It gave the character counts it had already checked, said plainly that the detail text was
+twice the guide and refused to cut it ("that is an editorial call, not a factual one"), listed
+what is half-built, and told me which numbers *not* to quote because nobody had measured them.
+That is the shape the intake template was asking for and did not quite get last time.
+
+### Flagged, not changed
+`docs/BRIEF.md` still describes "World Map Photo Album" in the projects section. The brief is
+the source spec, so renaming it there is Kevin's call, not mine.

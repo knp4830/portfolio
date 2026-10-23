@@ -1,0 +1,28 @@
+---
+# Written by the project's own repo (HANDOFF.md, commit 3358ab8) and trimmed to the page.
+# Replaces the World Map Photo Album placeholder: same project, now built and named.
+order: 3
+title: "Nightside Atlas"
+oneLiner: "A dark world map where the countries I have photographed are lit; clicking one opens a gallery built from that country."
+cardLine: "A dark world map. The nine countries I have photographed are lit, each with a gallery."
+stack: ["TypeScript", "Next.js", "Canvas 2D", "SVG", "React", "Motion", "TopoJSON", "Tailwind"]
+dates: "Sep 2026 – present"
+# "Stage; detail": the card shows the stage, the detail page tags the detail.
+status: "Live; 9 of 13 countries"
+image:
+  src: "/projects/nightside-atlas.webp"
+  alt: "A world map on a near-black background. Every country is a dark blue-grey silhouette outlined in thin white, except nine — Spain, Portugal, France, Italy, Czechia, India, Vietnam, South Korea and Japan — which are filled solid amber."
+links:
+  live: "https://photography.kevinpham.page"
+details:
+  - label: "Problem"
+    text: "I had photographs from thirteen countries and nowhere to put them that wasn't a grid of thumbnails. Where a travel photograph was taken is half of what it is, so I wanted the map to be the index."
+  - label: "Role"
+    text: "Solo — design, code, data pipeline, photo processing and deploy."
+  - label: "Key decisions"
+    text: "One canvas renders everything, globe and flat map both; an earlier plan drew the settled map as SVG, which meant keeping two renderers in sync for no gain. Picking paints every country offscreen in a colour encoding its id, then reads the pixel under the cursor. The morph blends the two projection formulas rather than swapping projections, so there is no seam."
+  - label: "Rejected idea"
+    text: "A real 3D globe: harder to hit-test a country, and it buys nothing the blended 2D projection doesn't. The map is cut from phones too — at 390px seven lit European countries fall inside a 29x23px box, so nothing there is tappable."
+  - label: "Result"
+    text: "Nine countries and 53 photographs are published; four more are built but parked until I shoot enough frames. The dot field is baked at build time — 176 countries, 8,522 dots, 266KB — so the browser never does geometry."
+---

@@ -176,7 +176,12 @@ function ProjectCard({ project, copy, fluid = false }: { project: Project; copy:
       />
       {/* A taped-in screenshot once Kevin has one; a blank square until then. */}
       {project.image ? (
-        <TapedPhoto src={project.image.src} alt={project.image.alt} height={fluid ? PHOTO_HEIGHT.mobile : PHOTO_HEIGHT.spread} />
+        <TapedPhoto
+          src={project.image.src}
+          alt={project.image.alt}
+          focus={project.image.focus}
+          height={fluid ? PHOTO_HEIGHT.mobile : PHOTO_HEIGHT.spread}
+        />
       ) : (
         <span aria-hidden className="h-[70px] shrink-0 rounded-chip border border-dashed border-ink-soft" />
       )}
