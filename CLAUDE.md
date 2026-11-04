@@ -242,7 +242,7 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 
 **Still four project cards**, so the second-spread restructure isn't needed yet. The open design decisions from Oct 12 stand: whether PolyPaper drops to the index card, and whether to build the second spread + index now or when a fifth project lands.
 
-**Resume, skills, real links** (branch `resume-skills`, Nov 3): `public/resume.pdf` added, so both buttons work; skill groups dropped their "used in" project lists (`usedIn` out of the schema); Computer science gained software engineering and agile software development, Teamwork leads with Scrum; Minced links to `minced.kevinpham.page`; placeholder link slots removed everywhere, so only real links show; the projects note no longer crosses the "Projects" title.
+**Resume, skills, real links** (branch `resume-skills`, Nov 3): `public/resume.pdf` added, so both buttons work; skill groups dropped their "used in" project lists (`usedIn` out of the schema); Computer science gained software engineering and agile software development, Teamwork leads with Scrum; Minced links to `minced.kevinpham.page` and has a card photo from its live hero; Economics lists all eight courses; placeholder link slots removed everywhere, so only real links show; the projects note no longer crosses the "Projects" title, and "start here" reaches the spine level with contents row 1.
 
 **Open:** the card's dashed "link" chip is the last placeholder (it can't be a real link — the card is already one). Nobody has read the resume PDF's text to check it against "no phone number anywhere".
 
