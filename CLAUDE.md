@@ -96,7 +96,7 @@ portfolio/
 - **The notebook is exactly 12 pages** — 1–2 opening, 3–4 timeline, 5–6 skills, 7–8 projects, 9–10 contact, 11–12 colophon (Kevin moved the colophon last, Sep 21). The order lives in `src/lib/notebook/spreads.ts`; page numbers, contents ranges, and previous/next all derive from it.
 - **Contents:** five sections with page ranges. Hover and keyboard focus turn the title huckleberry with a highlighter swash, tint the leader and range, and show "jump →"; click riffles straight to the section and updates the route.
 - No phone number anywhere. No LeetCode.
-- Project cards show a **taped-in screenshot** when the project's `image` is set and a **real link chip** when `links.github` or `links.live` is set; without them the dashed slots stay empty. Never invent either (CLAUDE.md → Do NOT: no placeholders that look real).
+- Project cards show a **taped-in screenshot** when the project's `image` is set; without one the dashed slot stays empty. A detail page shows a **link chip only for a link that exists** (`links.live`, `links.github`) and nothing when there are none — no "after launch" / "later" placeholders (Kevin, Nov 3). Never invent either.
 - Salal (`--salal`) is never used for text under 24px — it fails contrast.
 - Huckleberry is 1.9:1 on the day desk: text and focus rings **on the desk** use `--desk-ink`.
 - Facts values use Special Elite at 0.88×; labels stay JetBrains Mono in huckleberry. Project detail paragraphs stay Newsreader.
@@ -232,7 +232,6 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 - **Screenshots for Minced and PolyPaper** — their slots stay dashed until Kevin has pictures.
 - **`docs/BRIEF.md` still says "World Map Photo Album"** — the project shipped as Nightside Atlas. Renaming it in the brief is Kevin's call.
 - **A live link for Blackjack Odds** needs packaging (`electron-builder`, a new package — ask first) and unsigned builds warn on install.
-- **`public/resume.pdf` still missing** — both resume buttons 404 in production.
 - **Production is still behind Vercel Authentication** — Settings → Deployment Protection → "Only Preview Deployments".
 
 **Live on its own domain** (Oct 13): `kevinpham.page` (Porkbun, apex A record + `www` CNAME, `www` 308s to the apex), Deployment Protection down to previews only, so the site is public. Minced will get `minced.app` rather than a subdomain, so its Google OAuth config is set up once.
@@ -242,5 +241,9 @@ If the DoD can't be met, don't check the box. Say what's blocking, what you trie
 **Nightside Atlas** (branch `nightside-atlas`, Oct 23): the photography project shipped and replaced its World Map Photo Album placeholder at `order: 3`, written from that repo's `HANDOFF.md`. First card with a real live link (`photography.kevinpham.page`); its GitHub repo is private, so that slot stays dashed. Cards gained `image.focus` (per-image crop position) and a schema guard: with an image, `cardLine` is capped at 92 characters, because a photo costs the card three wrapped lines.
 
 **Still four project cards**, so the second-spread restructure isn't needed yet. The open design decisions from Oct 12 stand: whether PolyPaper drops to the index card, and whether to build the second spread + index now or when a fifth project lands.
+
+**Resume, skills, real links** (branch `resume-skills`, Nov 3): `public/resume.pdf` added, so both buttons work; skill groups dropped their "used in" project lists (`usedIn` out of the schema); Computer science gained software engineering and agile software development, Teamwork leads with Scrum; Minced links to `minced.kevinpham.page`; placeholder link slots removed everywhere, so only real links show; the projects note no longer crosses the "Projects" title.
+
+**Open:** the card's dashed "link" chip is the last placeholder (it can't be a real link — the card is already one). Nobody has read the resume PDF's text to check it against "no phone number anywhere".
 
 **Next up: M3.1 — Accessibility pass.**

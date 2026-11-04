@@ -524,3 +524,37 @@ That is the shape the intake template was asking for and did not quite get last 
 ### Flagged, not changed
 `docs/BRIEF.md` still describes "World Map Photo Album" in the projects section. The brief is
 the source spec, so renaming it there is Kevin's call, not mine.
+
+## Resume, skills cleanup, real links (2026-11-03)
+
+- **`public/resume.pdf` exists.** Both Download resume buttons worked all along; the file was
+  the missing half. Served as `application/pdf`, 68KB.
+- **Skill groups lost their "used in" line.** Every group header carried a right-aligned list
+  of projects ("Minced · PolyPaper"). Kevin cut them: a skills page should say what he works
+  with, not re-litigate which project used which tool — the project pages already list stacks.
+  `usedIn` is gone from the schema too, so the field can't drift back in half-filled.
+- **Coursework added** to Computer science (software engineering, agile software development),
+  and Teamwork now leads with Scrum, which is what the PolyPaper team actually ran.
+- **Minced is live** at `minced.kevinpham.page` (checked: 957 recipes, sign-in present), so its
+  detail page has a real link chip.
+- **No more placeholder link slots.** The dashed "live · after launch" and "GitHub · later"
+  chips are gone; a detail page shows only links that exist, and nothing at all when there are
+  none. `fitDetail` now sizes the title against the real chip count (0, 1 or 2) instead of
+  always reserving room for two.
+- **The projects note stopped crossing its own title.** "shipping this one" and its arrow sat
+  far enough left that the arrow's tail cut through the word "Projects". The note moved back
+  right and the arrow now descends in the gap past the title's last letter onto Minced's top
+  corner.
+
+### Worth remembering
+The placeholder slots came from the design's "empty slots" state, which made sense when no
+project had shipped anything. Three of four now have a real URL or a public repo, and an empty
+dashed chip beside a real one reads as a missing thing rather than a planned one. Design states
+that describe "before launch" are worth re-checking after launch.
+
+### Flagged, not changed
+- **The card's own dashed "link" chip** (bottom-right of every project card) is now the last
+  placeholder on the spread. It can't be a real link — the whole card is already a link, and
+  anchors can't nest — so it is decoration. Kevin's call whether it goes.
+- **I could not read the resume PDF's text** from here (no `pdftoppm`, and the text streams are
+  compressed), so nobody has checked it against the site's "no phone number anywhere" rule.

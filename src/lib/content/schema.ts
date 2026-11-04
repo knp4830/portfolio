@@ -29,7 +29,7 @@ const chipSchema = z.union([
 
 export const skillsSchema = z.strictObject({
   groups: z
-    .array(z.strictObject({ name: text, usedIn: text, items: z.array(chipSchema).min(1) }))
+    .array(z.strictObject({ name: text, items: z.array(chipSchema).min(1) }))
     .min(1),
   foundations: z.array(z.strictObject({ name: text, detail: text })).min(1),
 });
@@ -136,7 +136,7 @@ export const pageSchemas = {
     note: text,
     specimen: text,
     specimenNote: text,
-    detail: z.strictObject({ label: text, stack: text, lineage: text, live: text, github: text, liveLink: text, githubLink: text, close: text }),
+    detail: z.strictObject({ label: text, stack: text, lineage: text, liveLink: text, githubLink: text, close: text }),
     card: z.strictObject({ link: text }),
   }),
   contact: z.strictObject({

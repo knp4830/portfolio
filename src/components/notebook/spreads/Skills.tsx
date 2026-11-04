@@ -16,9 +16,8 @@ export function skillsSpread({ copy, skills }: SkillsProps): SpreadContent {
 
   const groups = skills.groups.map((group) => (
     <section key={group.name} aria-label={group.name} className="mb-7 flex flex-col">
-      <div className="flex h-7 items-center justify-between gap-2">
+      <div className="flex h-7 items-center">
         <h3 className="type-label type-caps text-huckleberry">{group.name}</h3>
-        <span className="type-label whitespace-nowrap text-ink-soft">{group.usedIn}</span>
       </div>
       <ChipRow>
         {group.items.map((item) => (
