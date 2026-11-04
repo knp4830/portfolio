@@ -49,8 +49,8 @@ const MONO_CHAR = 7.6;
 /** A taped screenshot stands in for the blank slot, so it costs the same 70px on a spread: image plus its 8px border.
  *  The mobile card is full width, so the photo gets the room to be worth looking at. */
 const PHOTO_HEIGHT = { spread: 62, mobile: 150 };
-/** The two "live · after launch" / "GitHub · later" slots, with the gap before them. */
-const SLOTS_WIDTH = 300;
+/** Width of the link chips beside a detail page title: one is about half of two. */
+const SLOTS_WIDTH = { 0: 0, 1: 150, 2: 300 } as const;
 
 /** Largest display size (40–56px) at which the title fits on one line. */
 export function titleSize(title: string) {
@@ -59,10 +59,14 @@ export function titleSize(title: string) {
 
 const lines = (text: string, width: number, char: number) => Math.max(1, Math.ceil((text.length * char) / width));
 
+/** How many real links a project has: 0, 1 or 2. */
+const linkCount = (project: Project) => ((project.links?.live ? 1 : 0) + (project.links?.github ? 1 : 0)) as 0 | 1 | 2;
+
 /** Detail page layout: title size, whether the slots need their own row, and whether parts can breathe. */
 function fitDetail(project: Project) {
   const size = titleSize(project.title);
-  const slotsBelow = project.title.length * TITLE_EM * size + SLOTS_WIDTH > COLUMN;
+  const links = linkCount(project);
+  const slotsBelow = links > 0 && project.title.length * TITLE_EM * size + SLOTS_WIDTH[links] > COLUMN;
   const partLines = project.details.map((part) =>
     // A two-word label ("Key decisions") wraps to two lines in its 84px column.
     Math.max(lines(part.text, VALUE_COLUMN, DETAIL_CHAR), part.label.includes(" ") ? 2 : 1),
@@ -103,10 +107,10 @@ export function projectsSpread({ copy, projects }: ProjectsProps): SpreadContent
           </figure>
         )}
       </div>
-      <div className="absolute top-[60px] left-[258px]">
+      <div className="absolute top-[88px] left-[336px]">
         <Marginalia lines={[copy.note]} tilt={2} />
       </div>
-      <ProjectsArrow className="pointer-events-none absolute top-[-34px] left-[-112px] overflow-visible" />
+      <ProjectsArrow className="pointer-events-none absolute top-[-8px] left-[-26px] overflow-visible" />
       <Tape tilt={4} className="top-[500px] left-[360px]" />
     </>
   );
@@ -207,10 +211,10 @@ function ProjectCard({ project, copy, fluid = false }: { project: Project; copy:
 function ProjectDetail({ project, copy, stacked = false }: { project: Project; copy: PageCopy<"projects">; stacked?: boolean }) {
   const { detail } = splitStatus(project.status);
   const fit = fitDetail(project);
-  const slots = (
+  const slots = linkCount(project) > 0 && (
     <div className={`flex gap-2 ${stacked ? "" : fit.slotsBelow ? "h-7 items-center" : "pb-1.5"}`}>
-      {project.links?.live ? <SlotLink href={project.links.live} label={copy.detail.liveLink} /> : <EmptySlot label={copy.detail.live} />}
-      {project.links?.github ? <SlotLink href={project.links.github} label={copy.detail.githubLink} /> : <EmptySlot label={copy.detail.github} />}
+      {project.links?.live && <SlotLink href={project.links.live} label={copy.detail.liveLink} />}
+      {project.links?.github && <SlotLink href={project.links.github} label={copy.detail.githubLink} />}
     </div>
   );
   const row = stacked ? "flex flex-col" : "grid grid-cols-[84px_minmax(0,1fr)] gap-x-4";

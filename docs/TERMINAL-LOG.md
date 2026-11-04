@@ -493,3 +493,24 @@ git push -u origin nightside-atlas
 **Failed:** `pnpm build` ended with `<Html> should not be imported outside of pages/_document`
 while prerendering `/404`. Nothing to do with the code — `pnpm dev` had been running against
 the same `.next` directory. `rm -rf .next && pnpm build` is clean.
+
+## Resume and skills pass (2026-11-03)
+
+```bash
+cp "/c/Users/Kevin Pham/Downloads/Kevin Pham — Resume (SWE Base Template).pdf" public/resume.pdf
+curl -s -o /dev/null -w "%{http_code} %{content_type}\n" http://localhost:3100/resume.pdf   # 200 application/pdf
+```
+
+**Failed:** reading the PDF's text. `Read` needs `pdftoppm` (poppler), which isn't installed,
+and `chrome --headless --screenshot` on a PDF writes a blank image — it doesn't rasterize the
+plugin. Grepping the raw file only finds coordinate numbers, since the text streams are
+compressed.
+
+```bash
+# Kevin: commit, push, PR
+git fetch
+git checkout -b resume-skills origin/main
+git add -A
+git commit -m "Add the resume, clean up skills, show only real project links"
+git push -u origin resume-skills
+```
