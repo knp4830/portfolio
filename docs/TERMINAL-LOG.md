@@ -514,3 +514,14 @@ git add -A
 git commit -m "Add the resume, clean up skills, show only real project links"
 git push -u origin resume-skills
 ```
+
+Capturing a live site for a card photo, then measuring where a mark actually lands:
+
+```bash
+chrome --headless=new --window-size=1600,1000 --screenshot=minced.png https://minced.kevinpham.page/
+node -e "...sharp('minced.png').resize({width:1400}).webp({quality:82})..."   # 76KB
+```
+
+The "start here" arrow was nudged from measurements taken in the browser (`getBoundingClientRect`
+on the arrow's path and on the contents row), not by eye — the arrow is inside the left page, so
+it can never cross the spine.

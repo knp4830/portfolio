@@ -79,10 +79,10 @@ export function openingSpread({ site, copy }: OpeningProps): SpreadContent {
           <SwordFern className="block" />
         </div>
       </div>
-      <div className="absolute top-[122px] left-[392px]">
+      <div className="absolute top-[134px] left-[406px]">
         <Marginalia lines={[copy.startHere]} tilt={-3} />
       </div>
-      <StartHereArrow className="pointer-events-none absolute top-0 left-0 overflow-visible" />
+      <StartHereArrow className="pointer-events-none absolute top-[12px] left-[14px] overflow-visible" />
       {/* The scale bar and its note sit toward the spine, clear of the fern's leaves. */}
       <FrondScale className="pointer-events-none absolute top-0 left-[38px] overflow-visible" />
       <div className="absolute top-[640px] left-[522px]">
