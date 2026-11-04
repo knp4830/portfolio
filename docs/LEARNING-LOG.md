@@ -546,6 +546,18 @@ the source spec, so renaming it there is Kevin's call, not mine.
   right and the arrow now descends in the gap past the title's last letter onto Minced's top
   corner.
 
+- **Economics lists its coursework** like Computer science does: all eight of Kevin's courses,
+  with the two intros and the two analysis courses paired ("introductory micro and macro",
+  "micro and macroeconomic analysis") so the row is four lines instead of six. A one-line
+  "B.A. in Economics" looked unfinished beside a Mathematics row that names its courses.
+- **Minced has a card photo** — its own live hero (shakshuka, "Narrow it down. Start cooking.",
+  the search box), captured from `minced.kevinpham.page` at 1600×1000, 1400px webp, 76KB, with
+  `focus: "50% 42%"` so the crop keeps the headline.
+- **"start here" reaches the spine.** Its arrow stopped 80px short of the contents, so it read
+  as pointing into the gutter. Measured both boxes in the browser rather than guessing: the
+  arrowhead now ends at the page's edge, level with row 1. It cannot cross onto the right page
+  — the arrow belongs to the left page and turns with it.
+
 ### Worth remembering
 The placeholder slots came from the design's "empty slots" state, which made sense when no
 project had shipped anything. Three of four now have a real URL or a public repo, and an empty
